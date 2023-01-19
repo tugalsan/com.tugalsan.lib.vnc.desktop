@@ -27,7 +27,7 @@ public class TS_LibVnc {
         show(pane, window, viewOnly, ipNumber_orURL, password).connectAction();
     }
 
-    public static Parser defaultParser(boolean viewOnly) {
+    private static Parser defaultParser(boolean viewOnly) {
         String vncHost = "vncHostEmptyInit";
         Integer vncPort_orNull = null; //default
         String vncPassword = "vncPasswordEmptyInit";

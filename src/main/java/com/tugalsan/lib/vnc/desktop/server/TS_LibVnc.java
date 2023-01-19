@@ -1,10 +1,12 @@
-package com.tugalsan.lib.vnc.desktop.server.viewer;
+package com.tugalsan.lib.vnc.desktop.server;
 
+import com.tugalsan.lib.vnc.desktop.server.viewer.ParametersHandler;
+import com.tugalsan.lib.vnc.desktop.server.viewer.Viewer;
 import com.tugalsan.lib.vnc.desktop.server.viewer.cli.Parser;
 import java.awt.Window;
 import javax.swing.JDesktopPane;
 
-public class ViewerUtils {
+public class TS_LibVnc {
 
     public static Viewer show(JDesktopPane pane, Window window, Parser parser) {
         return new Viewer(parser, pane, window);
@@ -15,7 +17,7 @@ public class ViewerUtils {
     }
 
     public static Viewer show(JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
-        var connParams = ViewerUtils.defaultParser(viewOnly);
+        var connParams = TS_LibVnc.defaultParser(viewOnly);
         connParams.addOption(ParametersHandler.ARG_HOST, ipNumber_orURL, "");
         connParams.addOption(ParametersHandler.ARG_PASSWORD, password, "");
         return show(pane, window, connParams);

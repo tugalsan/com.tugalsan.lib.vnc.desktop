@@ -9,7 +9,5 @@ module com.tugalsan.lib.vnc.desktop {
     requires com.tugalsan.api.compiler;
     requires com.tugalsan.api.unsafe;
     requires com.tugalsan.api.desktop;
-    
-    exports com.tugalsan.lib.vnc.desktop.server.viewer.cli;
-    exports com.tugalsan.lib.vnc.desktop.server.viewer;
+    exports com.tugalsan.lib.vnc.desktop.server;
 }

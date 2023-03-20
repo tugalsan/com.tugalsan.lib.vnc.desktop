@@ -6,6 +6,7 @@ module com.tugalsan.lib.vnc.desktop {
     requires trilead.ssh2;
     requires com.tugalsan.api.thread;
     requires com.tugalsan.api.executable;
+    requires com.tugalsan.api.charset;
     requires com.tugalsan.api.compiler;
     requires com.tugalsan.api.unsafe;
     requires com.tugalsan.api.desktop;

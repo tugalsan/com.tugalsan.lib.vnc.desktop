@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
+import com.sun.jna.Platform;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ import java.util.regex.Pattern;
 
 public class KeyboardConvertor {
 
-    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    private static final boolean isWindows = Platform.isWindows();
     private static final String PATTERN_STRING_FOR_SCANCODE = "scancode=(\\d+)";
     private Pattern patternForScancode;
     @SuppressWarnings("serial")

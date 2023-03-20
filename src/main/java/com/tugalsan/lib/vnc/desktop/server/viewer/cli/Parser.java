@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.cli;
 
+import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
 import com.tugalsan.lib.vnc.desktop.server.viewer.ParametersHandler;
@@ -79,7 +80,7 @@ public class Parser {
 
     public void addOption(String opName, String defaultValue, String desc) {
         Option op = new Option(opName, defaultValue, desc);
-        options.put(opName.toLowerCase(), op);
+        options.put(TGS_CharSetCast.toLocaleLowerCase(opName), op);
     }
 
     public void parse(String[] args) {
@@ -87,7 +88,7 @@ public class Parser {
             if (p.startsWith("-")) {
                 int skipMinuses = p.startsWith("--") ? 2 : 1;
                 String[] params = p.split("=", 2);
-                Option op = options.get(params[0].toLowerCase().substring(skipMinuses));
+                Option op = options.get(TGS_CharSetCast.toLocaleLowerCase(params[0]).substring(skipMinuses));
                 if (op != null) {
                     op.isSet = true;
                     if (params.length > 1 && !Strings.isTrimmedEmpty(params[1])) {
@@ -102,12 +103,12 @@ public class Parser {
     }
 
     public String getValueFor(String param) {
-        Option op = options.get(param.toLowerCase());
+        Option op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
         return op != null ? op.value : null;
     }
 
     public boolean isSet(String param) {
-        Option op = options.get(param.toLowerCase());
+        Option op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
         return op != null && op.isSet;
     }
 

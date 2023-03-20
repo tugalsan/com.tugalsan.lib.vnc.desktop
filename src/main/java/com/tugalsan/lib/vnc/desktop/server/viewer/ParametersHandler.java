@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
+import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.EncodingType;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.LocalPointer;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
@@ -118,7 +119,7 @@ public class ParametersHandler {
         int mask = completeSettings(new ParamsRetriever() {
             @Override
             public String getParamByName(String name) {
-                if (ARG_VERBOSE.equalsIgnoreCase(name) || ARG_VERBOSE_MORE.equalsIgnoreCase(name)) {
+                if (TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE, name) || TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE_MORE, name)) {
                     return parser.isSet(name) ? name : null;
                 }
                 return parser.getValueFor(name);
@@ -213,19 +214,19 @@ public class ParametersHandler {
         if (isGiven(convertToAsciiParam)) {
             rfbMask |= ProtocolSettings.CHANGED_CONVERT_TO_ASCII;
         }
-        if (EncodingType.TIGHT.getName().equalsIgnoreCase(encodingParam)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.TIGHT.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.TIGHT);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
-        if (EncodingType.HEXTILE.getName().equalsIgnoreCase(encodingParam)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.HEXTILE.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.HEXTILE);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
-        if (EncodingType.ZRLE.getName().equalsIgnoreCase(encodingParam)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.ZRLE.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.ZRLE);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
-        if (EncodingType.RAW_ENCODING.getName().equalsIgnoreCase(encodingParam)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.RAW_ENCODING.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.RAW_ENCODING);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
@@ -243,7 +244,7 @@ public class ParametersHandler {
                 rfbMask |= ProtocolSettings.CHANGED_JPEG_QUALITY;
             }
         } catch (NumberFormatException e) {
-            if ("lossless".equalsIgnoreCase(jpegQualityParam)) {
+            if (TGS_CharSetCast.equalsLocaleIgnoreCase("lossless", jpegQualityParam)) {
                 rfbSettings.setJpegQuality(-Math.abs(rfbSettings.getJpegQuality()));
             }
         }
@@ -254,21 +255,21 @@ public class ParametersHandler {
         } catch (NumberFormatException e) {
             /* nop */ }
 
-        if ("on".equalsIgnoreCase(localPointerParam) || "true".equalsIgnoreCase(localPointerParam) || "yes".equalsIgnoreCase(localPointerParam)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase("on", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("true", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("yes", localPointerParam)) {
             rfbSettings.setMouseCursorTrack(LocalPointer.ON);
             rfbMask |= ProtocolSettings.CHANGED_MOUSE_CURSOR_TRACK;
         }
-        if ("off".equalsIgnoreCase(localPointerParam) || "no".equalsIgnoreCase(localPointerParam) || "false".equalsIgnoreCase(localPointerParam)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase("off", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("no", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("false", localPointerParam)) {
             rfbSettings.setMouseCursorTrack(LocalPointer.OFF);
             rfbMask |= ProtocolSettings.CHANGED_MOUSE_CURSOR_TRACK;
         }
-        if ("hide".equalsIgnoreCase(localPointerParam) || "hidden".equalsIgnoreCase(localPointerParam)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase("hide", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("hidden", localPointerParam)) {
             rfbSettings.setMouseCursorTrack(LocalPointer.HIDE);
             rfbMask |= ProtocolSettings.CHANGED_MOUSE_CURSOR_TRACK;
         }
-        if ("none".equalsIgnoreCase(tunneling) || "no".equalsIgnoreCase(tunneling) || "false".equalsIgnoreCase(tunneling)) {
+        if (TGS_CharSetCast.equalsLocaleIgnoreCase("none", tunneling) || TGS_CharSetCast.equalsLocaleIgnoreCase("no", tunneling) || TGS_CharSetCast.equalsLocaleIgnoreCase("false", tunneling)) {
             rfbSettings.setTunnelType(TunnelType.NOTUNNEL);
-        } else { // if ("ssl".equalsIgnoreCase(tunneling)) {
+        } else { // if (TGS_CharSetCast.equalsLocaleIgnoreCase("ssl",tunneling)) {
             rfbSettings.setTunnelType(TunnelType.SSL);
         }
         return rfbMask;
@@ -308,7 +309,7 @@ public class ParametersHandler {
         }
         String sshHostNameParam = pr.getParamByName(ARG_SSH_HOST);
         connectionParams.sshHostName = sshHostNameParam;
-        connectionParams.setUseSsh("yes".equalsIgnoreCase(pr.getParamByName(ARG_TUNNELING)));
+        connectionParams.setUseSsh(TGS_CharSetCast.equalsLocaleIgnoreCase("yes", pr.getParamByName(ARG_TUNNELING)));
         try {
             connectionParams.setSshPortNumber(pr.getParamByName(ARG_SSH_PORT));
         } catch (WrongParameterException e) {
@@ -323,8 +324,8 @@ public class ParametersHandler {
 
     private static boolean parseBooleanOrDefault(String param, boolean defaultValue) {
         return defaultValue
-                ? !("no".equalsIgnoreCase(param) || "false".equalsIgnoreCase(param))
-                : "yes".equalsIgnoreCase(param) || "true".equalsIgnoreCase(param);
+                ? !(TGS_CharSetCast.equalsLocaleIgnoreCase("no", param) || TGS_CharSetCast.equalsLocaleIgnoreCase("false", param))
+                : TGS_CharSetCast.equalsLocaleIgnoreCase("yes", param) || TGS_CharSetCast.equalsLocaleIgnoreCase("true", param);
     }
 
 }

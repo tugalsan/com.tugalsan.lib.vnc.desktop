@@ -36,7 +36,7 @@ public interface ConnectionWorker<T> {
     /**
      * The same as in {@link javax.swing.SwingWorker}
      */
-    void execute();
+    void run();
 
     /**
      * Should cancel worker.

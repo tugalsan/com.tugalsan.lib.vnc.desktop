@@ -140,7 +140,7 @@ public class ConnectionPresenter extends Presenter {
         networkConnectionWorker.setConnectionParams(connectionParams);
         networkConnectionWorker.setPresenter(this);
         networkConnectionWorker.setHasSshSupport(hasSshSupport);
-        networkConnectionWorker.execute();
+        networkConnectionWorker.run();
     }
 
     /**
@@ -179,7 +179,7 @@ public class ConnectionPresenter extends Presenter {
         rfbConnectionWorker.setUiSettings(uiSettings);
         rfbConnectionWorker.setConnectionString(
                 getModelProperty(PROPERTY_HOST_NAME) + ":" + getModelProperty(PROPERTY_RFB_PORT_NUMBER));
-        rfbConnectionWorker.execute();
+        rfbConnectionWorker.run();
         viewerControlApi = rfbConnectionWorker.getViewerControlApi();
     }
 

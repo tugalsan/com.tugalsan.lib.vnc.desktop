@@ -202,7 +202,7 @@ public class Viewer implements ViewerEventsListener {
         TS_DesktopPaneUtils.tiltWindows(pane);
         TS_ThreadRun.now(() -> {
             TS_ThreadWait.seconds(null, 5);
-            TGS_UnSafe.execute(() -> {
+            TGS_UnSafe.run(() -> {
                 viewerWindow.ReDrawOnResize();
                 viewerWindow.getFrame().setResizable(true);
                 System.out.println("np");

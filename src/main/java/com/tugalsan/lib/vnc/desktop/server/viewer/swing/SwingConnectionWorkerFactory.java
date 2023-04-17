@@ -23,14 +23,12 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
-import com.tugalsan.api.compiler.client.TGS_CompilerType1;
 import com.tugalsan.lib.vnc.desktop.server.viewer.mvp.Presenter;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.AbstractConnectionWorkerFactory;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.NetworkConnectionWorker;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.RfbConnectionWorker;
 
 import java.awt.*;
-import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 
 /**

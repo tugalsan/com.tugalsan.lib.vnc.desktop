@@ -25,6 +25,7 @@ package com.tugalsan.lib.vnc.desktop.server.viewer.settings;
 
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
 import com.tugalsan.lib.vnc.desktop.server.viewer.mvp.Model;
+import java.util.Objects;
 
 /**
  * Object that represents parameters needed for establishing network connection
@@ -277,13 +278,14 @@ public class ConnectionParams implements Model {
 
     @Override
     public int hashCode() {
-        long hash = (hostName != null ? hostName.hashCode() : 0)
-                + portNumber * 17
-                + (useSsh ? 781 : 693)
-                + (sshHostName != null ? sshHostName.hashCode() : 0) * 23
-                + (sshUserName != null ? sshUserName.hashCode() : 0) * 37
-                + sshPortNumber * 41;
-        return (int) hash;
+        return Objects.hash(
+                hostName != null ? hostName.hashCode() : 0,
+                portNumber,
+                useSsh,
+                sshHostName != null ? sshHostName.hashCode() : 0,
+                sshUserName != null ? sshUserName.hashCode() : 0,
+                sshPortNumber
+        );
     }
 
     public void clearFields() {

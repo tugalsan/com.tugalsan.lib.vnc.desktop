@@ -25,6 +25,7 @@ package com.tugalsan.lib.vnc.desktop.server.rfb;
 
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TransportException;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
+import java.util.Objects;
 
 /**
  * Structure used to describe protocol options such as tunneling methods,
@@ -101,10 +102,7 @@ public class RfbCapabilityInfo {
 
     @Override
     public int hashCode() {
-        int result = code;
-        result = 31 * result + vendorSignature.hashCode();
-        result = 31 * result + nameSignature.hashCode();
-        return result;
+        return Objects.hash(code, vendorSignature.hashCode(), nameSignature.hashCode());
     }
 
     public void setEnable(boolean enable) {

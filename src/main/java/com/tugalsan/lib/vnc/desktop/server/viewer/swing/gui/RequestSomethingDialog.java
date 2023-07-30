@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui;
 
-import com.tugalsan.api.desktop.server.TS_DesktopWindowUtils;
+import com.tugalsan.api.desktop.server.TS_DesktopWindowAndFrameUtils;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -143,8 +143,8 @@ public class RequestSomethingDialog extends JDialog {
             inputField.requestFocus();
         }
         pack();
-        TS_DesktopWindowUtils.decorate(this);
-        TS_DesktopWindowUtils.center(this);
+        TS_DesktopWindowAndFrameUtils.decorate(this);
+        TS_DesktopWindowAndFrameUtils.center(this);
     }
 
     public RequestSomethingDialog setOkLabel(String okLabel) {

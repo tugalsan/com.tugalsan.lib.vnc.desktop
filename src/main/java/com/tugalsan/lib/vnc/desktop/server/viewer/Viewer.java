@@ -28,8 +28,10 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.swing.ConnectionPresenter;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.ViewerEventsListener;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingConnectionWorkerFactory;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingViewerWindow;
-import com.tugalsan.api.desktop.server.TS_DesktopPaneUtils;
+import com.tugalsan.api.desktop.server.TS_DesktopDesktopPaneUtils;
 import com.tugalsan.api.desktop.server.TS_DesktopDialogMessageUtils;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.TS_ThreadWait;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.LazyLoaded;
 import com.tugalsan.lib.vnc.desktop.server.viewer.cli.Parser;
@@ -38,7 +40,6 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.settings.UiSettings;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.ConnectionDialogView;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.ConnectionInfoView;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.ConnectionView;
-import com.tugalsan.api.thread.server.*;
 import com.tugalsan.api.unsafe.client.*;
 import java.awt.Window;
 import java.io.FileInputStream;
@@ -198,9 +199,9 @@ public class Viewer implements ViewerEventsListener {
         viewerWindow.setVisible();
         viewerWindow.validate();
         viewerWindow.setZoomToFitSelected(true);
-        TS_DesktopPaneUtils.remove(pane, connectionDialogView.getFrame());
-        TS_DesktopPaneUtils.tiltWindows(pane);
-        TS_ThreadRun.now(() -> {
+        TS_DesktopDesktopPaneUtils.remove(pane, connectionDialogView.getFrame());
+        TS_DesktopDesktopPaneUtils.tiltWindows(pane);
+        TS_ThreadAsync.now(() -> {
             TS_ThreadWait.seconds(null, 5);
             TGS_UnSafe.run(() -> {
                 viewerWindow.ReDrawOnResize();

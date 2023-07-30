@@ -58,7 +58,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.handlers.Handshaker;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.tunnel.TunnelType;
 import com.tugalsan.lib.vnc.desktop.server.transport.BaudrateMeter;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
-import com.tugalsan.api.thread.server.TS_ThreadRun;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.*;
@@ -134,13 +134,13 @@ public class Protocol implements IChangeSettingsListener {
 
         sendRefreshMessage();
         senderTask = new SenderTask(messageQueue, context.transport, Protocol.this);
-        senderThread = TS_ThreadRun.now(() -> senderTask.run());
+        senderThread = TS_ThreadAsync.now(() -> senderTask.run());
         resetDecoders();
         receiverTask = new ReceiverTask(
                 context.transport, repaintController,
                 clipboardController,
                 Protocol.this, baudrateMeter);
-        receiverThread = TS_ThreadRun.now(() -> receiverTask.run());
+        receiverThread = TS_ThreadAsync.now(() -> receiverTask.run());
     }
 
     private void correctServerPixelFormat() {

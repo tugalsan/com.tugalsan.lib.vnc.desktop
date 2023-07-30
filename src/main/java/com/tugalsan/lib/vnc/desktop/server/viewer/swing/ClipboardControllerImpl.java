@@ -30,7 +30,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientCutTextMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
-import com.tugalsan.api.thread.server.TS_ThreadRun;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -127,7 +127,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
             isRunning = false;
         }
         if (enable && !isEnabled) {
-            TS_ThreadRun.now(() -> run());
+            TS_ThreadAsync.now(() -> run());
         }
         isEnabled = enable;
     }

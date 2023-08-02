@@ -30,7 +30,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientCutTextMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
-import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.struct.async.TS_ThreadAsync;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;

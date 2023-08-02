@@ -58,7 +58,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.handlers.Handshaker;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.tunnel.TunnelType;
 import com.tugalsan.lib.vnc.desktop.server.transport.BaudrateMeter;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
-import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.struct.async.TS_ThreadAsync;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.*;

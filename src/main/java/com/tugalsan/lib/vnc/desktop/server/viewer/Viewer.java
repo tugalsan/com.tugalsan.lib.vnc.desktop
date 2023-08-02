@@ -30,7 +30,7 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingConnectionWorkerFac
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingViewerWindow;
 import com.tugalsan.api.desktop.server.TS_DesktopDesktopPaneUtils;
 import com.tugalsan.api.desktop.server.TS_DesktopDialogMessageUtils;
-import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.struct.async.TS_ThreadAsync;
 import com.tugalsan.api.thread.server.TS_ThreadWait;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.LazyLoaded;

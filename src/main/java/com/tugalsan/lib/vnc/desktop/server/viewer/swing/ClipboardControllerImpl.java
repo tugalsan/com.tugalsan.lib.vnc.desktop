@@ -31,7 +31,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
-import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -50,10 +50,10 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
     private volatile boolean isRunning;
     private boolean isEnabled;
     private final Protocol protocol;
-    private final TS_ThreadSafeTrigger killTrigger;
+    private final TS_ThreadSyncTrigger killTrigger;
     private Charset charset;
 
-    public ClipboardControllerImpl(TS_ThreadSafeTrigger killTrigger, Protocol protocol, String charsetName) {
+    public ClipboardControllerImpl(TS_ThreadSyncTrigger killTrigger, Protocol protocol, String charsetName) {
         this.killTrigger = killTrigger;
         this.protocol = protocol;
         clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();

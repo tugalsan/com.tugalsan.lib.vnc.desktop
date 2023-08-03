@@ -30,7 +30,7 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingConnectionWorkerFac
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingViewerWindow;
 import com.tugalsan.api.desktop.server.TS_DesktopDesktopPaneUtils;
 import com.tugalsan.api.desktop.server.TS_DesktopDialogMessageUtils;
-import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 import com.tugalsan.api.thread.server.TS_ThreadWait;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
@@ -60,7 +60,7 @@ import javax.swing.JDesktopPane;
 public class Viewer implements ViewerEventsListener {
 
     private final ApplicationSettings applicationSettings;
-    private final TS_ThreadSafeTrigger killTrigger;
+    private final TS_ThreadSyncTrigger killTrigger;
     private static final Logger logger = Logger.getLogger(Viewer.class.getName());
     private int paramsMask;
     public final ConnectionParams connectionParams;
@@ -71,7 +71,7 @@ public class Viewer implements ViewerEventsListener {
     private JDesktopPane pane;
 
 //    abstract public void afterLoaded();
-    public Viewer(TS_ThreadSafeTrigger killTrigger, Parser parser, JDesktopPane pane, Window window) {
+    public Viewer(TS_ThreadSyncTrigger killTrigger, Parser parser, JDesktopPane pane, Window window) {
         this.killTrigger = killTrigger;
         this.pane = pane;
         logger.info("TightVNC Viewer version " + ver());

@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb.protocol;
 
-import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TransportException;
 import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientToServerMessage;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
@@ -37,7 +37,7 @@ public class SenderTask implements Runnable {
     private final MessageQueue queue;
     private final Transport transport;
     private final Protocol protocol;
-    private final TS_ThreadSafeTrigger killTrigger;
+    private final TS_ThreadSyncTrigger killTrigger;
 
     /**
      * Create sender task Task runs as thread, receive messages from queue and
@@ -48,7 +48,7 @@ public class SenderTask implements Runnable {
      * @param transport transport to send messages out
      * @param protocol session lifecircle support
      */
-    public SenderTask(TS_ThreadSafeTrigger killTrigger, MessageQueue messageQueue, Transport transport, Protocol protocol) {
+    public SenderTask(TS_ThreadSyncTrigger killTrigger, MessageQueue messageQueue, Transport transport, Protocol protocol) {
         this.killTrigger = killTrigger;
         this.queue = messageQueue;
         this.transport = transport;

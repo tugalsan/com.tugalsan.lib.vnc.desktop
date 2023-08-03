@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb.protocol;
 
-import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.lib.vnc.desktop.server.drawing.Renderer;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.CommonException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.ProtocolException;
@@ -52,7 +52,7 @@ public class ReceiverTask implements Runnable {
 
     private static Logger logger = Logger.getLogger("com.glavsoft.rfb.protocol.ReceiverTask");
     private final Transport transport;
-    private final TS_ThreadSafeTrigger killTrigger;
+    private final TS_ThreadSyncTrigger killTrigger;
     private Renderer renderer;
     private final IRepaintController repaintController;
     private final ClipboardController clipboardController;
@@ -62,7 +62,7 @@ public class ReceiverTask implements Runnable {
     private PixelFormat pixelFormat;
     private volatile boolean needSendPixelFormat;
 
-    public ReceiverTask(TS_ThreadSafeTrigger killTrigger, Transport transport,
+    public ReceiverTask(TS_ThreadSyncTrigger killTrigger, Transport transport,
             IRepaintController repaintController, ClipboardController clipboardController,
             Protocol protocol, BaudrateMeter baudrateMeter) {
         this.killTrigger = killTrigger;

@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb.protocol;
 
-import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.CursorPosDecoder;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.CopyRectDecoder;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.ZlibDecoder;
@@ -117,7 +117,7 @@ public class Protocol implements IChangeSettingsListener {
      * another. With a fast client, the rate at which FramebufferUpdateRequests
      * are sent should be regulated to avoid hogging the network.
      */
-    public void startNormalHandling(TS_ThreadSafeTrigger killTrigger, IRfbSessionListener rfbSessionListener,
+    public void startNormalHandling(TS_ThreadSyncTrigger killTrigger, IRfbSessionListener rfbSessionListener,
             IRepaintController repaintController, ClipboardController clipboardController) {
         this.rfbSessionListener = rfbSessionListener;
         this.repaintController = repaintController;

@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
-import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.AuthenticationFailedException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TransportException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.UnsupportedProtocolVersionException;
@@ -70,7 +70,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
     private ProtocolSettings rfbSettings;
     private UiSettings uiSettings;
     private ViewerControlApi viewerControlApi;
-    private TS_ThreadSafeTrigger killTrigger;
+    private TS_ThreadSyncTrigger killTrigger;
 
     @Override
     public Void doInBackground() throws Exception {
@@ -94,7 +94,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
         return null;
     }
 
-    public SwingRfbConnectionWorker(TS_ThreadSafeTrigger killTrigger, String predefinedPassword, ConnectionPresenter presenter, Component parent,
+    public SwingRfbConnectionWorker(TS_ThreadSyncTrigger killTrigger, String predefinedPassword, ConnectionPresenter presenter, Component parent,
             SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
         this.killTrigger = killTrigger;
         this.predefinedPassword = predefinedPassword;

@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
-import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.lib.vnc.desktop.server.viewer.mvp.Presenter;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.AbstractConnectionWorkerFactory;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.NetworkConnectionWorker;
@@ -43,9 +43,9 @@ public class SwingConnectionWorkerFactory extends AbstractConnectionWorkerFactor
     private final SwingViewerWindowFactory viewerWindowFactory;
     private JDesktopPane pane;
     private Window window;
-    private TS_ThreadSafeTrigger killTrigger;
+    private TS_ThreadSyncTrigger killTrigger;
 
-    public SwingConnectionWorkerFactory(TS_ThreadSafeTrigger killTrigger, Component parent, String predefinedPassword, Presenter presenter,
+    public SwingConnectionWorkerFactory(TS_ThreadSyncTrigger killTrigger, Component parent, String predefinedPassword, Presenter presenter,
             SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
         this.killTrigger = killTrigger;
         this.parent = parent;
@@ -56,7 +56,7 @@ public class SwingConnectionWorkerFactory extends AbstractConnectionWorkerFactor
         this.window = window;
     }
 
-    public SwingConnectionWorkerFactory(TS_ThreadSafeTrigger killTrigger, Component parent, Presenter connectionPresenter, SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
+    public SwingConnectionWorkerFactory(TS_ThreadSyncTrigger killTrigger, Component parent, Presenter connectionPresenter, SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
         this(killTrigger, parent, "", connectionPresenter, viewerWindowFactory, pane, window);
     }
 

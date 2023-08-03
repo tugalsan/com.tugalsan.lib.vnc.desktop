@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb.protocol;
 
+import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
 import com.tugalsan.lib.vnc.desktop.server.drawing.Renderer;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.CommonException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.ProtocolException;
@@ -51,6 +52,7 @@ public class ReceiverTask implements Runnable {
 
     private static Logger logger = Logger.getLogger("com.glavsoft.rfb.protocol.ReceiverTask");
     private final Transport transport;
+    private final TS_ThreadSafeTrigger killTrigger;
     private Renderer renderer;
     private final IRepaintController repaintController;
     private final ClipboardController clipboardController;
@@ -60,9 +62,10 @@ public class ReceiverTask implements Runnable {
     private PixelFormat pixelFormat;
     private volatile boolean needSendPixelFormat;
 
-    public ReceiverTask(Transport transport,
+    public ReceiverTask(TS_ThreadSafeTrigger killTrigger, Transport transport,
             IRepaintController repaintController, ClipboardController clipboardController,
             Protocol protocol, BaudrateMeter baudrateMeter) {
+        this.killTrigger = killTrigger;
         this.transport = transport;
         this.repaintController = repaintController;
         this.clipboardController = clipboardController;
@@ -77,7 +80,7 @@ public class ReceiverTask implements Runnable {
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (killTrigger.hasNotTriggered() && !Thread.currentThread().isInterrupted()) {
                 byte messageId = transport.readByte();
                 switch (messageId) {
                     case FRAMEBUFFER_UPDATE -> //					logger.fine("Server message: FramebufferUpdate (0)");
@@ -95,7 +98,8 @@ public class ReceiverTask implements Runnable {
                         logger.fine("Server message: CutText (3)");
                         serverCutText();
                     }
-                    default -> logger.severe("Unsupported server message. Id = " + messageId);
+                    default ->
+                        logger.severe("Unsupported server message. Id = " + messageId);
                 }
             }
         } catch (TransportException e) {

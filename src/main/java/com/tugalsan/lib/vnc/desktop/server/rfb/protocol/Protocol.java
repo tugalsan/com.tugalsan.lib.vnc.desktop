@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb.protocol;
 
+import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.CursorPosDecoder;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.CopyRectDecoder;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.ZlibDecoder;
@@ -58,7 +59,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.handlers.Handshaker;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.tunnel.TunnelType;
 import com.tugalsan.lib.vnc.desktop.server.transport.BaudrateMeter;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
-import com.tugalsan.api.thread.server.struct.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.*;
@@ -116,7 +117,7 @@ public class Protocol implements IChangeSettingsListener {
      * another. With a fast client, the rate at which FramebufferUpdateRequests
      * are sent should be regulated to avoid hogging the network.
      */
-    public void startNormalHandling(IRfbSessionListener rfbSessionListener,
+    public void startNormalHandling(TS_ThreadSafeTrigger killTrigger, IRfbSessionListener rfbSessionListener,
             IRepaintController repaintController, ClipboardController clipboardController) {
         this.rfbSessionListener = rfbSessionListener;
         this.repaintController = repaintController;
@@ -133,14 +134,14 @@ public class Protocol implements IChangeSettingsListener {
         context.settings.addListener(repaintController);
 
         sendRefreshMessage();
-        senderTask = new SenderTask(messageQueue, context.transport, Protocol.this);
-        senderThread = TS_ThreadAsync.now(() -> senderTask.run());
+        senderTask = new SenderTask(killTrigger, messageQueue, context.transport, Protocol.this);
+        senderThread = TS_ThreadAsync.now(killTrigger, kt -> senderTask.run());
         resetDecoders();
-        receiverTask = new ReceiverTask(
+        receiverTask = new ReceiverTask(killTrigger,
                 context.transport, repaintController,
                 clipboardController,
                 Protocol.this, baudrateMeter);
-        receiverThread = TS_ThreadAsync.now(() -> receiverTask.run());
+        receiverThread = TS_ThreadAsync.now(killTrigger, kt -> receiverTask.run());
     }
 
     private void correctServerPixelFormat() {

@@ -30,7 +30,8 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingConnectionWorkerFac
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.SwingViewerWindow;
 import com.tugalsan.api.desktop.server.TS_DesktopDesktopPaneUtils;
 import com.tugalsan.api.desktop.server.TS_DesktopDialogMessageUtils;
-import com.tugalsan.api.thread.server.struct.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 import com.tugalsan.api.thread.server.TS_ThreadWait;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.LazyLoaded;
@@ -59,6 +60,7 @@ import javax.swing.JDesktopPane;
 public class Viewer implements ViewerEventsListener {
 
     private final ApplicationSettings applicationSettings;
+    private final TS_ThreadSafeTrigger killTrigger;
     private static final Logger logger = Logger.getLogger(Viewer.class.getName());
     private int paramsMask;
     public final ConnectionParams connectionParams;
@@ -69,7 +71,8 @@ public class Viewer implements ViewerEventsListener {
     private JDesktopPane pane;
 
 //    abstract public void afterLoaded();
-    public Viewer(Parser parser, JDesktopPane pane, Window window) {
+    public Viewer(TS_ThreadSafeTrigger killTrigger, Parser parser, JDesktopPane pane, Window window) {
+        this.killTrigger = killTrigger;
         this.pane = pane;
         logger.info("TightVNC Viewer version " + ver());
         connectionParams = new ConnectionParams();
@@ -98,7 +101,7 @@ public class Viewer implements ViewerEventsListener {
 
         SwingViewerWindowFactory viewerWindowFactory = new SwingViewerWindowFactory(this);
 
-        connectionPresenter.setConnectionWorkerFactory(new SwingConnectionWorkerFactory(window, passwordFromParams, connectionPresenter, viewerWindowFactory, pane, window));
+        connectionPresenter.setConnectionWorkerFactory(new SwingConnectionWorkerFactory(killTrigger, window, passwordFromParams, connectionPresenter, viewerWindowFactory, pane, window));
         connectionPresenter.startConnection(settings, uiSettings, paramsMask);
     }
     public ConnectionDialogView connectionDialogView;
@@ -201,8 +204,8 @@ public class Viewer implements ViewerEventsListener {
         viewerWindow.setZoomToFitSelected(true);
         TS_DesktopDesktopPaneUtils.remove(pane, connectionDialogView.getFrame());
         TS_DesktopDesktopPaneUtils.tiltWindows(pane);
-        TS_ThreadAsync.now(() -> {
-            TS_ThreadWait.seconds(null, 5);
+        TS_ThreadAsync.now(killTrigger, kt -> {
+            TS_ThreadWait.seconds(null, killTrigger, 5);
             TGS_UnSafe.run(() -> {
                 viewerWindow.ReDrawOnResize();
                 viewerWindow.getFrame().setResizable(true);

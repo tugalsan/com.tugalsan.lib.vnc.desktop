@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
+import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
 import com.tugalsan.lib.vnc.desktop.server.viewer.mvp.Presenter;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.AbstractConnectionWorkerFactory;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.NetworkConnectionWorker;
@@ -42,9 +43,11 @@ public class SwingConnectionWorkerFactory extends AbstractConnectionWorkerFactor
     private final SwingViewerWindowFactory viewerWindowFactory;
     private JDesktopPane pane;
     private Window window;
+    private TS_ThreadSafeTrigger killTrigger;
 
-    public SwingConnectionWorkerFactory(Component parent, String predefinedPassword, Presenter presenter,
+    public SwingConnectionWorkerFactory(TS_ThreadSafeTrigger killTrigger, Component parent, String predefinedPassword, Presenter presenter,
             SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
+        this.killTrigger = killTrigger;
         this.parent = parent;
         this.predefinedPassword = predefinedPassword;
         this.presenter = (ConnectionPresenter) presenter;
@@ -53,8 +56,8 @@ public class SwingConnectionWorkerFactory extends AbstractConnectionWorkerFactor
         this.window = window;
     }
 
-    public SwingConnectionWorkerFactory(Component parent, Presenter connectionPresenter, SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
-        this(parent, "", connectionPresenter, viewerWindowFactory, pane, window);
+    public SwingConnectionWorkerFactory(TS_ThreadSafeTrigger killTrigger, Component parent, Presenter connectionPresenter, SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
+        this(killTrigger, parent, "", connectionPresenter, viewerWindowFactory, pane, window);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class SwingConnectionWorkerFactory extends AbstractConnectionWorkerFactor
 
     @Override
     public RfbConnectionWorker createRfbConnectionWorker() {
-        return new SwingRfbConnectionWorker(predefinedPassword, presenter, parent, viewerWindowFactory, pane, window);
+        return new SwingRfbConnectionWorker(killTrigger, predefinedPassword, presenter, parent, viewerWindowFactory, pane, window);
     }
 
     @Override

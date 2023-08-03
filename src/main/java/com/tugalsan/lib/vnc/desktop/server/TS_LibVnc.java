@@ -1,5 +1,6 @@
 package com.tugalsan.lib.vnc.desktop.server;
 
+import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
 import com.tugalsan.lib.vnc.desktop.server.viewer.ParametersHandler;
 import com.tugalsan.lib.vnc.desktop.server.viewer.Viewer;
 import com.tugalsan.lib.vnc.desktop.server.viewer.cli.Parser;
@@ -8,33 +9,33 @@ import javax.swing.JDesktopPane;
 
 public class TS_LibVnc {
 
-    public static Viewer show(JDesktopPane pane, Window window, Parser parser) {
-        return new Viewer(parser, pane, window);
+    public static Viewer show(TS_ThreadSafeTrigger killTrigger, JDesktopPane pane, Window window, Parser parser) {
+        return new Viewer(killTrigger, parser, pane, window);
     }
 
-    public static void connect(JDesktopPane pane, Window window, Parser parser) {
-        show(pane, window, parser).connectAction();
+    public static void connect(TS_ThreadSafeTrigger killTrigger, JDesktopPane pane, Window window, Parser parser) {
+        show(killTrigger, pane, window, parser).connectAction();
     }
 
-    public static Viewer show(JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
+    public static Viewer show(TS_ThreadSafeTrigger killTrigger, JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
         var connParams = TS_LibVnc.defaultParser(viewOnly);
         connParams.addOption(ParametersHandler.ARG_HOST, ipNumber_orURL, "");
         connParams.addOption(ParametersHandler.ARG_PASSWORD, password, "");
-        return show(pane, window, connParams);
+        return show(killTrigger, pane, window, connParams);
     }
 
-    public static void connect(JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
-        show(pane, window, viewOnly, ipNumber_orURL, password).connectAction();
+    public static void connect(TS_ThreadSafeTrigger killTrigger, JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
+        show(killTrigger, pane, window, viewOnly, ipNumber_orURL, password).connectAction();
     }
 
     private static Parser defaultParser(boolean viewOnly) {
-        String vncHost = "vncHostEmptyInit";
+        var vncHost = "vncHostEmptyInit";
         Integer vncPort_orNull = null; //default
-        String vncPassword = "vncPasswordEmptyInit";
-        boolean sshEnable = false;
-        String sshHost = "sshHostEmptyInit";
+        var vncPassword = "vncPasswordEmptyInit";
+        var sshEnable = false;
+        var sshHost = "sshHostEmptyInit";
         Integer sshPort_orNull = 5900; //default
-        String sshUser = "sshUserEmptyInit";
+        var sshUser = "sshUserEmptyInit";
         Integer compLevel_from_1_to_9_orNull_def6 = null; //default
         Integer imgQuality_from_1_to_9_orNull_def6 = null; //default
         Integer bitPerPixel_3_6_8_16_24_32_or_null_defServer = null; //default

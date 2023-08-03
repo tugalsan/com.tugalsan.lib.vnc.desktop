@@ -30,7 +30,8 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientCutTextMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
-import com.tugalsan.api.thread.server.struct.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -49,16 +50,18 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
     private volatile boolean isRunning;
     private boolean isEnabled;
     private final Protocol protocol;
+    private final TS_ThreadSafeTrigger killTrigger;
     private Charset charset;
 
-    public ClipboardControllerImpl(Protocol protocol, String charsetName) {
+    public ClipboardControllerImpl(TS_ThreadSafeTrigger killTrigger, Protocol protocol, String charsetName) {
+        this.killTrigger = killTrigger;
         this.protocol = protocol;
         clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         updateSavedClipboardContent(); // prevent onstart clipboard content sending
 
         if (Strings.isTrimmedEmpty(charsetName)) {
             charset = Charset.defaultCharset();
-        } else if (TGS_CharSetCast.equalsLocaleIgnoreCase("standard",charsetName)) {
+        } else if (TGS_CharSetCast.equalsLocaleIgnoreCase("standard", charsetName)) {
             charset = Charset.forName(STANDARD_CHARSET);
         } else {
             charset = Charset.isSupported(charsetName) ? Charset.forName(charsetName) : Charset.defaultCharset();
@@ -127,7 +130,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
             isRunning = false;
         }
         if (enable && !isEnabled) {
-            TS_ThreadAsync.now(() -> run());
+            TS_ThreadAsync.now(killTrigger, kt -> run());
         }
         isEnabled = enable;
     }
@@ -135,7 +138,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
     @Override
     public void run() {
         isRunning = true;
-        while (isRunning) {
+        while (isRunning && killTrigger.hasNotTriggered()) {
             String clipboardText = getRenewedClipboardText();
             if (clipboardText != null) {
                 protocol.sendMessage(new ClientCutTextMessage(clipboardText, charset));

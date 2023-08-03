@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
+import com.tugalsan.api.thread.server.safe.TS_ThreadSafeTrigger;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.AuthenticationFailedException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TransportException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.UnsupportedProtocolVersionException;
@@ -69,6 +70,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
     private ProtocolSettings rfbSettings;
     private UiSettings uiSettings;
     private ViewerControlApi viewerControlApi;
+    private TS_ThreadSafeTrigger killTrigger;
 
     @Override
     public Void doInBackground() throws Exception {
@@ -92,8 +94,9 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
         return null;
     }
 
-    public SwingRfbConnectionWorker(String predefinedPassword, ConnectionPresenter presenter, Component parent,
+    public SwingRfbConnectionWorker(TS_ThreadSafeTrigger killTrigger, String predefinedPassword, ConnectionPresenter presenter, Component parent,
             SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
+        this.killTrigger = killTrigger;
         this.predefinedPassword = predefinedPassword;
         this.presenter = presenter;
         this.parent = parent;
@@ -117,7 +120,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
             get();
             presenter.showMessage("Handshake established");
             ClipboardControllerImpl clipboardController
-                    = new ClipboardControllerImpl(workingProtocol, rfbSettings.getRemoteCharsetName());
+                    = new ClipboardControllerImpl(killTrigger, workingProtocol, rfbSettings.getRemoteCharsetName());
             clipboardController.setEnabled(rfbSettings.isAllowClipboardTransfer());
             rfbSettings.addListener(clipboardController);
             viewerWindow = viewerWindowFactory.createViewerWindow(
@@ -125,7 +128,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
                     pane, window
             );
 
-            workingProtocol.startNormalHandling(this, viewerWindow.getRepaintController(), clipboardController);
+            workingProtocol.startNormalHandling(killTrigger, this, viewerWindow.getRepaintController(), clipboardController);
             presenter.showMessage("Started");
 
             presenter.successfulRfbConnection();

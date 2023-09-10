@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing.ssh;
 
+import com.tugalsan.api.unsafe.client.TGS_UnSafe;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
@@ -89,6 +90,7 @@ public class PrefsHelper {
                 }
             }
         } catch (Exception r) {
+            TGS_UnSafe.throwIfInterruptedException(r);
             logger.warning("Wrong data at '" + sshNode.absolutePath() + "#" + key + "' prefs: " + r.getMessage());
             clearNode(sshNode);
         }

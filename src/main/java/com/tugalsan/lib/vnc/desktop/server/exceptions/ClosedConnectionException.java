@@ -29,8 +29,8 @@ package com.tugalsan.lib.vnc.desktop.server.exceptions;
 @SuppressWarnings("serial")
 public class ClosedConnectionException extends TransportException {
 
-    public ClosedConnectionException(Throwable exception) {
-        super(exception);
+    public ClosedConnectionException(Throwable e) {
+        super(e);
     }
 
 }

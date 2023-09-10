@@ -30,8 +30,8 @@ public class TransportException extends CommonException {
         super(message, exception);
     }
 
-    public TransportException(Throwable exception) {
-        super(exception);
+    public TransportException(Throwable e) {
+        super(e);
     }
 
     public TransportException(String message) {

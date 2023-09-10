@@ -24,6 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
 import com.sun.jna.Platform;
+import com.tugalsan.api.unsafe.client.TGS_UnSafe;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -102,7 +103,7 @@ public class KeyboardConvertor {
         try {
             Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
             canCheckCapsWithToolkit = true;
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException e) {
             canCheckCapsWithToolkit = false;
         }
         if (isWindows) {
@@ -137,7 +138,7 @@ public class KeyboardConvertor {
                 try {
                     isCapsLock
                             = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
-                } catch (Exception ex) {
+                } catch (UnsupportedOperationException e) {
                     /* nop */ }
             }
         }

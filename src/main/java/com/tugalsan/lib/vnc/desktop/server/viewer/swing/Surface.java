@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
+import com.tugalsan.api.unsafe.client.TGS_UnSafe;
 import com.tugalsan.lib.vnc.desktop.server.core.SettingsChangedEvent;
 import com.tugalsan.lib.vnc.desktop.server.drawing.Renderer;
 import com.tugalsan.lib.vnc.desktop.server.rfb.IChangeSettingsListener;
@@ -248,7 +249,8 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
             mouseEventListener.setScaleFactor(scaleFactor);
             updateFrameSize();
         } catch (Exception e2) {
-
+            TGS_UnSafe.throwIfInterruptedException(e2);
+            //noop
         }
     }
 

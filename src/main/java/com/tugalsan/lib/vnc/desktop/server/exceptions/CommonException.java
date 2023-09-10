@@ -26,12 +26,12 @@ package com.tugalsan.lib.vnc.desktop.server.exceptions;
 @SuppressWarnings("serial")
 public class CommonException extends Exception {
 
-    public CommonException(Throwable exception) {
-        super(exception);
+    public CommonException(Throwable e) {
+        super(e);
     }
 
-    public CommonException(String message, Throwable exception) {
-        super(message, exception);
+    public CommonException(String msg, Throwable e) {
+        super(msg, e);
     }
 
     public CommonException(String message) {

@@ -26,8 +26,8 @@ package com.tugalsan.lib.vnc.desktop.server.exceptions;
 @SuppressWarnings("serial")
 public class CouldNotConnectException extends TransportException {
 
-    public CouldNotConnectException(Throwable exception) {
-        super(exception);
+    public CouldNotConnectException(Throwable e) {
+        super(e);
     }
 
 }

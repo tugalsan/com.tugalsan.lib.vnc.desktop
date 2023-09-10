@@ -32,6 +32,7 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.RequestSomethingDial
 import com.trilead.ssh2.*;
 import com.trilead.ssh2.channel.LocalAcceptThread;
 import com.trilead.ssh2.crypto.Base64;
+import com.tugalsan.api.unsafe.client.TGS_UnSafe;
 
 import javax.swing.*;
 import java.io.File;
@@ -164,15 +165,7 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
                         throw new AuthenticationFailedException("Authentication failed");
                     }
                 } catch (IOException e) {
-                    if (e.getCause() != null && e.getCause().getCause() != null) { // go deeper!
-                        throw e.getCause().getCause();
-                    } else {
-                        if (e.getCause() != null) {
-                            throw e.getCause();
-                        } else {
-                            throw e;
-                        }
-                    }
+                    TGS_UnSafe.thrw(e);
                 }
             }
             if ("password".equals(authMethod)) {

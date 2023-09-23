@@ -34,7 +34,6 @@ import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 import com.tugalsan.api.thread.server.TS_ThreadWait;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
-import com.tugalsan.lib.vnc.desktop.server.utils.LazyLoaded;
 import com.tugalsan.lib.vnc.desktop.server.viewer.cli.Parser;
 import com.tugalsan.lib.vnc.desktop.server.viewer.settings.ConnectionParams;
 import com.tugalsan.lib.vnc.desktop.server.viewer.settings.UiSettings;
@@ -43,13 +42,6 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.ConnectionInfoView;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.ConnectionView;
 import com.tugalsan.api.unsafe.client.*;
 import java.awt.Window;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -74,7 +66,6 @@ public class Viewer implements ViewerEventsListener {
     public Viewer(TS_ThreadSyncTrigger killTrigger, Parser parser, JDesktopPane pane, Window window) {
         this.killTrigger = killTrigger;
         this.pane = pane;
-        logger.info("TightVNC Viewer version " + ver());
         connectionParams = new ConnectionParams();
         settings = ProtocolSettings.getDefaultSettings();
         uiSettings = new UiSettings();
@@ -146,50 +137,16 @@ public class Viewer implements ViewerEventsListener {
             ch.setLevel(levelToSet);
             appLogger.addHandler(ch);
         } catch (SecurityException e) {
-            logger.warning("cannot set logging level to: " + levelToSet);
+            logger.log(Level.WARNING, "cannot set logging level to: {0}", levelToSet);
         }
     }
 
-    /**
-     * Closes App(lication) or stops App(let).
-     */
     private void closeApp() {
         if (connectionPresenter != null) {
             connectionPresenter.cancelConnection();
             logger.info("Connection cancelled.");
         }
 //        System.exit(0);
-    }
-
-    private static LazyLoaded<String> ver = new LazyLoaded<String>(new LazyLoaded.Loader<String>() {
-        @Override
-        public String load() {
-            String version = Viewer.class.getPackage().getImplementationVersion();
-
-            if (version != null) {
-                return version;
-            }
-            try {
-                String result;
-                Attributes attrs = new Manifest(new FileInputStream(JarFile.MANIFEST_NAME)).getMainAttributes();
-                final String ver = attrs.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-                try {
-                    result = ver != null ? new String(ver.getBytes("ISO-8859-1"), "ISO-8859-1") : null;
-                } catch (UnsupportedEncodingException e) {
-                    result = null;
-                }
-                version = result;
-            } catch (FileNotFoundException e) {
-                System.out.println("Manifest file not found");
-            } catch (IOException e) {
-                System.out.println("Cannot read Manifest file");
-            }
-            return version;
-        }
-    });
-
-    public static String ver() {
-        return ver.get();
     }
 
     @Override

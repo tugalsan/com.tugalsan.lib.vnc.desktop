@@ -91,6 +91,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
         publish(message);
 
         workingProtocol.handshake();
+//        done();
         return null;
     }
 

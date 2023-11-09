@@ -94,6 +94,7 @@ public class Handshaker {
         protocol.setProtocolVersion(ver);
         logger.info("Set protocol version to: " + ver);
         transport = auth(transport, ver);
+        logger.info("Transport created");
         return transport;
     }
 
@@ -296,7 +297,7 @@ public class Handshaker {
             if (SecurityType.TIGHT2_AUTHENTICATION.getId() == (0xff & type)) {
                 handler = registeredAuthHandlers.get(SecurityType.TIGHT2_AUTHENTICATION.getId());
                 if (handler != null) {
-                    logger.info("Security Type accepted: " + SecurityType.TIGHT2_AUTHENTICATION.name());
+                    logger.info("Security Type accepted(TIGHT2): " + SecurityType.TIGHT2_AUTHENTICATION.name());
                     return SecurityType.TIGHT2_AUTHENTICATION.getId();
                 }
             }
@@ -306,7 +307,7 @@ public class Handshaker {
             if (SecurityType.TIGHT_AUTHENTICATION.getId() == (0xff & type)) {
                 handler = registeredAuthHandlers.get(SecurityType.TIGHT_AUTHENTICATION.getId());
                 if (handler != null) {
-                    logger.info("Security Type accepted: " + SecurityType.TIGHT_AUTHENTICATION.name());
+                    logger.info("Security Type accepted(TIGHT): " + SecurityType.TIGHT_AUTHENTICATION.name());
                     return SecurityType.TIGHT_AUTHENTICATION.getId();
                 }
             }
@@ -314,7 +315,7 @@ public class Handshaker {
         for (byte type : secTypes) {
             handler = registeredAuthHandlers.get(0xff & type);
             if (handler != null) {
-                logger.info("Security Type accepted: " + handler.getType());
+                logger.info("Security Type accepted(OTHER): " + handler.getType());
                 return handler.getType().getId();
             }
         }

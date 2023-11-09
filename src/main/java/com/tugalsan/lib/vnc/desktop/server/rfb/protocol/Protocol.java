@@ -79,8 +79,8 @@ public class Protocol implements IChangeSettingsListener {
     private Thread receiverThread;
     private PixelFormat serverPixelFormat;
 
-    private final Map<EncodingType, Decoder> decoders = new LinkedHashMap<EncodingType, Decoder>();
-    private final Set<ClientMessageType> clientMessageTypes = new HashSet<ClientMessageType>();
+    private final Map<EncodingType, Decoder> decoders = new LinkedHashMap();
+    private final Set<ClientMessageType> clientMessageTypes = new HashSet();
     private boolean inCleanUp = false;
     private boolean isMac;
     private BaudrateMeter baudrateMeter;
@@ -97,8 +97,11 @@ public class Protocol implements IChangeSettingsListener {
 
     public void handshake() throws UnsupportedProtocolVersionException, UnsupportedSecurityTypeException,
             AuthenticationFailedException, TransportException, FatalException {
+        logger.info("Starting handshake...");
         context.transport = new Handshaker(this).handshake(getTransport());
+        logger.info("context.transport:" + context.transport);
         messageQueue = new MessageQueue(); // TODO Why here?
+        logger.info("messageQueue:" + messageQueue);
     }
 
     public IRequestString getPasswordRetriever() {

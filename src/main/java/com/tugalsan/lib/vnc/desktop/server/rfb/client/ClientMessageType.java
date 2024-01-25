@@ -55,7 +55,7 @@ public enum ClientMessageType {
     }
 
     public static ClientMessageType byId(int id) {
-        for (ClientMessageType type : values()) {
+        for (var type : values()) {
             if (type.id == id) {
                 return type;
             }

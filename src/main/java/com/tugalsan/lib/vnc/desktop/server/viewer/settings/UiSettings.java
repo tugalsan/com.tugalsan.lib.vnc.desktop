@@ -44,7 +44,7 @@ public class UiSettings {
     public static final int CHANGED_SCALE_FACTOR = 1 << 0;
     public static final int CHANGED_MOUSE_CURSOR_SHAPE = 1 << 1;
 
-    private final List<IChangeSettingsListener> listeners = new CopyOnWriteArrayList<IChangeSettingsListener>();
+    private final List<IChangeSettingsListener> listeners = new CopyOnWriteArrayList();
     private int changedSettingsMask = 0;
 
     private final UiSettingsData uiSettingsData;
@@ -79,16 +79,16 @@ public class UiSettings {
         if (null == listeners) {
             return;
         }
-        final SettingsChangedEvent event = new SettingsChangedEvent(new UiSettings(this));
+        var event = new SettingsChangedEvent(new UiSettings(this));
         changedSettingsMask = 0;
-        for (IChangeSettingsListener listener : listeners) {
+        listeners.forEach(listener -> {
             listener.settingsChanged(event);
-        }
+        });
     }
 
     public void zoomOut() {
-        double oldScaleFactor = uiSettingsData.getScalePercent();
-        double scaleFactor = (int) (this.uiSettingsData.getScalePercent() / SCALE_PERCENT_ZOOMING_STEP) * SCALE_PERCENT_ZOOMING_STEP;
+        var oldScaleFactor = uiSettingsData.getScalePercent();
+        var scaleFactor = (int) (this.uiSettingsData.getScalePercent() / SCALE_PERCENT_ZOOMING_STEP) * SCALE_PERCENT_ZOOMING_STEP;
         if (scaleFactor == oldScaleFactor) {
             scaleFactor -= SCALE_PERCENT_ZOOMING_STEP;
         }
@@ -114,7 +114,7 @@ public class UiSettings {
     }
 
     public void zoomToFit(int containerWidth, int containerHeight, int fbWidth, int fbHeight) {
-        int scalePromille = Math.min(1000 * containerWidth / fbWidth,
+        var scalePromille = Math.min(1000 * containerWidth / fbWidth,
                 1000 * containerHeight / fbHeight);
         while (fbWidth * scalePromille / 1000. > containerWidth
                 || fbHeight * scalePromille / 1000. > containerHeight) {

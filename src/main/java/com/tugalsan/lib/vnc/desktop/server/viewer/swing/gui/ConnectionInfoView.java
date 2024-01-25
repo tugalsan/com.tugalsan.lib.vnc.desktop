@@ -30,7 +30,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -43,7 +42,7 @@ public class ConnectionInfoView extends JInternalFrame implements ConnectionView
     private static final String CANCEL = "Cancel";
     private static final int PAD = 8;
     private static final String CLOSE = "Close";
-    private ViewerEventsListener onCloseListener;
+    private final ViewerEventsListener onCloseListener;
     private final ConnectionPresenter presenter;
     private final JLabel messageLabel;
     private final JLabel infoLabel;
@@ -56,7 +55,7 @@ public class ConnectionInfoView extends JInternalFrame implements ConnectionView
         this.onCloseListener = onCloseListener;
         this.presenter = presenter;
 
-        JPanel outerPane = new JPanel(new BorderLayout(PAD, PAD));
+        var outerPane = new JPanel(new BorderLayout(PAD, PAD));
         outerPane.setBorder(new EmptyBorder(PAD, 2 * PAD, 2 * PAD, 2 * PAD));
 //        final java.util.List<Image> applicationIcons = TS_WindowIconUtils.getApplicationIcons();
 //        if (!applicationIcons.isEmpty()) {
@@ -65,7 +64,7 @@ public class ConnectionInfoView extends JInternalFrame implements ConnectionView
 //            outerPane.add(iconLabel, BorderLayout.WEST);
 //            iconLabel.setBorder(new EmptyBorder(PAD, 2 * PAD, PAD, 2 * PAD));
 //        }
-        JPanel listPane = new JPanel();
+        var listPane = new JPanel();
         outerPane.add(listPane, BorderLayout.CENTER);
         listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
         listPane.add(Box.createVerticalStrut(PAD));
@@ -79,14 +78,11 @@ public class ConnectionInfoView extends JInternalFrame implements ConnectionView
         listPane.add(Box.createVerticalStrut(2 * PAD));
 
         cancelOrCloseButton = new JButton(CANCEL);
-        cancelOrCloseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ConnectionInfoView.this.dispatchEvent(new InternalFrameEvent(
-                        ConnectionInfoView.this, WindowEvent.WINDOW_CLOSING));
-            }
+        cancelOrCloseButton.addActionListener((ActionEvent e) -> {
+            ConnectionInfoView.this.dispatchEvent(new InternalFrameEvent(
+                    ConnectionInfoView.this, WindowEvent.WINDOW_CLOSING));
         });
-        JPanel buttonPane = new JPanel();
+        var buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.add(Box.createHorizontalGlue());
         buttonPane.add(cancelOrCloseButton);
@@ -120,7 +116,7 @@ public class ConnectionInfoView extends JInternalFrame implements ConnectionView
 
     @Override
     public void showReconnectDialog(String title, String message) {
-        int val = JOptionPane.showConfirmDialog(this,
+        var val = JOptionPane.showConfirmDialog(this,
                 message + "\nTry another connection?",
                 title,
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);

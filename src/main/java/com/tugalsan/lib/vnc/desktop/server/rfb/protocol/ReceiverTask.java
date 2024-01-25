@@ -32,9 +32,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.ClipboardController;
 import com.tugalsan.lib.vnc.desktop.server.rfb.IRepaintController;
 import com.tugalsan.lib.vnc.desktop.server.rfb.client.FramebufferUpdateRequestMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.client.SetPixelFormatMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.EncodingType;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.PixelFormat;
-import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.Decoder;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder.FramebufferUpdateRectangle;
 import com.tugalsan.lib.vnc.desktop.server.transport.BaudrateMeter;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
@@ -50,7 +48,7 @@ public class ReceiverTask implements Runnable {
     private static final byte BELL = 2;
     private static final byte SERVER_CUT_TEXT = 3;
 
-    private static Logger logger = Logger.getLogger("com.glavsoft.rfb.protocol.ReceiverTask");
+    private static final Logger logger = Logger.getLogger("com.glavsoft.rfb.protocol.ReceiverTask");
     private final Transport transport;
     private final TS_ThreadSyncTrigger killTrigger;
     private Renderer renderer;
@@ -58,7 +56,7 @@ public class ReceiverTask implements Runnable {
     private final ClipboardController clipboardController;
     protected FramebufferUpdateRequestMessage fullscreenFbUpdateIncrementalRequest;
     private final Protocol protocol;
-    private BaudrateMeter baudrateMeter;
+    private final BaudrateMeter baudrateMeter;
     private PixelFormat pixelFormat;
     private volatile boolean needSendPixelFormat;
 
@@ -81,7 +79,7 @@ public class ReceiverTask implements Runnable {
     public void run() {
         try {
             while (killTrigger.hasNotTriggered() && !Thread.currentThread().isInterrupted()) {
-                byte messageId = transport.readByte();
+                var messageId = transport.readByte();
                 switch (messageId) {
                     case FRAMEBUFFER_UPDATE -> //					logger.fine("Server message: FramebufferUpdate (0)");
                         framebufferUpdateMessage();
@@ -99,11 +97,11 @@ public class ReceiverTask implements Runnable {
                         serverCutText();
                     }
                     default ->
-                        logger.severe("Unsupported server message. Id = " + messageId);
+                        logger.severe("Unsupported server message. Id = %s".formatted(String.valueOf(messageId)));
                 }
             }
         } catch (TransportException e) {
-            logger.severe("Close session: " + e.getMessage());
+            logger.severe("Close session: %s".formatted(e.getMessage()));
             protocol.cleanUpSession("Connection closed.");
         } catch (ProtocolException e) {
             logger.severe(e.getMessage());
@@ -112,8 +110,8 @@ public class ReceiverTask implements Runnable {
             logger.severe(e.getMessage());
             protocol.cleanUpSession("Connection closed..");
         } catch (Throwable te) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
+            var sw = new StringWriter();
+            var pw = new PrintWriter(sw);
             te.printStackTrace(pw);
             protocol.cleanUpSession(te.getMessage() + "\n" + sw.toString());
         }
@@ -123,7 +121,7 @@ public class ReceiverTask implements Runnable {
     private void setColorMapEntries() throws TransportException {
         transport.readByte();  // padding
         transport.readUInt16(); // first color index
-        int length = transport.readUInt16();
+        var length = transport.readUInt16();
         while (length-- > 0) {
             transport.readUInt16(); // R
             transport.readUInt16(); // G
@@ -148,12 +146,12 @@ public class ReceiverTask implements Runnable {
 
     public void framebufferUpdateMessage() throws CommonException {
         transport.skip(1); // padding
-        int numberOfRectangles = transport.readUInt16();
+        var numberOfRectangles = transport.readUInt16();
         while (numberOfRectangles-- > 0) {
-            FramebufferUpdateRectangle rect = new FramebufferUpdateRectangle();
+            var rect = new FramebufferUpdateRectangle();
             rect.fill(transport);
 
-            Decoder decoder = protocol.getDecoderByType(rect.getEncodingType());
+            var decoder = protocol.getDecoderByType(rect.getEncodingType());
 //			logger.finer(rect.toString() + (0 == numberOfRectangles ? "\n---" : ""));
             if (decoder != null) {
                 try {
@@ -166,20 +164,22 @@ public class ReceiverTask implements Runnable {
                         baudrateMeter.stopMeasuringCycle();
                     }
                 }
-                if (EncodingType.RICH_CURSOR == rect.getEncodingType()
-                        || EncodingType.CURSOR_POS == rect.getEncodingType()) {
-                    repaintController.repaintCursor();
-                } else if (rect.getEncodingType() == EncodingType.DESKTOP_SIZE) {
-                    synchronized (this) {
-                        fullscreenFbUpdateIncrementalRequest
-                                = new FramebufferUpdateRequestMessage(0, 0, rect.width, rect.height, true);
-                    }
-                    renderer = repaintController.createRenderer(transport, rect.width, rect.height,
-                            protocol.getPixelFormat());
-                    protocol.sendMessage(new FramebufferUpdateRequestMessage(0, 0, rect.width, rect.height, false));
-                    return;
-                } else {
+                if (null
+                        == rect.getEncodingType()) {
                     repaintController.repaintBitmap(rect);
+                } else switch (rect.getEncodingType()) {
+                    case RICH_CURSOR, CURSOR_POS -> repaintController.repaintCursor();
+                    case DESKTOP_SIZE -> {
+                        synchronized (this) {
+                            fullscreenFbUpdateIncrementalRequest
+                                    = new FramebufferUpdateRequestMessage(0, 0, rect.width, rect.height, true);
+                        }
+                        renderer = repaintController.createRenderer(transport, rect.width, rect.height,
+                                protocol.getPixelFormat());
+                        protocol.sendMessage(new FramebufferUpdateRequestMessage(0, 0, rect.width, rect.height, false));
+                        return;
+                    }
+                    default -> repaintController.repaintBitmap(rect);
                 }
             } else {
                 throw new CommonException("Unprocessed encoding: " + rect.toString());
@@ -191,7 +191,7 @@ public class ReceiverTask implements Runnable {
                     needSendPixelFormat = false;
                     protocol.setPixelFormat(pixelFormat);
                     protocol.sendMessage(new SetPixelFormatMessage(pixelFormat));
-                    logger.fine("sent: " + pixelFormat);
+                    logger.fine("sent: %s" .formatted(pixelFormat.toString()));
                     protocol.sendRefreshMessage();
                     logger.fine("sent: nonincremental fb update");
                 }

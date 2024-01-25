@@ -57,11 +57,11 @@ import java.util.logging.Logger;
  */
 public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implements RfbConnectionWorker, IRfbSessionListener {
 
-    private String predefinedPassword;
-    private ConnectionPresenter presenter;
-    private Component parent;
-    private SwingViewerWindowFactory viewerWindowFactory;
-    private Logger logger;
+    private final String predefinedPassword;
+    private final ConnectionPresenter presenter;
+    private final Component parent;
+    private final SwingViewerWindowFactory viewerWindowFactory;
+    private static final Logger logger = Logger.getLogger(SwingRfbConnectionWorker.class.getName());
     private volatile boolean isStoppingProcess;
     private SwingViewerWindow viewerWindow;
     private String connectionString;
@@ -70,7 +70,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
     private ProtocolSettings rfbSettings;
     private UiSettings uiSettings;
     private ViewerControlApi viewerControlApi;
-    private TS_ThreadSyncTrigger killTrigger;
+    private final TS_ThreadSyncTrigger killTrigger;
 
     @Override
     public Void doInBackground() throws Exception {
@@ -78,15 +78,15 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
             throw new ConnectionErrorException("Null socket");
         }
         workingSocket.setTcpNoDelay(true); // disable Nagle algorithm
-        Transport transport = new Transport(workingSocket);
-        final BaudrateMeter baudrateMeter = new BaudrateMeter();
+        var transport = new Transport(workingSocket);
+        var baudrateMeter = new BaudrateMeter();
         transport.setBaudrateMeter(baudrateMeter);
         workingProtocol = new Protocol(transport,
                 new PasswordChooser(connectionString, parent, this),
                 rfbSettings);
         workingProtocol.setConnectionIdRetriever(new ConnectionIdChooser(parent, this));
         viewerControlApi = new ViewerControlApi(workingProtocol, baudrateMeter);
-        String message = "Handshaking with remote host";
+        var message = "Handshaking with remote host";
         logger.info(message);
         publish(message);
 
@@ -104,14 +104,13 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
         this.viewerWindowFactory = viewerWindowFactory;
         this.pane = pane;
         this.window = window;
-        logger = Logger.getLogger(getClass().getName());
     }
-    private JDesktopPane pane;
-    private Window window;
+    private final JDesktopPane pane;
+    private final Window window;
 
     @Override
     protected void process(List<String> strings) { // EDT
-        String message = strings.get(strings.size() - 1); // get last
+        var message = strings.get(strings.size() - 1); // get last
         presenter.showMessage(message);
     }
 
@@ -120,8 +119,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
         try {
             get();
             presenter.showMessage("Handshake established");
-            ClipboardControllerImpl clipboardController
-                    = new ClipboardControllerImpl(killTrigger, workingProtocol, rfbSettings.getRemoteCharsetName());
+            var clipboardController = new ClipboardControllerImpl(killTrigger, workingProtocol, rfbSettings.getRemoteCharsetName());
             clipboardController.setEnabled(rfbSettings.isAllowClipboardTransfer());
             rfbSettings.addListener(clipboardController);
             viewerWindow = viewerWindowFactory.createViewerWindow(
@@ -149,19 +147,19 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
             } catch (UnsupportedProtocolVersionException e) {
                 errorTitle = "Unsupported Protocol Version";
                 errorMessage = e.getMessage();
-                logger.severe(errorTitle + ": " + errorMessage);
+                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
             } catch (UnsupportedSecurityTypeException e) {
                 errorTitle = "Unsupported Security Type";
                 errorMessage = e.getMessage();
-                logger.severe(errorTitle + ": " + errorMessage);
+                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
             } catch (AuthenticationFailedException e) {
                 errorTitle = "Authentication Failed";
                 errorMessage = e.getMessage();
-                logger.severe(errorTitle + ": " + errorMessage);
+                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
                 presenter.clearPredefinedPassword();
             } catch (TransportException e) {
                 errorTitle = "Connection Error";
-                final Throwable cause = e.getCause();
+                var cause = e.getCause();
                 errorMessage = errorTitle + " : " + e.getMessage();
                 if (cause != null) {
                     if (cause instanceof EOFException) {
@@ -202,21 +200,18 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
             return;
         }
         cleanUpUISessionAndConnection();
-        logger.info("Rfb session stopped: " + reason);
+        logger.info("Rfb session stopped: %s".formatted(reason));
         if (presenter.needReconnection()) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    presenter.showReconnectDialog("Connection error", reason);
-                    presenter.reconnect(predefinedPassword);
-                }
+            SwingUtilities.invokeLater(() -> {
+                presenter.showReconnectDialog("Connection error", reason);
+                presenter.reconnect(predefinedPassword);
             });
         }
     }
 
     @Override
     public boolean cancel() {
-        boolean res = super.cancel(true);
+        var res = super.cancel(true);
         if (res && workingProtocol != null) {
             workingProtocol.cleanUpSession();
         }
@@ -267,7 +262,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
      */
     private class PasswordChooser implements IRequestString {
 
-        private String connectionString;
+        private final String connectionString;
         private final Component parent;
         private final ConnectionWorker onCancel;
 
@@ -285,11 +280,10 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
         }
 
         private String askPassword() {
-            RequestSomethingDialog dialog
-                    = new RequestSomethingDialog(parent, "VNC Authentication", true,
-                            "Server '" + connectionString + "' requires VNC authentication", "Password:")
-                            .setOkLabel("Login")
-                            .setInputFieldLength(12);
+            var dialog = new RequestSomethingDialog(parent, "VNC Authentication", true,
+                    "Server '" + connectionString + "' requires VNC authentication", "Password:")
+                    .setOkLabel("Login")
+                    .setInputFieldLength(12);
             if (!dialog.askResult()) {
                 onCancel.cancel();
             }
@@ -314,12 +308,11 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
 
         @Override
         public String getResult() {
-            RequestSomethingDialog dialog
-                    = new RequestSomethingDialog(parent, "TcpDispatcher ConnectionId", false,
-                            "TcpDispatcher requires Connection Id.",
-                            "Please get the Connection Id from you peer by any other communication channel\n(ex. phone call or IM) and insert it into the form field below.",
-                            "Connection Id:")
-                            .setInputFieldLength(18);
+            var dialog = new RequestSomethingDialog(parent, "TcpDispatcher ConnectionId", false,
+                    "TcpDispatcher requires Connection Id.",
+                    "Please get the Connection Id from you peer by any other communication channel\n(ex. phone call or IM) and insert it into the form field below.",
+                    "Connection Id:")
+                    .setInputFieldLength(18);
             if (!dialog.askResult()) {
                 onCancel.cancel();
             }

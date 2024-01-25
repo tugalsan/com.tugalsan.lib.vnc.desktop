@@ -29,7 +29,7 @@ import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
 
 public class RawDecoder extends Decoder {
 
-    private static RawDecoder instance = new RawDecoder();
+    private static final RawDecoder instance = new RawDecoder();
 
     public static RawDecoder getInstance() {
         return instance;
@@ -46,8 +46,8 @@ public class RawDecoder extends Decoder {
 
     public void decode(Transport transport, Renderer renderer, int x, int y,
             int width, int height) throws TransportException {
-        int length = width * height * renderer.getBytesPerPixel();
-        byte[] bytes = ByteBuffer.getInstance().getBuffer(length);
+        var length = width * height * renderer.getBytesPerPixel();
+        var bytes = ByteBuffer.getInstance().getBuffer(length);
         transport.readBytes(bytes, 0, length);
         renderer.drawBytes(bytes, x, y, width, height);
     }

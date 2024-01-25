@@ -42,7 +42,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -56,23 +55,22 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
     private JScrollPane scroller;
     private JInternalFrame frame;
     private ButtonsBar buttonsBar;
-    private Surface surface;
-    private ViewerEventsListener viewerEventsListener;
-    private String connectionString;
-    private ConnectionPresenter presenter;
+    private final Surface surface;
+    private final ViewerEventsListener viewerEventsListener;
+    private final String connectionString;
+    private final ConnectionPresenter presenter;
     private JLayeredPane lpane;
     private EmptyButtonsBarMouseAdapter buttonsBarMouseAdapter;
     private String remoteDesktopName;
-    private ProtocolSettings rfbSettings;
-    private UiSettings uiSettings;
-    private Protocol workingProtocol;
-    private JDesktopPane pane;
-    private Window window;
+    private final ProtocolSettings rfbSettings;
+    private final UiSettings uiSettings;
+    private final Protocol workingProtocol;
+    private final JDesktopPane pane;
+    private final Window window;
 
     private boolean isZoomToFitSelected;
     private List<JComponent> kbdButtons;
     private Container container;
-    private static Logger logger = Logger.getLogger(SwingViewerWindow.class.getName());
 
     public SwingViewerWindow(Protocol workingProtocol, ProtocolSettings rfbSettings, UiSettings uiSettings, Surface surface, ViewerEventsListener viewerEventsListener, String connectionString, ConnectionPresenter presenter, JDesktopPane pane, Window window) {
         this.window = window;
@@ -143,7 +141,7 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
     }
 
     public void pack() {
-        final Dimension oldSize = lpane.getSize();
+        var oldSize = lpane.getSize();
         lpane.setSize(surface.getPreferredSize());
         if (!isZoomToFitSelected()) {
             internalPack(oldSize);
@@ -172,33 +170,33 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
     }
 
     private void internalPack(Dimension outerPanelOldSize) {
-        final Rectangle workareaRectangle = getWorkareaRectangle();
-        final boolean isHScrollBar = scroller.getHorizontalScrollBar().isShowing();
-        final boolean isVScrollBar = scroller.getVerticalScrollBar().isShowing();
+        var workareaRectangle = getWorkareaRectangle();
+        var isHScrollBar = scroller.getHorizontalScrollBar().isShowing();
+        var isVScrollBar = scroller.getVerticalScrollBar().isShowing();
 
-        boolean isWidthChangeable = true;
-        boolean isHeightChangeable = true;
+        var isWidthChangeable = true;
+        var isHeightChangeable = true;
         if (outerPanelOldSize != null && surface.oldSize != null) {
             isWidthChangeable = (outerPanelOldSize.width == surface.oldSize.width && !isHScrollBar);
             isHeightChangeable = (outerPanelOldSize.height == surface.oldSize.height && !isVScrollBar);
         }
         frame.validate();
 
-        final Insets containerInsets = frame.getInsets();
-        Dimension preferredSize = frame.getPreferredSize();
-        Rectangle preferredRectangle = new Rectangle(frame.getLocation(), preferredSize);
+        var containerInsets = frame.getInsets();
+        var preferredSize = frame.getPreferredSize();
+        var preferredRectangle = new Rectangle(frame.getLocation(), preferredSize);
 
         if (null == outerPanelOldSize && workareaRectangle.contains(preferredRectangle)) {
             frame.pack();
         } else {
-            Dimension minDimension = new Dimension(
+            var minDimension = new Dimension(
                     containerInsets.left + containerInsets.right, containerInsets.top + containerInsets.bottom);
             if (buttonsBar != null && buttonsBar.isVisible) {
                 minDimension.width += buttonsBar.getWidth();
                 minDimension.height += buttonsBar.getHeight();
             }
-            Dimension dim = new Dimension(preferredSize);
-            Point location = frame.getLocation();
+            var dim = new Dimension(preferredSize);
+            var location = frame.getLocation();
             if (!isWidthChangeable) {
                 dim.width = frame.getWidth();
             } else {
@@ -209,14 +207,14 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
                     dim.width = minDimension.width;
                 }
 
-                int dx = location.x - workareaRectangle.x;
+                var dx = location.x - workareaRectangle.x;
                 if (dx < 0) {
                     dx = 0;
                     location.x = workareaRectangle.x;
                 }
-                int w = workareaRectangle.width - dx;
+                var w = workareaRectangle.width - dx;
                 if (w < dim.width) {
-                    int dw = dim.width - w;
+                    var dw = dim.width - w;
                     if (dw < dx) {
                         location.x -= dw;
                     } else {
@@ -236,14 +234,14 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
                     dim.height = minDimension.height;
                 }
 
-                int dy = location.y - workareaRectangle.y;
+                var dy = location.y - workareaRectangle.y;
                 if (dy < 0) {
                     dy = 0;
                     location.y = workareaRectangle.y;
                 }
-                int h = workareaRectangle.height - dy;
+                var h = workareaRectangle.height - dy;
                 if (h < dim.height) {
-                    int dh = dim.height - h;
+                    var dh = dim.height - h;
                     if (dh < dy) {
                         location.y -= dh;
                     } else {
@@ -261,9 +259,9 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
     }
 
     private Rectangle getWorkareaRectangle() {
-        final GraphicsConfiguration graphicsConfiguration = frame.getGraphicsConfiguration();
-        final Rectangle screenBounds = graphicsConfiguration.getBounds();
-        final Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfiguration);
+        var graphicsConfiguration = frame.getGraphicsConfiguration();
+        var screenBounds = graphicsConfiguration.getBounds();
+        var screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfiguration);
 
         screenBounds.x += screenInsets.left;
         screenBounds.y += screenInsets.top;
@@ -274,42 +272,29 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
 
     void addZoomButtons() {
         buttonsBar.createStrut();
-        zoomOutButton = buttonsBar.createButton("zoom-out", "Zoom Out", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                zoomFitButton.setSelected(false);
-                uiSettings.zoomOut();
-            }
+        zoomOutButton = buttonsBar.createButton("zoom-out", "Zoom Out", (ActionEvent e) -> {
+            zoomFitButton.setSelected(false);
+            uiSettings.zoomOut();
         });
-        zoomInButton = buttonsBar.createButton("zoom-in", "Zoom In", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                zoomFitButton.setSelected(false);
-                uiSettings.zoomIn();
-            }
+        zoomInButton = buttonsBar.createButton("zoom-in", "Zoom In", (ActionEvent e) -> {
+            zoomFitButton.setSelected(false);
+            uiSettings.zoomIn();
         });
-        zoomAsIsButton = buttonsBar.createButton("zoom-100", "Zoom 100%", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                zoomFitButton.setSelected(false);
-                uiSettings.zoomAsIs();
-            }
+        zoomAsIsButton = buttonsBar.createButton("zoom-100", "Zoom 100%", (ActionEvent e) -> {
+            zoomFitButton.setSelected(false);
+            uiSettings.zoomAsIs();
         });
 
         {
-            zoomFitButton = buttonsBar.createToggleButton("zoom-fit", "Zoom to Fit Window",
-                    new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        setZoomToFitSelected(true);
-                        zoomToFit();
-                        updateZoomButtonsState();
-                    } else {
-                        setZoomToFitSelected(false);
-                    }
-                    setSurfaceToHandleKbdFocus();
+            zoomFitButton = buttonsBar.createToggleButton("zoom-fit", "Zoom to Fit Window", (ItemEvent e) -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    setZoomToFitSelected(true);
+                    zoomToFit();
+                    updateZoomButtonsState();
+                } else {
+                    setZoomToFitSelected(false);
                 }
+                setSurfaceToHandleKbdFocus();
             });
             zoomFitButton.setEnabled(true);
             zoomFitButton.setSelected(true);
@@ -317,21 +302,21 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         }
     }
 
-    protected void setSurfaceToHandleKbdFocus() {
+    final protected void setSurfaceToHandleKbdFocus() {
         if (surface != null && !surface.requestFocusInWindow()) {
             surface.requestFocus();
         }
     }
 
     private void zoomToFit() {
-        Dimension scrollerSize = scroller.getSize();
-        Insets scrollerInsets = scroller.getInsets();
+        var scrollerSize = scroller.getSize();
+        var scrollerInsets = scroller.getInsets();
         uiSettings.zoomToFit(scrollerSize.width - scrollerInsets.left - scrollerInsets.right,
                 scrollerSize.height - scrollerInsets.top - scrollerInsets.bottom,
                 workingProtocol.getFbWidth(), workingProtocol.getFbHeight());
     }
 
-    void registerResizeListener(Container container) {
+    final void registerResizeListener(Container container) {
         container.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -349,7 +334,7 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         }
     }
 
-    void updateZoomButtonsState() {
+    final void updateZoomButtonsState() {
         zoomOutButton.setEnabled(uiSettings.getScalePercent() > UiSettings.MIN_SCALE_PERCENT);
         zoomInButton.setEnabled(uiSettings.getScalePercent() < UiSettings.MAX_SCALE_PERCENT);
         zoomAsIsButton.setEnabled(uiSettings.getScalePercent() != 100);
@@ -380,7 +365,7 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         if (isVisible) {
             if (!buttonsBar.isVisible) {
                 lpane.add(buttonsBar.bar, JLayeredPane.POPUP_LAYER, 0);
-                final int bbWidth = buttonsBar.bar.getPreferredSize().width;
+                var bbWidth = buttonsBar.bar.getPreferredSize().width;
                 buttonsBar.bar.setBounds(
                         scroller.getViewport().getViewPosition().x + (scroller.getWidth() - bbWidth) / 2, 0,
                         bbWidth, buttonsBar.bar.getPreferredSize().height);
@@ -439,14 +424,14 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         private static final Insets BUTTONS_MARGIN = new Insets(2, 2, 2, 2);
         private JPanel bar;
         private boolean isVisible;
-        private ArrayList<Component> noFullScreenGroup = new ArrayList<Component>();
-        
+        private final ArrayList<Component> noFullScreenGroup = new ArrayList();
+
         public ButtonsBar() {
             bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 1));
         }
 
         public JButton createButton(String iconId, String tooltipText, ActionListener actionListener) {
-            JButton button = new JButton(iconId);
+            var button = new JButton(iconId);
             button.setToolTipText(tooltipText);
             button.setMargin(BUTTONS_MARGIN);
             bar.add(button);
@@ -459,7 +444,7 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         }
 
         public JToggleButton createToggleButton(String iconId, String tooltipText, ItemListener itemListener) {
-            JToggleButton button = new JToggleButton(iconId);
+            var button = new JToggleButton(iconId);
             button.setToolTipText(tooltipText);
             button.setMargin(BUTTONS_MARGIN);
             bar.add(button);
@@ -495,9 +480,9 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         }
 
         public void setNoFullScreenGroupVisible(boolean isVisible) {
-            for (Component c : noFullScreenGroup) {
+            noFullScreenGroup.forEach(c -> {
                 c.setVisible(isVisible);
-            }
+            });
         }
     }
 
@@ -505,91 +490,68 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         // empty
     }
 
-    protected void createButtonsPanel(final Protocol protocol, Container container) {
-        final SwingViewerWindow.ButtonsBar buttonsBar = createButtonsBar();
+    final protected void createButtonsPanel(final Protocol protocol, Container container) {
+       var bb = createButtonsBar();
 
-        buttonsBar.addToNoFullScreenGroup(
-                buttonsBar.createButton("options", "Set Options", new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        showOptionsDialog();
-                        setSurfaceToHandleKbdFocus();
-                    }
+        bb.addToNoFullScreenGroup(
+                bb.createButton("options", "Set Options", (ActionEvent e) -> {
+                    showOptionsDialog();
+                    setSurfaceToHandleKbdFocus();
                 }));
 
-        buttonsBar.addToNoFullScreenGroup(
-                buttonsBar.createButton("info", "Show connection info", new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        showConnectionInfoMessage();
-                        setSurfaceToHandleKbdFocus();
-                    }
+        bb.addToNoFullScreenGroup(
+                bb.createButton("info", "Show connection info", (ActionEvent e) -> {
+                    showConnectionInfoMessage();
+                    setSurfaceToHandleKbdFocus();
                 }));
 
-        buttonsBar.addToNoFullScreenGroup(
-                buttonsBar.createStrut());
+        bb.addToNoFullScreenGroup(
+                bb.createStrut());
 
-        buttonsBar.createButton("refresh", "Refresh screen", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                protocol.sendRefreshMessage();
-                setSurfaceToHandleKbdFocus();
-            }
+        bb.createButton("refresh", "Refresh screen", (ActionEvent e) -> {
+            protocol.sendRefreshMessage();
+            setSurfaceToHandleKbdFocus();
         });
 
         addZoomButtons();
 
-        kbdButtons = new LinkedList<JComponent>();
+        kbdButtons = new LinkedList();
 
-        buttonsBar.createStrut();
+        bb.createStrut();
 
-        JButton ctrlAltDelButton = buttonsBar.createButton("ctrl-alt-del", "Send 'Ctrl-Alt-Del'", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendCtrlAltDel(protocol);
-                setSurfaceToHandleKbdFocus();
-            }
+        var ctrlAltDelButton = bb.createButton("ctrl-alt-del", "Send 'Ctrl-Alt-Del'", (ActionEvent e) -> {
+            sendCtrlAltDel(protocol);
+            setSurfaceToHandleKbdFocus();
         });
         kbdButtons.add(ctrlAltDelButton);
 
-        JButton winButton = buttonsBar.createButton("win", "Send 'Win' key as 'Ctrl-Esc'", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendWinKey(protocol);
-                setSurfaceToHandleKbdFocus();
-            }
+        var winButton = bb.createButton("win", "Send 'Win' key as 'Ctrl-Esc'", (ActionEvent e) -> {
+            sendWinKey(protocol);
+            setSurfaceToHandleKbdFocus();
         });
         kbdButtons.add(winButton);
 
-        JToggleButton ctrlButton = buttonsBar.createToggleButton("ctrl", "Ctrl Lock",
-                new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    protocol.sendMessage(new KeyEventMessage(Keymap.K_CTRL_LEFT, true));
-                } else {
-                    protocol.sendMessage(new KeyEventMessage(Keymap.K_CTRL_LEFT, false));
-                }
-                setSurfaceToHandleKbdFocus();
+        var ctrlButton = bb.createToggleButton("ctrl", "Ctrl Lock", (ItemEvent e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                protocol.sendMessage(new KeyEventMessage(Keymap.K_CTRL_LEFT, true));
+            } else {
+                protocol.sendMessage(new KeyEventMessage(Keymap.K_CTRL_LEFT, false));
             }
+            setSurfaceToHandleKbdFocus();
         });
         kbdButtons.add(ctrlButton);
 
-        JToggleButton altButton = buttonsBar.createToggleButton("alt", "Alt Lock",
-                new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    protocol.sendMessage(new KeyEventMessage(Keymap.K_ALT_LEFT, true));
-                } else {
-                    protocol.sendMessage(new KeyEventMessage(Keymap.K_ALT_LEFT, false));
-                }
-                setSurfaceToHandleKbdFocus();
+        var altButton = bb.createToggleButton("alt", "Alt Lock", (ItemEvent e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                protocol.sendMessage(new KeyEventMessage(Keymap.K_ALT_LEFT, true));
+            } else {
+                protocol.sendMessage(new KeyEventMessage(Keymap.K_ALT_LEFT, false));
             }
+            setSurfaceToHandleKbdFocus();
         });
         kbdButtons.add(altButton);
 
-        ModifierButtonEventListener modifierButtonListener = new ModifierButtonEventListener();
+        var modifierButtonListener = new ModifierButtonEventListener();
         modifierButtonListener.addButton(KeyEvent.VK_CONTROL, ctrlButton);
         modifierButtonListener.addButton(KeyEvent.VK_ALT, altButton);
         surface.addModifierListener(modifierButtonListener);
@@ -599,7 +561,7 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
 //		buttonBar.add(fileTransferButton);
 //        buttonsBar.createStrut();
 //
-        final JToggleButton viewOnlyButton = buttonsBar.createToggleButton("viewonly", "View Only", (ItemEvent e) -> {
+        var viewOnlyButton = bb.createToggleButton("viewonly", "View Only", (ItemEvent e) -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 rfbSettings.setViewOnly(true);
                 rfbSettings.fireListeners();
@@ -612,21 +574,18 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
         viewOnlyButton.setSelected(rfbSettings.isViewOnly());
         rfbSettings.addListener((SettingsChangedEvent event) -> {
             if (ProtocolSettings.isRfbSettingsChangedFired(event)) {
-                ProtocolSettings settings = (ProtocolSettings) event.getSource();
+                var settings = (ProtocolSettings) event.getSource();
                 viewOnlyButton.setSelected(settings.isViewOnly());
             }
         });
         kbdButtons.add(viewOnlyButton);
-        buttonsBar.createStrut();
+        bb.createStrut();
 
-        buttonsBar.createButton("close", "Close", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                close();
-                presenter.setNeedReconnection(false);
-                presenter.cancelConnection();
-                fireCloseApp();
-            }
+        bb.createButton("close", "Close", (ActionEvent e) -> {
+            close();
+            presenter.setNeedReconnection(false);
+            presenter.cancelConnection();
+            fireCloseApp();
         }).setAlignmentX(JComponent.RIGHT_ALIGNMENT);
 
         setButtonsBarVisible(true, container);
@@ -657,21 +616,21 @@ public class SwingViewerWindow implements IChangeSettingsListener, MouseEnteredL
     @Override
     public void settingsChanged(SettingsChangedEvent e) {
         if (ProtocolSettings.isRfbSettingsChangedFired(e)) {
-            ProtocolSettings settings = (ProtocolSettings) e.getSource();
+            var settings = (ProtocolSettings) e.getSource();
             setEnabledKbdButtons(!settings.isViewOnly());
         }
     }
 
     private void setEnabledKbdButtons(boolean enabled) {
         if (kbdButtons != null) {
-            for (JComponent b : kbdButtons) {
+            kbdButtons.forEach(b -> {
                 b.setEnabled(enabled);
-            }
+            });
         }
     }
 
     private void showOptionsDialog() {
-        OptionsDialog optionsDialog = new OptionsDialog(window);
+        var optionsDialog = new OptionsDialog(window);
         optionsDialog.initControlsFromSettings(rfbSettings, uiSettings, false);
         optionsDialog.setVisible(true);
     }

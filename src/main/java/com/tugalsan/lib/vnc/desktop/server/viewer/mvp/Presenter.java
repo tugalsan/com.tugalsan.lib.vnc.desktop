@@ -25,10 +25,10 @@ package com.tugalsan.lib.vnc.desktop.server.viewer.mvp;
 
 import com.tugalsan.lib.vnc.desktop.server.viewer.Viewer;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -40,14 +40,14 @@ public class Presenter {
 
     private final Map<String, View> registeredViews;
     private final Map<String, Model> registeredModels;
-    static private Logger logger = Logger.getLogger(Presenter.class.getName());
+    private static final Logger logger = Logger.getLogger(Presenter.class.getName());
     private Throwable savedInvocationTargetException;
     public Viewer viewer;
-    
+
     public Presenter(Viewer viewer) {
-        this.viewer  = viewer;
-        registeredViews = new HashMap<String, View>();
-        registeredModels = new HashMap<String, Model>();
+        this.viewer = viewer;
+        registeredViews = new HashMap();
+        registeredModels = new HashMap();
     }
 
     /**
@@ -61,7 +61,7 @@ public class Presenter {
     }
 
     public Set<Map.Entry<String, View>> removeAllViews() {
-        final Set<Map.Entry<String, View>> save = registeredViews.entrySet();
+        var save = registeredViews.entrySet();
         registeredViews.clear();
         return save;
     }
@@ -84,11 +84,11 @@ public class Presenter {
      */
     protected void populate() {
         savedInvocationTargetException = null;
-        for (Map.Entry<String, Model> entry : registeredModels.entrySet()) {
-            String modelName = entry.getKey();
-            Model model = entry.getValue();
+        registeredModels.entrySet().forEach(entry -> {
+            var modelName = entry.getKey();
+            var model = entry.getValue();
             populateFrom(modelName, model);
-        }
+        });
     }
 
     /**
@@ -99,23 +99,22 @@ public class Presenter {
      * @param modelName name of Model
      */
     public void populateFrom(String modelName) {
-        Model model = registeredModels.get(modelName);
+        var model = registeredModels.get(modelName);
         if (model != null) {
             populateFrom(modelName, model);
         } else {
-            logger.finer("Cannot find model: " + modelName);
+            logger.log(Level.FINER, "Cannot find model: {0}", modelName);
         }
     }
 
     private void populateFrom(String modelName, Model model) {
-        Method methods[] = model.getClass().getDeclaredMethods();
-        for (Method m : methods) {
+        var methods = model.getClass().getDeclaredMethods();
+        for (var m : methods) {
             if (m.getName().startsWith("get") && m.getParameterTypes().length == 0) {
-                String propertyName = m.getName().substring(3);
+                var propertyName = m.getName().substring(3);
                 try {
-                    final Object property = m.invoke(model);
-                    logger.finest("Load: " + modelName + ".get" + propertyName + "() # => " + property
-                            + "  type: " + m.getReturnType());
+                    var property = m.invoke(model);
+                    logger.log(Level.FINEST, "Load: {0}.get{1}() # => {2}  type: {3}", new Object[]{modelName, propertyName, property, m.getReturnType()});
                     setViewProperty(propertyName, property, m.getReturnType()); // TODO this can set savedInvocationTargetEx, so what to do whith it?
                 } catch (IllegalAccessException ignore) {
                     // nop
@@ -136,32 +135,32 @@ public class Presenter {
     }
 
     protected void show() {
-        for (View v : registeredViews.values()) {
+        registeredViews.values().forEach(v -> {
             v.showView();
-        }
+        });
     }
 
     protected void save() {
         savedInvocationTargetException = null;
-        for (Map.Entry<String, Model> entry : registeredModels.entrySet()) {
-            String modelName = entry.getKey();
-            Model model = entry.getValue();
-            Method methods[] = model.getClass().getDeclaredMethods();
-            for (Method m : methods) {
+        for (var entry : registeredModels.entrySet()) {
+            var modelName = entry.getKey();
+            var model = entry.getValue();
+            var methods = model.getClass().getDeclaredMethods();
+            for (var m : methods) {
                 if (m.getName().startsWith("set")) {
-                    String propertyName = m.getName().substring(3);
+                    var propertyName = m.getName().substring(3);
                     try {
-                        final Object viewProperty = getViewProperty(propertyName);
+                        var viewProperty = getViewProperty(propertyName);
                         m.invoke(model, viewProperty);
-                        logger.finest("Save: " + modelName + ".set" + propertyName + "( " + viewProperty + " )");
-                    } catch (IllegalAccessException ignore) {
+                        logger.log(Level.FINEST, "Save: {0}.set{1}( {2} )", new Object[]{modelName, propertyName, viewProperty});
+                    } catch (IllegalAccessException | PropertyNotFoundException ignore) {
                         // nop
                     } catch (InvocationTargetException e) {
                         savedInvocationTargetException = e.getCause();
                         break;
-                    } catch (PropertyNotFoundException e) {
-                        // nop
                     }
+                    // nop
+
                 }
             }
         }
@@ -177,47 +176,47 @@ public class Presenter {
 
     public Object getViewProperty(String propertyName) throws PropertyNotFoundException {
         savedInvocationTargetException = null;
-        logger.finest("get" + propertyName + "()");
-        for (Map.Entry<String, View> entry : registeredViews.entrySet()) {
-            String viewName = entry.getKey();
-            View view = entry.getValue();
+        logger.log(Level.FINEST, "get{0}()", propertyName);
+        for (var entry : registeredViews.entrySet()) {
+            var viewName = entry.getKey();
+            var view = entry.getValue();
             try {
-                Method getter = view.getClass().getMethod("get" + propertyName, new Class[0]);
-                final Object res = getter.invoke(view);
-                logger.finest("----from view: " + viewName + ".get" + propertyName + "() # +> " + res);
+                var getter = view.getClass().getMethod("get" + propertyName, new Class[0]);
+                var res = getter.invoke(view);
+                logger.log(Level.FINEST, "----from view: {0}.get{1}() # +> {2}", new Object[]{viewName, propertyName, res});
                 return res;
                 // oops, only first getter will be found TODO?
-            } catch (NoSuchMethodException ignore) {
+            } catch (NoSuchMethodException | IllegalAccessException ignore) {
                 // nop
             } catch (InvocationTargetException e) {
                 savedInvocationTargetException = e.getCause();
                 break;
-            } catch (IllegalAccessException ignore) {
-                // nop
             }
+            // nop
+
         }
         throw new PropertyNotFoundException(propertyName);
     }
 
     public Object getModelProperty(String propertyName) {
         savedInvocationTargetException = null;
-        logger.finest("get" + propertyName + "()");
-        for (String modelName : registeredModels.keySet()) {
-            Model model = registeredModels.get(modelName);
+        logger.log(Level.FINEST, "get{0}()", propertyName);
+        for (var modelName : registeredModels.keySet()) {
+            var model = registeredModels.get(modelName);
             try {
-                Method getter = model.getClass().getMethod("get" + propertyName, new Class[0]);
-                final Object res = getter.invoke(model);
-                logger.finest("----from model: " + modelName + ".get" + propertyName + "() # +> " + res);
+                var getter = model.getClass().getMethod("get" + propertyName, new Class[0]);
+                var res = getter.invoke(model);
+                logger.log(Level.FINEST, "----from model: {0}.get{1}() # +> {2}", new Object[]{modelName, propertyName, res});
                 return res;
                 // oops, only first getter will be found TODO?
-            } catch (NoSuchMethodException ignore) {
+            } catch (NoSuchMethodException | IllegalAccessException ignore) {
                 // nop
             } catch (InvocationTargetException e) {
                 savedInvocationTargetException = e.getCause();
                 break;
-            } catch (IllegalAccessException ignore) {
-                // nop
             }
+            // nop
+
         }
 //        savedInvocationTargetException = new PropertyNotFoundException(propertyName);
         return null;
@@ -229,29 +228,29 @@ public class Presenter {
 
     public void setViewProperty(String propertyName, Object newValue, Class<?> valueType) {
         savedInvocationTargetException = null;
-        logger.finest("set" + propertyName + "( " + newValue + " ) type: " + valueType);
-        for (Map.Entry<String, View> entry : registeredViews.entrySet()) {
-            String viewName = entry.getKey();
-            View view = entry.getValue();
+        logger.log(Level.FINEST, "set{0}( {1} ) type: {2}", new Object[]{propertyName, newValue, valueType});
+        for (var entry : registeredViews.entrySet()) {
+            var viewName = entry.getKey();
+            var view = entry.getValue();
             try {
-                Method setter = view.getClass().getMethod("set" + propertyName, valueType);
+                var setter = view.getClass().getMethod("set" + propertyName, valueType);
                 setter.invoke(view, newValue);
-                logger.finest("----to view: " + viewName + ".set" + propertyName + "( " + newValue + " )");
-            } catch (NoSuchMethodException ignore) {
+                logger.log(Level.FINEST, "----to view: {0}.set{1}( {2} )", new Object[]{viewName, propertyName, newValue});
+            } catch (NoSuchMethodException | IllegalAccessException ignore) {
                 // nop
             } catch (InvocationTargetException e) {
-                e.getCause().printStackTrace();
+                logger.info("WARNING: @setViewProperty -> %s".formatted(e.getCause().getMessage()));
                 savedInvocationTargetException = e.getCause();
                 break;
-            } catch (IllegalAccessException ignore) {
-                // nop
             }
+            // nop
+
         }
     }
 
     protected void throwPossiblyHappenedException() throws Throwable {
         if (savedInvocationTargetException != null) {
-            Throwable tmp = savedInvocationTargetException;
+            var tmp = savedInvocationTargetException;
             savedInvocationTargetException = null;
             throw tmp;
         }
@@ -267,22 +266,22 @@ public class Presenter {
 
     public void setModelProperty(String propertyName, Object newValue, Class<?> valueType) {
         savedInvocationTargetException = null;
-        logger.finest("set" + propertyName + "( " + newValue + " )");
-        for (Map.Entry<String, Model> entry : registeredModels.entrySet()) {
-            String modelName = entry.getKey();
-            Model model = entry.getValue();
+        logger.log(Level.FINEST, "set{0}( {1} )", new Object[]{propertyName, newValue});
+        for (var entry : registeredModels.entrySet()) {
+            var modelName = entry.getKey();
+            var model = entry.getValue();
             try {
-                Method method = model.getClass().getMethod("set" + propertyName, valueType);
+                var method = model.getClass().getMethod("set" + propertyName, valueType);
                 method.invoke(model, newValue);
-                logger.finest("----for model: " + modelName);
-            } catch (NoSuchMethodException ignore) {
+                logger.log(Level.FINEST, "----for model: {0}", modelName);
+            } catch (NoSuchMethodException | IllegalAccessException ignore) {
                 // nop
             } catch (InvocationTargetException e) {
                 savedInvocationTargetException = e.getCause();
                 break;
-            } catch (IllegalAccessException ignore) {
-                // nop
             }
+            // nop
+
         }
     }
 }

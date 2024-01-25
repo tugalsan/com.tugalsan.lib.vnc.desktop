@@ -28,7 +28,6 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.viewer.settings.UiSettings;
 
 import java.awt.*;
-import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 
 /**
@@ -72,8 +71,8 @@ public class SwingViewerWindowFactory {
      */
     public SwingViewerWindow createViewerWindow(Protocol workingProtocol, ProtocolSettings rfbSettings, UiSettings uiSettings, String connectionString, ConnectionPresenter presenter, JDesktopPane pane, Window window) {
         // TODO do we need in presenter here? or split to to history handling and reconnection ability
-        Surface surface = new Surface(workingProtocol, uiSettings.getScaleFactor());
-        final SwingViewerWindow viewerWindow = new SwingViewerWindow(workingProtocol, rfbSettings, uiSettings, surface, viewerEventsListener, connectionString, presenter, pane, window);
+        var surface = new Surface(workingProtocol, uiSettings.getScaleFactor());
+        var viewerWindow = new SwingViewerWindow(workingProtocol, rfbSettings, uiSettings, surface, viewerEventsListener, connectionString, presenter, pane, window);
         surface.setViewerWindow(viewerWindow);
         viewerWindow.setRemoteDesktopName(workingProtocol.getRemoteDesktopName());
         rfbSettings.addListener(viewerWindow);

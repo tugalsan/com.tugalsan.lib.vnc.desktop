@@ -51,14 +51,15 @@ import java.util.prefs.Preferences;
  */
 public class TrileadSsh2ConnectionManager extends SshConnectionManager {
 
-    private Set<File> identityFiles = new HashSet<>();
+    private static final Logger logger = Logger.getLogger(TrileadSsh2ConnectionManager.class.getName());
+
+    private final Set<File> identityFiles = new HashSet<>();
     private LocalPortForwarder portForwarder;
     private boolean connected = false;
     private Connection connection;
 
     public TrileadSsh2ConnectionManager(JFrame parentWindow) {
         super(parentWindow);
-        logger = Logger.getLogger(this.getClass().getName());
     }
 
     @Override
@@ -69,18 +70,12 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
     @Override
     protected int makeConnectionAndGetPort(ConnectionParams connectionParams) throws ConnectionErrorException {
         connected = false;
-        int port = 0;
+        var port = 0;
         connection = new Connection(connectionParams.getSshHostName(), connectionParams.getSshPortNumber());
         try {
-            KnownHosts knownHosts = getKnownHosts();
-            final ConnectionInfo connectionInfo = connection.connect(new HostVerifier(knownHosts));
-            logger.fine("SSH connection established:"
-                    + "\n  clientToServerCryptoAlgorithm: " + connectionInfo.clientToServerCryptoAlgorithm
-                    + "\n  clientToServerMACAlgorithm: " + connectionInfo.clientToServerMACAlgorithm
-                    + "\n  keyExchangeAlgorithm: " + connectionInfo.keyExchangeAlgorithm
-                    + "\n  serverHostKeyAlgorithm: " + connectionInfo.serverHostKeyAlgorithm
-                    + "\n  serverToClientCryptoAlgorithm: " + connectionInfo.serverToClientCryptoAlgorithm
-                    + "\n  serverToClientMACAlgorithm: " + connectionInfo.serverToClientMACAlgorithm);
+            var knownHosts = getKnownHosts();
+            var connectionInfo = connection.connect(new HostVerifier(knownHosts));
+            logger.log(Level.FINE, "SSH connection established:\n  clientToServerCryptoAlgorithm:{0}\n  clientToServerMACAlgorithm: {1}\n  keyExchangeAlgorithm: {2}\n  serverHostKeyAlgorithm: {3}\n  serverToClientCryptoAlgorithm: {4}\n  serverToClientMACAlgorithm: {5}", new Object[]{connectionInfo.clientToServerCryptoAlgorithm, connectionInfo.clientToServerMACAlgorithm, connectionInfo.keyExchangeAlgorithm, connectionInfo.serverHostKeyAlgorithm, connectionInfo.serverToClientCryptoAlgorithm, connectionInfo.serverToClientMACAlgorithm});
 
             if (!connection.isAuthenticationComplete()) {
                 tryAuthenticate(connectionParams, connection);
@@ -109,13 +104,14 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
         return port;
     }
 
+    @Override
     public void closeConnection() {
         if (portForwarder != null) {
             try {
                 portForwarder.close();
                 portForwarder = null;
             } catch (IOException e) {
-                logger.warning("There was a problem while closing ssh port forwarder: " + e.getMessage());
+                logger.warning("There was a problem while closing ssh port forwarder: +s".formatted(e.getMessage()));
             }
         }
         if (connection != null) {
@@ -126,13 +122,13 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
     }
 
     private void tryAuthenticate(ConnectionParams connectionParams, Connection connection) throws Throwable {
-        final String[] remainingAuthMethods = connection.getRemainingAuthMethods(connectionParams.getSshUserName());
-        logger.finer("Supported auth methods: " + Arrays.toString(remainingAuthMethods));
-        for (String authMethod : remainingAuthMethods) {// publickey, keyboard-interactive
+        var remainingAuthMethods = connection.getRemainingAuthMethods(connectionParams.getSshUserName());
+        logger.finer("Supported auth methods: %s".formatted(Arrays.toString(remainingAuthMethods)));
+        for (var authMethod : remainingAuthMethods) {// publickey, keyboard-interactive
             if ("publickey".equals(authMethod)) {
 
-                for (File keyFile : identityFiles) {
-                    logger.fine("Trying 'publickey' auth with " + keyFile);
+                for (var keyFile : identityFiles) {
+                    logger.fine("Trying 'publickey' auth with %s".formatted(keyFile.toString()));
                     String passphrase = null;
                     String title;
                     String message;
@@ -150,7 +146,7 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
                         passphrase = getPassphrase(title, message);
                     }
                     if (connection.authenticateWithPublicKey(connectionParams.getSshUserName(), keyFile, passphrase)) {
-                        logger.info("Authenticated with " + keyFile.getName());
+                        logger.info("Authenticated with %s".formatted(keyFile.getName()));
                         return;
                     }
                 }
@@ -182,15 +178,15 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
     }
 
     private KnownHosts getKnownHosts() throws IOException {
-        KnownHosts knownHosts = new KnownHosts();
-        Preferences sshNode = Preferences.userRoot().node(SSH_NODE);
+        var knownHosts = new KnownHosts();
+        var sshNode = Preferences.userRoot().node(SSH_NODE);
         try {
             //                     code bellow converts byte array to char array
             knownHosts.addHostkeys(PrefsHelper.getStringFrom(sshNode, KNOWN_HOSTS).toCharArray());
         } catch (IOException e) {
             PrefsHelper.clearNode(sshNode);
         }
-        File knownHostsFile = new File(OPENSSH_CONFIG_DIR_NAME, KNOWN_HOSTS);
+        var knownHostsFile = new File(OPENSSH_CONFIG_DIR_NAME, KNOWN_HOSTS);
         if (knownHostsFile.exists() && knownHostsFile.isFile()) {
             knownHosts.addHostkeys(knownHostsFile);
         }
@@ -198,7 +194,7 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
     }
 
     private String getPassphrase(String title, String message) {
-        RequestSomethingDialog dialog = new RequestSomethingDialog(parent, title, true, message);
+        var dialog = new RequestSomethingDialog(parent, title, true, message);
         return dialog.askResult() ? dialog.getResult() : "";
     }
 
@@ -211,8 +207,8 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
         try {
             latField = portForwarder.getClass().getDeclaredField("lat");
             latField.setAccessible(true);
-            final LocalAcceptThread lat = (LocalAcceptThread) latField.get(portForwarder);
-            final Field ssField = lat.getClass().getDeclaredField("ss");
+            var lat = (LocalAcceptThread) latField.get(portForwarder);
+            var ssField = lat.getClass().getDeclaredField("ss");
             ssField.setAccessible(true);
             return ((ServerSocket) ssField.get(lat)).getLocalPort();
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -238,9 +234,9 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
 
         @Override
         public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt, boolean[] echo) throws Exception {
-            String[] answers = new String[numPrompts];
-            for (int i = 0; i < numPrompts; ++i) {
-                RequestSomethingDialog dialog = new RequestSomethingDialog(
+            var answers = new String[numPrompts];
+            for (var i = 0; i < numPrompts; ++i) {
+                var dialog = new RequestSomethingDialog(
                         parent,
                         "Keyboard Interactive Authentication", !echo[i],
                         Strings.isTrimmedEmpty(name) ? "SSH Authentication" : name,
@@ -258,7 +254,7 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
 
     private class HostVerifier implements ServerHostKeyVerifier {
 
-        private KnownHosts knownHosts;
+        private final KnownHosts knownHosts;
 
         HostVerifier(KnownHosts knownHosts) {
             this.knownHosts = knownHosts;
@@ -266,26 +262,25 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
 
         @Override
         public boolean verifyServerHostKey(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey) throws Exception {
-            int result = knownHosts.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
+            var result = knownHosts.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
             String message;
             switch (result) {
-                case KnownHosts.HOSTKEY_IS_OK:
+                case KnownHosts.HOSTKEY_IS_OK -> {
                     return true;
-                case KnownHosts.HOSTKEY_IS_NEW:
+                }
+                case KnownHosts.HOSTKEY_IS_NEW ->
                     message = "Do you want to accept the hostkey (type " + serverHostKeyAlgorithm + ") from " + hostname + " ?";
-                    break;
-                case KnownHosts.HOSTKEY_HAS_CHANGED:
+                case KnownHosts.HOSTKEY_HAS_CHANGED ->
                     message = "WARNING! Hostkey for " + hostname + " has changed!\nAccept anyway?";
-                    break;
-                default:
+                default ->
                     throw new IllegalStateException();
             }
-            String hexFingerprint = KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey);
-            String bubblebabbleFingerprint = KnownHosts.createBubblebabbleFingerprint(serverHostKeyAlgorithm,
+            var hexFingerprint = KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey);
+            var bubblebabbleFingerprint = KnownHosts.createBubblebabbleFingerprint(serverHostKeyAlgorithm,
                     serverHostKey);
             message += "\n\nHex Fingerprint: " + hexFingerprint + "\nBubblebabble Fingerprint: " + bubblebabbleFingerprint;
-            final RequestYesNoDialog yesNoDialog = new RequestYesNoDialog(parent, "SSH: Host Verification", message);
-            final boolean verified = yesNoDialog.ask();
+            var yesNoDialog = new RequestYesNoDialog(parent, "SSH: Host Verification", message);
+            var verified = yesNoDialog.ask();
 
             if (verified) {
                 addHostkeyToStorages(hostname, serverHostKeyAlgorithm, serverHostKey);
@@ -294,8 +289,8 @@ public class TrileadSsh2ConnectionManager extends SshConnectionManager {
         }
 
         void addHostkeyToStorages(String hostname, String serverHostKeyAlgorithm, byte[] serverHostKey) throws IOException {
-            Preferences sshNode = Preferences.userRoot().node(SSH_NODE);
-            String record = hostname + " " + serverHostKeyAlgorithm + " " + new String(Base64.encode(serverHostKey));
+            var sshNode = Preferences.userRoot().node(SSH_NODE);
+            var record = hostname + " " + serverHostKeyAlgorithm + " " + new String(Base64.encode(serverHostKey));
             PrefsHelper.addRecordTo(sshNode, KNOWN_HOSTS, record);
 
             KnownHosts.addHostkeyToFile(new File(OPENSSH_CONFIG_DIR_NAME, KNOWN_HOSTS),

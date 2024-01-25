@@ -59,7 +59,7 @@ public class Transport {
         init(is, os);
     }
 
-    void init(InputStream is, OutputStream os) {
+    final void init(InputStream is, OutputStream os) {
         origIs = is;
         this.is = is != null ? new DataInputStream(is) : null;
         origOs = os;
@@ -70,11 +70,10 @@ public class Transport {
         this(null, null);
     }
 
-    void release() {
-        origIs = is = null;
-        origOs = os = null;
-    }
-
+//    void release() {
+//        origIs = is = null;
+//        origOs = os = null;
+//    }
     public byte readByte() throws TransportException {
         try {
             if (baudrateMeter != null) {
@@ -169,7 +168,7 @@ public class Transport {
         // unset most significant (sign) bit 'cause InputStream#readFully reads
         // [int] length bytes from stream. Change when really need read string more
         // than 2147483647 bytes length
-        int length = readInt32() & Integer.MAX_VALUE;
+        var length = readInt32() & Integer.MAX_VALUE;
         return readString(length);
     }
 
@@ -184,7 +183,7 @@ public class Transport {
         // unset most significant (sign) bit 'cause InputStream#readFully  reads
         // [int] length bytes from stream. Change when really need read string more
         // than 2147483647 bytes length
-        int length = readInt32() & Integer.MAX_VALUE;
+        var length = readInt32() & Integer.MAX_VALUE;
         return new String(readBytes(length), UTF8);
     }
 
@@ -197,7 +196,7 @@ public class Transport {
      * @throws TransportException
      */
     public byte[] readBytes(int length) throws TransportException {
-        byte b[] = new byte[length];
+        var b = new byte[length];
         return readBytes(b, 0, length);
     }
 
@@ -217,7 +216,7 @@ public class Transport {
 
     public void skip(int length) throws TransportException {
         try {
-            int rest = length;
+            var rest = length;
             do {
                 rest -= is.skipBytes(rest);
             } while (rest > 0);

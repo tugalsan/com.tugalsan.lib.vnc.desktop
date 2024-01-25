@@ -29,8 +29,8 @@ package com.tugalsan.lib.vnc.desktop.server.transport;
 public class BaudrateMeter {
 
     public static final int MIN_BPS = 10000;
-    private static final int n = 5;
-    private static final double ALPHA = 2. / (n + 1);
+    private static final int N = 5;
+    private static final double ALPHA = 2. / (N + 1);
     private double ema = 0;
     private boolean measure = false;
     private long start;
@@ -53,11 +53,11 @@ public class BaudrateMeter {
 
     public void stopMeasuringCycle() {
         measure = false;
-        long ms = System.currentTimeMillis() - start;
+        var ms = System.currentTimeMillis() - start;
         if (0 == ms || bytes < 100) {
             return; // skip with too small portion of data
         }
-        double bps = bytes * 8. / (ms / 1000.);
+        var bps = bytes * 8. / (ms / 1000.);
 //        double bpms = bytes * 8. / ms;
         if (bps < MIN_BPS) { // limit lower value
             bps = MIN_BPS;

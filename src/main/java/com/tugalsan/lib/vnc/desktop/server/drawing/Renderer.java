@@ -49,7 +49,7 @@ public abstract class Renderer {
     protected SoftCursor cursor;
     protected ColorDecoder colorDecoder;
 
-    protected void init(int width, int height, PixelFormat pixelFormat) {
+    final protected void init(int width, int height, PixelFormat pixelFormat) {
         this.width = width;
         this.height = height;
         initColorDecoder(pixelFormat);
@@ -59,8 +59,11 @@ public abstract class Renderer {
 
     public void initColorDecoder(PixelFormat pixelFormat) {
         lock.lock();
-        colorDecoder = new ColorDecoder(pixelFormat);
-        lock.unlock();
+        try {
+            colorDecoder = new ColorDecoder(pixelFormat);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -73,32 +76,38 @@ public abstract class Renderer {
      * @param height bitmap height
      */
     public void drawBytes(byte[] bytes, int x, int y, int width, int height) {
-        int i = 0;
+        var i = 0;
         lock.lock();
-        for (int ly = y; ly < y + height; ++ly) {
-            int end = ly * this.width + x + width;
-            for (int pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
-                pixels[pixelsOffset] = getPixelColor(bytes, i);
-                i += colorDecoder.bytesPerPixel;
+        try {
+            for (var ly = y; ly < y + height; ++ly) {
+                var end = ly * this.width + x + width;
+                for (var pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
+                    pixels[pixelsOffset] = getPixelColor(bytes, i);
+                    i += colorDecoder.bytesPerPixel;
+                }
             }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     /**
      * Draw byte array bitmap data (for ZRLE)
      */
     public int drawCompactBytes(byte[] bytes, int offset, int x, int y, int width, int height) {
-        int i = offset;
+        var i = offset;
         lock.lock();
-        for (int ly = y; ly < y + height; ++ly) {
-            int end = ly * this.width + x + width;
-            for (int pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
-                pixels[pixelsOffset] = getCompactPixelColor(bytes, i);
-                i += colorDecoder.bytesPerCPixel;
+        try {
+            for (var ly = y; ly < y + height; ++ly) {
+                var end = ly * this.width + x + width;
+                for (var pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
+                    pixels[pixelsOffset] = getCompactPixelColor(bytes, i);
+                    i += colorDecoder.bytesPerCPixel;
+                }
             }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
         return i - offset;
     }
 
@@ -106,31 +115,37 @@ public abstract class Renderer {
      * Draw int (colors) array bitmap data (for ZRLE)
      */
     public void drawColoredBitmap(int[] colors, int x, int y, int width, int height) {
-        int i = 0;
+        var i = 0;
         lock.lock();
-        for (int ly = y; ly < y + height; ++ly) {
-            int end = ly * this.width + x + width;
-            for (int pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
-                pixels[pixelsOffset] = colors[i++];
+        try {
+            for (var ly = y; ly < y + height; ++ly) {
+                var end = ly * this.width + x + width;
+                for (var pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
+                    pixels[pixelsOffset] = colors[i++];
+                }
             }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     /**
      * Draw byte array bitmap data (for Tight)
      */
     public int drawTightBytes(byte[] bytes, int offset, int x, int y, int width, int height) {
-        int i = offset;
+        var i = offset;
         lock.lock();
-        for (int ly = y; ly < y + height; ++ly) {
-            int end = ly * this.width + x + width;
-            for (int pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
-                pixels[pixelsOffset] = colorDecoder.getTightColor(bytes, i);
-                i += colorDecoder.bytesPerPixelTight;
+        try {
+            for (var ly = y; ly < y + height; ++ly) {
+                var end = ly * this.width + x + width;
+                for (var pixelsOffset = ly * this.width + x; pixelsOffset < end; ++pixelsOffset) {
+                    pixels[pixelsOffset] = colorDecoder.getTightColor(bytes, i);
+                    i += colorDecoder.bytesPerPixelTight;
+                }
             }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
         return i - offset;
     }
 
@@ -139,18 +154,21 @@ public abstract class Renderer {
      * Assumed: rrrrrrrr gggggggg bbbbbbbb)
      */
     public void drawUncaliberedRGBLine(byte[] bytes, int x, int y, int width) {
-        int end = y * this.width + x + width;
+        var end = y * this.width + x + width;
         lock.lock();
-        for (int i = 3, pixelsOffset = y * this.width + x; pixelsOffset < end; ++pixelsOffset) {
-            pixels[pixelsOffset]
-                    = //					(0xff & bytes[i++]) << 16 |
-                    //					(0xff & bytes[i++]) << 8 |
-                    //					0xff & bytes[i++];
-                    (0xff & 255 * (colorDecoder.redMax & bytes[i++]) / colorDecoder.redMax) << 16
-                    | (0xff & 255 * (colorDecoder.greenMax & bytes[i++]) / colorDecoder.greenMax) << 8
-                    | 0xff & 255 * (colorDecoder.blueMax & bytes[i++]) / colorDecoder.blueMax;
+        try {
+            for (int i = 3, pixelsOffset = y * this.width + x; pixelsOffset < end; ++pixelsOffset) {
+                pixels[pixelsOffset]
+                        = //					(0xff & bytes[i++]) << 16 |
+                        //					(0xff & bytes[i++]) << 8 |
+                        //					0xff & bytes[i++];
+                        (0xff & 255 * (colorDecoder.redMax & bytes[i++]) / colorDecoder.redMax) << 16
+                        | (0xff & 255 * (colorDecoder.greenMax & bytes[i++]) / colorDecoder.greenMax) << 8
+                        | 0xff & 255 * (colorDecoder.blueMax & bytes[i++]) / colorDecoder.blueMax;
+            }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     /**
@@ -163,36 +181,39 @@ public abstract class Renderer {
      */
     public void drawBytesWithPalette(byte[] buffer, FramebufferUpdateRectangle rect, int[] palette, int paletteSize) {
         lock.lock();
-        // 2 colors
-        if (2 == paletteSize) {
-            int dx, dy, n;
-            int i = rect.y * this.width + rect.x;
-            int rowBytes = (rect.width + 7) / 8;
-            byte b;
-
-            for (dy = 0; dy < rect.height; dy++) {
-                for (dx = 0; dx < rect.width / 8; dx++) {
-                    b = buffer[dy * rowBytes + dx];
-                    for (n = 7; n >= 0; n--) {
-                        pixels[i++] = palette[b >> n & 1];
+        try {
+            // 2 colors
+            if (2 == paletteSize) {
+                int dx, dy, n;
+                var i = rect.y * this.width + rect.x;
+                var rowBytes = (rect.width + 7) / 8;
+                byte b;
+                
+                for (dy = 0; dy < rect.height; dy++) {
+                    for (dx = 0; dx < rect.width / 8; dx++) {
+                        b = buffer[dy * rowBytes + dx];
+                        for (n = 7; n >= 0; n--) {
+                            pixels[i++] = palette[b >> n & 1];
+                        }
+                    }
+                    for (n = 7; n >= 8 - rect.width % 8; n--) {
+                        pixels[i++] = palette[buffer[dy * rowBytes + dx] >> n & 1];
+                    }
+                    i += this.width - rect.width;
+                }
+            } else {
+                // 3..255 colors (assuming bytesPixel == 4).
+                var i = 0;
+                for (var ly = rect.y; ly < rect.y + rect.height; ++ly) {
+                    for (var lx = rect.x; lx < rect.x + rect.width; ++lx) {
+                        var pixelsOffset = ly * this.width + lx;
+                        pixels[pixelsOffset] = palette[buffer[i++] & 0xFF];
                     }
                 }
-                for (n = 7; n >= 8 - rect.width % 8; n--) {
-                    pixels[i++] = palette[buffer[dy * rowBytes + dx] >> n & 1];
-                }
-                i += this.width - rect.width;
             }
-        } else {
-            // 3..255 colors (assuming bytesPixel == 4).
-            int i = 0;
-            for (int ly = rect.y; ly < rect.y + rect.height; ++ly) {
-                for (int lx = rect.x; lx < rect.x + rect.width; ++lx) {
-                    int pixelsOffset = ly * this.width + lx;
-                    pixels[pixelsOffset] = palette[buffer[i++] & 0xFF];
-                }
-            }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     /**
@@ -217,12 +238,15 @@ public abstract class Renderer {
             deltaY = -1;
         }
         lock.lock();
-        for (int y = startSrcY; y != endSrcY; y += deltaY) {
-            System.arraycopy(pixels, y * width + srcX,
-                    pixels, dstY * width + dstRect.x, dstRect.width);
-            dstY += deltaY;
+        try {
+            for (var y = startSrcY; y != endSrcY; y += deltaY) {
+                System.arraycopy(pixels, y * width + srcX,
+                        pixels, dstY * width + dstRect.x, dstRect.width);
+                dstY += deltaY;
+            }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     /**
@@ -246,12 +270,15 @@ public abstract class Renderer {
      */
     public void fillRect(int color, int x, int y, int width, int height) {
         lock.lock();
-        int sy = y * this.width + x;
-        int ey = sy + height * this.width;
-        for (int i = sy; i < ey; i += this.width) {
-            Arrays.fill(pixels, i, i + width, color);
+        try {
+            var sy = y * this.width + x;
+            var ey = sy + height * this.width;
+            for (var i = sy; i < ey; i += this.width) {
+                Arrays.fill(pixels, i, i + width, color);
+            }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     /**

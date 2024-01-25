@@ -35,15 +35,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SwingNetworkConnectionWorker extends SwingWorker<Socket, String> implements NetworkConnectionWorker {
 
     public static final int MAX_HOSTNAME_LENGTH_FOR_MESSAGES = 40;
     private final Component parent;
-    private final Logger logger;
+    private static final Logger logger = Logger.getLogger(SwingNetworkConnectionWorker.class.getName());
     private boolean hasSshSupport;
     private ConnectionParams connectionParams;
     private ConnectionPresenter presenter;
@@ -51,7 +49,6 @@ public class SwingNetworkConnectionWorker extends SwingWorker<Socket, String> im
 
     public SwingNetworkConnectionWorker(Component parent) {
         this.parent = parent;
-        logger = Logger.getLogger(getClass().getName());
     }
 
     @Override
@@ -60,12 +57,12 @@ public class SwingNetworkConnectionWorker extends SwingWorker<Socket, String> im
     }
 
     public Socket doInBackground2() throws IOException, InterruptedException, ConnectionErrorException, CancelConnectionException, UnknownHostException {
-        String s = "<b>" + connectionParams.hostName + "</b>:" + connectionParams.getPortNumber();
+        var s = "<b>" + connectionParams.hostName + "</b>:" + connectionParams.getPortNumber();
         if (connectionParams.useSsh()) {
             s += " <i>(via com.glavsoft.viewer.swing.ssh://" + connectionParams.sshUserName + "@" + connectionParams.sshHostName + ":" + connectionParams.getSshPortNumber() + ")</i>";
         }
 
-        String message = "<html>Trying to connect to " + s + "</html>";
+        var message = "<html>Trying to connect to " + s + "</html>";
         logger.info(message.replaceAll("<[^<>]+?>", ""));
         publish(message);
         int port;
@@ -103,22 +100,22 @@ public class SwingNetworkConnectionWorker extends SwingWorker<Socket, String> im
             throw ie;
         }
         logger.info("creating socket...");
-        logger.info("host:" + host);
-        logger.info("port:" + port);
+        logger.info("host:%s".formatted(host));
+        logger.info("port:%s".formatted(port));
         return new Socket(host, port);
     }
 
-    private String formatHostString(String hostName) {
-        if (hostName.length() <= MAX_HOSTNAME_LENGTH_FOR_MESSAGES) {
-            return hostName;
-        } else {
-            return hostName.substring(0, MAX_HOSTNAME_LENGTH_FOR_MESSAGES) + "...";
-        }
-    }
+//    private String formatHostString(String hostName) {
+//        if (hostName.length() <= MAX_HOSTNAME_LENGTH_FOR_MESSAGES) {
+//            return hostName;
+//        } else {
+//            return hostName.substring(0, MAX_HOSTNAME_LENGTH_FOR_MESSAGES) + "...";
+//        }
+//    }
 
     @Override
     protected void process(List<String> strings) { // EDT
-        String message = strings.get(strings.size() - 1); // get last
+        var message = strings.get(strings.size() - 1); // get last
         presenter.showMessage(message);
     }
 
@@ -147,8 +144,7 @@ public class SwingNetworkConnectionWorker extends SwingWorker<Socket, String> im
             presenter.successfulNetworkConnection(socket);
             logger.info("creating socket done#1");
         } catch (CancellationException e) {
-            logger.info("Cancelled: " + e.getMessage());
-            e.printStackTrace();
+            logger.info("Cancelled: %s".formatted(e.getMessage()));
             presenter.showMessage("Cancelled");
             presenter.connectionFailed();
         } catch (InterruptedException e) {

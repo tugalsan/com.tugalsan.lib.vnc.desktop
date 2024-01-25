@@ -29,9 +29,9 @@ import java.nio.charset.Charset;
 public class Strings {
 
     public static String toString(byte[] byteArray) {
-        StringBuilder sb = new StringBuilder("[");
-        boolean notFirst = false;
-        for (byte b : byteArray) {
+        var sb = new StringBuilder("[");
+        var notFirst = false;
+        for (var b : byteArray) {
             if (notFirst) {
                 sb.append(", ");
             } else {

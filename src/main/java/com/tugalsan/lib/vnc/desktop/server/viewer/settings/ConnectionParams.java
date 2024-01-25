@@ -142,7 +142,7 @@ public class ConnectionParams implements Model {
      *
      * @param port string representation of port number
      */
-    public void setPortNumber(String port) throws WrongParameterException {
+    final public void setPortNumber(String port) throws WrongParameterException {
         portNumber = this.parsePortNumber(port);
     }
 
@@ -266,7 +266,7 @@ public class ConnectionParams implements Model {
         if (this == obj) {
             return true;
         }
-        ConnectionParams o = (ConnectionParams) obj;
+        var o = (ConnectionParams) obj;
         return isEqualsNullable(hostName, o.hostName) && getPortNumber() == o.getPortNumber()
                 && useSsh == o.useSsh && isEqualsNullable(sshHostName, o.sshHostName)
                 && getSshPortNumber() == o.getSshPortNumber() && isEqualsNullable(sshUserName, o.sshUserName);

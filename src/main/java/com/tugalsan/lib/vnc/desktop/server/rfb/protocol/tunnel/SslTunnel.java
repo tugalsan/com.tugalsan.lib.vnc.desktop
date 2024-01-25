@@ -30,7 +30,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -66,27 +65,17 @@ public class SslTunnel implements TunnelHandler {
     @Override
     public Transport createTunnel(Transport transport) throws TransportException {
         try {
-            SSLContext sslContext = SSLContext.getInstance(PROTOCOL);
+            var sslContext = SSLContext.getInstance(PROTOCOL);
             sslContext.init(null, getTrustAllCertsManager(), null);
-            SSLEngine engine = sslContext.createSSLEngine();
+            var engine = sslContext.createSSLEngine();
             engine.setUseClientMode(true);
             @SuppressWarnings("unchecked")
-            final Class<Transport> sslTransportClass = (Class<Transport>) Class.forName(SSL_TRANSPORT);
-            final Constructor<Transport> constructor = sslTransportClass.getConstructor(Transport.class, SSLEngine.class);
+            var sslTransportClass = (Class<Transport>) Class.forName(SSL_TRANSPORT);
+            var constructor = sslTransportClass.getConstructor(Transport.class, SSLEngine.class);
             return constructor.newInstance(transport, engine);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new TransportException("Cannot create SSL/TLS tunnel", e);
-        } catch (KeyManagementException e) {
-            throw new TransportException("Cannot create SSL/TLS tunnel", e);
-        } catch (ClassNotFoundException e) {
-            throw new TransportException("Cannot create SSL/TLS tunnel, SSL transport plugin unavailable", e);
-        } catch (NoSuchMethodException e) {
-            throw new TransportException("Cannot create SSL/TLS tunnel, SSL transport plugin unavailable", e);
-        } catch (InvocationTargetException e) {
-            throw new TransportException("Cannot create SSL/TLS tunnel, SSL transport plugin unavailable", e);
-        } catch (InstantiationException e) {
-            throw new TransportException("Cannot create SSL/TLS tunnel, SSL transport plugin unavailable", e);
-        } catch (IllegalAccessException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new TransportException("Cannot create SSL/TLS tunnel, SSL transport plugin unavailable", e);
         }
 
@@ -95,14 +84,17 @@ public class SslTunnel implements TunnelHandler {
     private TrustManager[] getTrustAllCertsManager() {
         return new TrustManager[]{
             new X509TrustManager() {
+                @Override
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
 
+                @Override
                 public void checkClientTrusted(
                         java.security.cert.X509Certificate[] certs, String authType) {
                 }
 
+                @Override
                 public void checkServerTrusted(
                         java.security.cert.X509Certificate[] certs, String authType) {
                 }

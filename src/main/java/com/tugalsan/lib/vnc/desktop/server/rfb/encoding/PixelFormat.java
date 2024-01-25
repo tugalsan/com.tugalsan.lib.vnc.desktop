@@ -75,7 +75,7 @@ public class PixelFormat {
     }
 
     public static PixelFormat create24bitColorDepthPixelFormat(int bigEndianFlag) {
-        final PixelFormat pixelFormat = new PixelFormat();
+        final var pixelFormat = new PixelFormat();
         pixelFormat.bigEndianFlag = (byte) bigEndianFlag;
         pixelFormat.bitsPerPixel = 32;
         pixelFormat.blueMax = 255;
@@ -93,7 +93,7 @@ public class PixelFormat {
      * specifies 65536 colors, 5bit per Red, 6bit per Green, 5bit per Blue
      */
     public static PixelFormat create16bitColorDepthPixelFormat(int bigEndianFlag) {
-        final PixelFormat pixelFormat = new PixelFormat();
+        final var pixelFormat = new PixelFormat();
         pixelFormat.bigEndianFlag = (byte) bigEndianFlag;
         pixelFormat.bitsPerPixel = 16;
         pixelFormat.blueMax = 31;
@@ -111,7 +111,7 @@ public class PixelFormat {
      * specifies 256 colors, 2bit per Blue, 3bit per Green &amp; Red
      */
     public static PixelFormat create8bitColorDepthBGRPixelFormat(int bigEndianFlag) {
-        final PixelFormat pixelFormat = new PixelFormat();
+        final var pixelFormat = new PixelFormat();
         pixelFormat.bigEndianFlag = (byte) bigEndianFlag;
         pixelFormat.bitsPerPixel = 8;
         pixelFormat.redMax = 7;
@@ -129,7 +129,7 @@ public class PixelFormat {
      * specifies 64 colors, 2bit per Red, Green &amp; Blue
      */
     public static PixelFormat create6bitColorDepthPixelFormat(int bigEndianFlag) {
-        final PixelFormat pixelFormat = new PixelFormat();
+        final var pixelFormat = new PixelFormat();
         pixelFormat.bigEndianFlag = (byte) bigEndianFlag;
         pixelFormat.bitsPerPixel = 8;
         pixelFormat.blueMax = 3;
@@ -147,7 +147,7 @@ public class PixelFormat {
      * specifies 8 colors, 1bit per Red, Green &amp; Blue
      */
     public static PixelFormat create3bitColorDepthPixelFormat(int bigEndianFlag) {
-        final PixelFormat pixelFormat = new PixelFormat();
+        final var pixelFormat = new PixelFormat();
         pixelFormat.bigEndianFlag = (byte) bigEndianFlag;
         pixelFormat.bitsPerPixel = 8;
         pixelFormat.blueMax = 1;

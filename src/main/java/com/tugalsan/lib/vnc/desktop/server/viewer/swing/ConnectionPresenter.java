@@ -66,7 +66,7 @@ public class ConnectionPresenter extends Presenter {
     private final boolean hasSshSupport;
     private ProtocolSettings rfbSettings;
     private UiSettings uiSettings;
-    private final Logger logger;
+    private static final Logger logger = Logger.getLogger(ConnectionPresenter.class.getName());
     private RfbConnectionWorker rfbConnectionWorker;
     private AbstractConnectionWorkerFactory connectionWorkerFactory;
     private NetworkConnectionWorker networkConnectionWorker;
@@ -76,8 +76,6 @@ public class ConnectionPresenter extends Presenter {
     public ConnectionPresenter(Viewer viewer) {
         super(viewer);
         this.hasSshSupport = SshConnectionManager.checkForSshSupport();
-
-        logger = Logger.getLogger(getClass().getName());
     }
 
     public void startConnection(ProtocolSettings rfbSettings, UiSettings uiSettings)
@@ -116,7 +114,7 @@ public class ConnectionPresenter extends Presenter {
         }
         setModelProperty(PROPERTY_HOST_NAME, hostName);
 
-        final String rfbPort = (String) getViewPropertyOrNull(PROPERTY_RFB_PORT_NUMBER);
+        var rfbPort = (String) getViewPropertyOrNull(PROPERTY_RFB_PORT_NUMBER);
         setModelProperty(PROPERTY_RFB_PORT_NUMBER, rfbPort);
         try {
             throwPossiblyHappenedException();
@@ -132,7 +130,7 @@ public class ConnectionPresenter extends Presenter {
      * connection worker tries to establish tcp connection with remote host
      */
     public void connect() {
-        final ConnectionParams connectionParams = (ConnectionParams) getModel(CONNECTION_PARAMS_MODEL);
+       var connectionParams = (ConnectionParams) getModel(CONNECTION_PARAMS_MODEL);
         if (null == connectionWorkerFactory) {
             throw new IllegalStateException("connectionWorkerFactory is not set");
         }
@@ -210,7 +208,7 @@ public class ConnectionPresenter extends Presenter {
      * @param errorMessage message to show
      */
     void showConnectionErrorDialog(String errorMessage) {
-        final ConnectionView connectionView = (ConnectionView) getView(CONNECTION_VIEW);
+        var connectionView = (ConnectionView) getView(CONNECTION_VIEW);
         if (connectionView != null) {
             connectionView.showConnectionErrorDialog(errorMessage);
         }
@@ -223,7 +221,7 @@ public class ConnectionPresenter extends Presenter {
      * @param errorMessage message to show
      */
     void showReconnectDialog(String errorTitle, String errorMessage) {
-        final ConnectionView connectionView = (ConnectionView) getView(CONNECTION_VIEW);
+        var connectionView = (ConnectionView) getView(CONNECTION_VIEW);
         if (connectionView != null) {
             connectionView.showReconnectDialog(errorTitle, errorMessage);
         }

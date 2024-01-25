@@ -45,7 +45,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
 
     private static final String STANDARD_CHARSET = "ISO-8859-1"; // aka Latin-1
     private static final long CLIPBOARD_UPDATE_CHECK_INTERVAL_MILS = 1000L;
-    private Clipboard clipboard;
+    private final Clipboard clipboard;
     private String clipboardText = null;
     private volatile boolean isRunning;
     private boolean isEnabled;
@@ -76,7 +76,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
     @Override
     public void updateSystemClipboard(byte[] bytes) {
         if (clipboard != null) {
-            StringSelection stringSelection = new StringSelection(new String(bytes, charset));
+            var stringSelection = new StringSelection(new String(bytes, charset));
             if (isEnabled) {
                 clipboard.setContents(stringSelection, null);
             }
@@ -91,11 +91,11 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
         if (clipboard != null && clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
             try {
                 clipboardText = (String) clipboard.getData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException e) {
-                // ignore
-            } catch (IOException e) {
+            } catch (UnsupportedFlavorException | IOException e) {
                 // ignore
             }
+            // ignore
+            
         } else {
             clipboardText = null;
         }
@@ -116,7 +116,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
      */
     @Override
     public String getRenewedClipboardText() {
-        String old = clipboardText;
+        var old = clipboardText;
         updateSavedClipboardContent();
         if (clipboardText != null && !clipboardText.equals(old)) {
             return clipboardText;
@@ -139,7 +139,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
     public void run() {
         isRunning = true;
         while (isRunning && killTrigger.hasNotTriggered()) {
-            String clipboardText = getRenewedClipboardText();
+            var clipboardText = getRenewedClipboardText();
             if (clipboardText != null) {
                 protocol.sendMessage(new ClientCutTextMessage(clipboardText, charset));
             }
@@ -152,7 +152,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
 
     @Override
     public void settingsChanged(SettingsChangedEvent e) {
-        ProtocolSettings settings = (ProtocolSettings) e.getSource();
+        var settings = (ProtocolSettings) e.getSource();
         setEnabled(settings.isAllowClipboardTransfer());
     }
 

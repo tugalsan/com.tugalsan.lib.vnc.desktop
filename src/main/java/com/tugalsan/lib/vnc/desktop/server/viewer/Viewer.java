@@ -43,7 +43,6 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.ConnectionView;
 import com.tugalsan.api.unsafe.client.*;
 import java.awt.Window;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
@@ -54,13 +53,13 @@ public class Viewer implements ViewerEventsListener {
     private final ApplicationSettings applicationSettings;
     private final TS_ThreadSyncTrigger killTrigger;
     private static final Logger logger = Logger.getLogger(Viewer.class.getName());
-    private int paramsMask;
+    private final int paramsMask;
     public final ConnectionParams connectionParams;
-    private String passwordFromParams;
+    private final String passwordFromParams;
     private final ProtocolSettings settings;
     private final UiSettings uiSettings;
-    private ConnectionPresenter connectionPresenter;
-    private JDesktopPane pane;
+    private final ConnectionPresenter connectionPresenter;
+    private final JDesktopPane pane;
 
 //    abstract public void afterLoaded();
     public Viewer(TS_ThreadSyncTrigger killTrigger, Parser parser, JDesktopPane pane, Window window) {
@@ -90,7 +89,7 @@ public class Viewer implements ViewerEventsListener {
         connectionPresenter.addView(ConnectionPresenter.CONNECTION_VIEW, connectionView);
         connectionView.getFrame().setBounds(0, 0, 500, 300);
 
-        SwingViewerWindowFactory viewerWindowFactory = new SwingViewerWindowFactory(this);
+        var viewerWindowFactory = new SwingViewerWindowFactory(this);
 
         connectionPresenter.setConnectionWorkerFactory(new SwingConnectionWorkerFactory(killTrigger, window, passwordFromParams, connectionPresenter, viewerWindowFactory, pane, window));
         connectionPresenter.startConnection(settings, uiSettings, paramsMask);
@@ -122,18 +121,18 @@ public class Viewer implements ViewerEventsListener {
     }
 
     private void setLoggingLevel(Level levelToSet) {
-        final Logger appLogger = Logger.getLogger("com.glavsoft");
+        var appLogger = Logger.getLogger("com.glavsoft");
         try {
             appLogger.setUseParentHandlers(false);
             appLogger.setLevel(levelToSet);
-            for (Handler h : appLogger.getHandlers()) {
+            for (var h : appLogger.getHandlers()) {
                 if (h instanceof ConsoleHandler) {
                     appLogger.removeHandler(h);
                 } else {
                     h.setLevel(levelToSet);
                 }
             }
-            ConsoleHandler ch = new ConsoleHandler();
+            var ch = new ConsoleHandler();
             ch.setLevel(levelToSet);
             appLogger.addHandler(ch);
         } catch (SecurityException e) {

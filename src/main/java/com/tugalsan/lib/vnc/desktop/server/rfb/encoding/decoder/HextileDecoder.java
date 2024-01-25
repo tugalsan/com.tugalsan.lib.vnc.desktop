@@ -44,15 +44,15 @@ public class HextileDecoder extends Decoder {
         if (rect.width == 0 || rect.height == 0) {
             return;
         }
-        int[] colors = new int[]{-1, -1};
-        int maxX = rect.x + rect.width;
-        int maxY = rect.y + rect.height;
-        for (int tileY = rect.y; tileY < maxY;
+        var colors = new int[]{-1, -1};
+        var maxX = rect.x + rect.width;
+        var maxY = rect.y + rect.height;
+        for (var tileY = rect.y; tileY < maxY;
                 tileY += DEFAULT_TILE_SIZE) {
-            int tileHeight = Math.min(maxY - tileY, DEFAULT_TILE_SIZE);
-            for (int tileX = rect.x; tileX < maxX;
+            var tileHeight = Math.min(maxY - tileY, DEFAULT_TILE_SIZE);
+            for (var tileX = rect.x; tileX < maxX;
                     tileX += DEFAULT_TILE_SIZE) {
-                int tileWidth = Math.min(maxX - tileX, DEFAULT_TILE_SIZE);
+                var tileWidth = Math.min(maxX - tileX, DEFAULT_TILE_SIZE);
                 decodeTile(transport, renderer, colors, tileX,
                         tileY, tileWidth, tileHeight);
             }
@@ -64,7 +64,7 @@ public class HextileDecoder extends Decoder {
             Renderer renderer, int[] colors,
             int tileX, int tileY, int tileWidth, int tileHeight)
             throws TransportException {
-        int subencoding = transport.readUInt8();
+        var subencoding = transport.readUInt8();
         if ((subencoding & RAW_MASK) != 0) {
             RawDecoder.getInstance().decode(transport, renderer,
                     tileX, tileY, tileWidth, tileHeight);
@@ -85,17 +85,17 @@ public class HextileDecoder extends Decoder {
             return;
         }
 
-        int numberOfSubrectangles = transport.readUInt8();
-        boolean colorSpecified = (subencoding & SUBRECTS_COLOURED_MASK) != 0;
-        for (int i = 0; i < numberOfSubrectangles; ++i) {
-            int color = colorSpecified ? renderer.readPixelColor(transport) : colors[FG_COLOR_INDEX];
+        var numberOfSubrectangles = transport.readUInt8();
+        var colorSpecified = (subencoding & SUBRECTS_COLOURED_MASK) != 0;
+        for (var i = 0; i < numberOfSubrectangles; ++i) {
+            var color = colorSpecified ? renderer.readPixelColor(transport) : colors[FG_COLOR_INDEX];
             colors[FG_COLOR_INDEX] = color;
-            byte dimensions = transport.readByte(); // bits 7-4 for x, bits 3-0 for y
-            int subtileX = dimensions >> 4 & 0x0f;
-            int subtileY = dimensions & 0x0f;
+            var dimensions = transport.readByte(); // bits 7-4 for x, bits 3-0 for y
+            var subtileX = dimensions >> 4 & 0x0f;
+            var subtileY = dimensions & 0x0f;
             dimensions = transport.readByte(); // bits 7-4 for w, bits 3-0 for h
-            int subtileWidth = 1 + (dimensions >> 4 & 0x0f);
-            int subtileHeight = 1 + (dimensions & 0x0f);
+            var subtileWidth = 1 + (dimensions >> 4 & 0x0f);
+            var subtileHeight = 1 + (dimensions & 0x0f);
             renderer.fillRect(color,
                     tileX + subtileX, tileY + subtileY,
                     subtileWidth, subtileHeight);

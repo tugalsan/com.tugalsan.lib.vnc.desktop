@@ -32,8 +32,8 @@ public class CopyRectDecoder extends Decoder {
     @Override
     public void decode(Transport transport, Renderer renderer,
             FramebufferUpdateRectangle rect) throws TransportException {
-        int srcX = transport.readUInt16();
-        int srcY = transport.readUInt16();
+        var srcX = transport.readUInt16();
+        var srcY = transport.readUInt16();
         if (rect.width == 0 || rect.height == 0) {
             return;
         }

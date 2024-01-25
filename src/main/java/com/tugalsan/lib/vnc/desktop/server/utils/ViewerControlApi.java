@@ -26,7 +26,6 @@ package com.tugalsan.lib.vnc.desktop.server.utils;
 import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientMessageType;
 import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientToServerMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.Protocol;
-import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.transport.BaudrateMeter;
 
 /**
@@ -35,7 +34,7 @@ import com.tugalsan.lib.vnc.desktop.server.transport.BaudrateMeter;
 public class ViewerControlApi {
 
     private final Protocol protocol;
-    private BaudrateMeter baudrateMeter;
+    private final BaudrateMeter baudrateMeter;
 
     public ViewerControlApi(Protocol protocol, BaudrateMeter baudrateMeter) {
         this.protocol = protocol;
@@ -52,19 +51,19 @@ public class ViewerControlApi {
     }
 
     public void setCompressionLevelTo(int compressionLevel) {
-        final ProtocolSettings settings = protocol.getSettings();
+        final var settings = protocol.getSettings();
         settings.setCompressionLevel(compressionLevel);
         settings.fireListeners();
     }
 
     public void setJpegQualityTo(int jpegQuality) {
-        final ProtocolSettings settings = protocol.getSettings();
+        final var settings = protocol.getSettings();
         settings.setJpegQuality(jpegQuality);
         settings.fireListeners();
     }
 
     public void setViewOnly(boolean isViewOnly) {
-        final ProtocolSettings settings = protocol.getSettings();
+        final var settings = protocol.getSettings();
         settings.setViewOnly(isViewOnly);
         settings.fireListeners();
     }

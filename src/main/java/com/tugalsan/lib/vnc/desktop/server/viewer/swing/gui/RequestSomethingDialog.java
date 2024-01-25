@@ -64,7 +64,7 @@ public class RequestSomethingDialog extends JDialog {
         } else {
             inputField = new JTextField(inputFieldLength);
         }
-        JPanel outerPane = new JPanel(new BorderLayout(PAD, PAD));
+        var outerPane = new JPanel(new BorderLayout(PAD, PAD));
         outerPane.setBorder(new EmptyBorder(PAD, 2 * PAD, 2 * PAD, 2 * PAD));
 //        final java.util.List<Image> applicationIcons = TS_WindowIconUtils.getApplicationIcons();
 //        if (!applicationIcons.isEmpty()) {
@@ -73,22 +73,22 @@ public class RequestSomethingDialog extends JDialog {
 //            outerPane.add(iconLabel, BorderLayout.WEST);
 //            iconLabel.setBorder(new EmptyBorder(PAD, 2 * PAD, PAD, 2 * PAD));
 //        }
-        JPanel listPane = new JPanel();
+        var listPane = new JPanel();
         outerPane.add(listPane, BorderLayout.CENTER);
         listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
         listPane.add(Box.createVerticalStrut(PAD));
         if (messages.length > 0) {
-            for (int i = 0; i < (messages.length - 1); ++i) {
-                final JLabel label = new JLabel(messages[i]);
+            for (var i = 0; i < (messages.length - 1); ++i) {
+                var label = new JLabel(messages[i]);
                 label.setAlignmentX(Component.LEFT_ALIGNMENT);
                 listPane.add(label);
                 listPane.add(Box.createVerticalStrut(PAD));
             }
-            String last = messages[messages.length - 1];
+            var last = messages[messages.length - 1];
             if (last.endsWith(":")) {
-                JPanel inputPanel = new JPanel();
+                var inputPanel = new JPanel();
                 inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.LINE_AXIS));
-                final JLabel label = new JLabel(last);
+                var label = new JLabel(last);
                 label.setAlignmentX(Component.LEFT_ALIGNMENT);
                 inputPanel.add(label);
                 inputPanel.add(inputField);
@@ -110,9 +110,9 @@ public class RequestSomethingDialog extends JDialog {
         if (null == cancelLabel) {
             cancelLabel = CANCEL;
         }
-        JPanel buttonsPane = new JPanel();
+        var buttonsPane = new JPanel();
         buttonsPane.setLayout(new BoxLayout(buttonsPane, BoxLayout.LINE_AXIS));
-        JButton okButton = new JButton(new AbstractAction(okLabel) {
+        var okButton = new JButton(new AbstractAction(okLabel) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 result = true;
@@ -121,7 +121,7 @@ public class RequestSomethingDialog extends JDialog {
                         RequestSomethingDialog.this, WindowEvent.WINDOW_CLOSING));
             }
         });
-        JButton cancelButton = new JButton(new AbstractAction(cancelLabel) {
+        var cancelButton = new JButton(new AbstractAction(cancelLabel) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 result = false;
@@ -164,15 +164,10 @@ public class RequestSomethingDialog extends JDialog {
 
     public boolean askResult() {
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    setVisible(true);
-                }
+            SwingUtilities.invokeAndWait(() -> {
+                setVisible(true);
             });
-        } catch (InterruptedException e) {
-            Logger.getLogger(this.getClass().getName()).severe(e.getMessage());
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
             Logger.getLogger(this.getClass().getName()).severe(e.getMessage());
         }
         return result;

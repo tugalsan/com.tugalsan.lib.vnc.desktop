@@ -74,21 +74,21 @@ public class Parser {
         }
     }
 
-    private final Map<String, Option> options = new LinkedHashMap<String, Option>();
-    private final List<String> plainOptions = new ArrayList<String>();
+    private final Map<String, Option> options = new LinkedHashMap();
+    private final List<String> plainOptions = new ArrayList();
     private boolean isSetPlainOptions = false;
 
-    public void addOption(String opName, String defaultValue, String desc) {
-        Option op = new Option(opName, defaultValue, desc);
+    final public void addOption(String opName, String defaultValue, String desc) {
+        var op = new Option(opName, defaultValue, desc);
         options.put(TGS_CharSetCast.toLocaleLowerCase(opName), op);
     }
 
     public void parse(String[] args) {
-        for (String p : args) {
+        for (var p : args) {
             if (p.startsWith("-")) {
-                int skipMinuses = p.startsWith("--") ? 2 : 1;
-                String[] params = p.split("=", 2);
-                Option op = options.get(TGS_CharSetCast.toLocaleLowerCase(params[0]).substring(skipMinuses));
+                var skipMinuses = p.startsWith("--") ? 2 : 1;
+                var params = p.split("=", 2);
+                var op = options.get(TGS_CharSetCast.toLocaleLowerCase(params[0]).substring(skipMinuses));
                 if (op != null) {
                     op.isSet = true;
                     if (params.length > 1 && !Strings.isTrimmedEmpty(params[1])) {
@@ -103,12 +103,12 @@ public class Parser {
     }
 
     public String getValueFor(String param) {
-        Option op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
+        var op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
         return op != null ? op.value : null;
     }
 
     public boolean isSet(String param) {
-        Option op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
+        var op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
         return op != null && op.isSet;
     }
 
@@ -142,20 +142,20 @@ public class Parser {
     }
 
     public String optionsUsage() {
-        StringBuilder sb = new StringBuilder();
-        int maxNameLength = 0;
-        for (Option op : options.values()) {
+        var sb = new StringBuilder();
+        var maxNameLength = 0;
+        for (var op : options.values()) {
             if (op.desc.isEmpty()) {
                 continue;
             }
             maxNameLength = Math.max(maxNameLength, op.opName.length());
         }
-        for (Option op : options.values()) {
+        for (var op : options.values()) {
             if (op.desc.isEmpty()) {
                 continue;
             }
             sb.append(" -").append(op.opName);
-            for (int i = 0; i < maxNameLength - op.opName.length(); ++i) {
+            for (var i = 0; i < maxNameLength - op.opName.length(); ++i) {
                 sb.append(' ');
             }
             sb.append(" : ").append(op.desc).append('\n');

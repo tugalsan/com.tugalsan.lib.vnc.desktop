@@ -61,14 +61,18 @@ import com.tugalsan.lib.vnc.desktop.server.transport.BaudrateMeter;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
 import java.util.logging.Logger;
 
 public class Protocol implements IChangeSettingsListener {
 
     private final ProtocolContext context;
-    private final Logger logger;
+    private static final Logger logger = Logger.getLogger(Protocol.class.getName());
     private final IRequestString passwordRetriever;
     private MessageQueue messageQueue;
     private SenderTask senderTask;
@@ -90,7 +94,6 @@ public class Protocol implements IChangeSettingsListener {
         context = new ProtocolContext();
         context.transport = transport;
         this.passwordRetriever = passwordRetriever;
-        logger = Logger.getLogger(getClass().getName());
         context.settings = settings;
         decoders.put(EncodingType.RAW_ENCODING, RawDecoder.getInstance());
     }
@@ -99,9 +102,9 @@ public class Protocol implements IChangeSettingsListener {
             AuthenticationFailedException, TransportException, FatalException {
         logger.info("Starting handshake...");
         context.transport = new Handshaker(this).handshake(getTransport());
-        logger.info("context.transport:" + context.transport);
+        logger.info("context.transport:%s".formatted(context.transport.toString()));
         messageQueue = new MessageQueue(); // TODO Why here?
-        logger.info("messageQueue:" + messageQueue);
+        logger.info("messageQueue:%s".formatted(messageQueue.toString()));
     }
 
     public IRequestString getPasswordRetriever() {
@@ -130,7 +133,7 @@ public class Protocol implements IChangeSettingsListener {
         correctServerPixelFormat();
         context.setPixelFormat(createPixelFormat(context.settings));
         sendMessage(new SetPixelFormatMessage(context.pixelFormat));
-        logger.fine("sent: " + context.pixelFormat);
+        logger.fine("sent: %s".formatted(context.pixelFormat.toString()));
 
         sendSupportedEncodingsMessage(context.settings);
         context.settings.addListener(Protocol.this); // to support pixel format (color depth), and encodings changes
@@ -188,81 +191,79 @@ public class Protocol implements IChangeSettingsListener {
     }
 
     public void sendSupportedEncodingsMessage(ProtocolSettings settings) {
-        final LinkedHashSet<EncodingType> encodings = new LinkedHashSet<EncodingType>();
-        final EncodingType preferredEncoding = settings.getPreferredEncoding();
+        final LinkedHashSet<EncodingType> encodings = new LinkedHashSet();
+        final var preferredEncoding = settings.getPreferredEncoding();
         if (preferredEncoding != EncodingType.RAW_ENCODING) {
             encodings.add(preferredEncoding); // preferred first
         }
-        for (final EncodingType e : decoders.keySet()) {
-            if (e == preferredEncoding) {
-                continue;
-            }
-            switch (e) {
-                case RAW_ENCODING:
-                    break;
-                case COMPRESS_LEVEL_0:
-                    final int compressionLevel = settings.getCompressionLevel();
-                    if (compressionLevel > 0 && compressionLevel < 10) {
-                        encodings.add(EncodingType.byId(EncodingType.COMPRESS_LEVEL_0.getId() + compressionLevel));
+        decoders.keySet().stream()
+                .filter(e -> !(e == preferredEncoding))
+                .forEachOrdered(e -> {
+                    switch (e) {
+                        case RAW_ENCODING -> {
+                        }
+                        case COMPRESS_LEVEL_0 -> {
+                            final var compressionLevel = settings.getCompressionLevel();
+                            if (compressionLevel > 0 && compressionLevel < 10) {
+                                encodings.add(EncodingType.byId(EncodingType.COMPRESS_LEVEL_0.getId() + compressionLevel));
+                            }
+                        }
+                        case JPEG_QUALITY_LEVEL_0 -> {
+                            final var jpegQuality = settings.getJpegQuality();
+                            final var colorDepth = settings.getColorDepth();
+                            if (jpegQuality > 0 && jpegQuality < 10
+                                    && (colorDepth == ProtocolSettings.COLOR_DEPTH_24
+                                    || colorDepth == ProtocolSettings.COLOR_DEPTH_SERVER_SETTINGS)) {
+                                encodings.add(EncodingType.byId(EncodingType.JPEG_QUALITY_LEVEL_0.getId() + jpegQuality));
+                            }
+                        }
+                        case COPY_RECT -> {
+                            if (settings.isAllowCopyRect()) {
+                                encodings.add(EncodingType.COPY_RECT);
+                            }
+                        }
+                        case RICH_CURSOR -> {
+                            if (settings.getMouseCursorTrack() == LocalPointer.HIDE
+                                    || settings.getMouseCursorTrack() == LocalPointer.ON) {
+                                encodings.add(EncodingType.RICH_CURSOR);
+                            }
+                        }
+                        case CURSOR_POS -> {
+                            if (settings.getMouseCursorTrack() == LocalPointer.HIDE
+                                    || settings.getMouseCursorTrack() == LocalPointer.ON) {
+                                encodings.add(EncodingType.CURSOR_POS);
+                            }
+                        }
+                        default ->
+                            encodings.add(e);
                     }
-                    break;
-                case JPEG_QUALITY_LEVEL_0:
-                    final int jpegQuality = settings.getJpegQuality();
-                    final int colorDepth = settings.getColorDepth();
-                    if (jpegQuality > 0 && jpegQuality < 10
-                            && (colorDepth == ProtocolSettings.COLOR_DEPTH_24
-                            || colorDepth == ProtocolSettings.COLOR_DEPTH_SERVER_SETTINGS)) {
-                        encodings.add(EncodingType.byId(EncodingType.JPEG_QUALITY_LEVEL_0.getId() + jpegQuality));
-                    }
-                    break;
-                case COPY_RECT:
-                    if (settings.isAllowCopyRect()) {
-                        encodings.add(EncodingType.COPY_RECT);
-                    }
-                    break;
-                case RICH_CURSOR:
-                    if (settings.getMouseCursorTrack() == LocalPointer.HIDE
-                            || settings.getMouseCursorTrack() == LocalPointer.ON) {
-                        encodings.add(EncodingType.RICH_CURSOR);
-                    }
-                    break;
-                case CURSOR_POS:
-                    if (settings.getMouseCursorTrack() == LocalPointer.HIDE
-                            || settings.getMouseCursorTrack() == LocalPointer.ON) {
-                        encodings.add(EncodingType.CURSOR_POS);
-                    }
-                    break;
-                default:
-                    encodings.add(e);
-            }
-        }
-        SetEncodingsMessage encodingsMessage = new SetEncodingsMessage(encodings);
+                });
+        var encodingsMessage = new SetEncodingsMessage(encodings);
         sendMessage(encodingsMessage);
-        logger.fine("sent: " + encodingsMessage.toString());
+        logger.fine("sent: %s".formatted(encodingsMessage.toString()));
     }
 
     /**
      * create pixel format by bpp
      */
     private PixelFormat createPixelFormat(ProtocolSettings settings) {
-        int serverBigEndianFlag = serverPixelFormat.bigEndianFlag;
-        switch (settings.getColorDepth()) {
-            case ProtocolSettings.COLOR_DEPTH_24:
-                return PixelFormat.create24bitColorDepthPixelFormat(serverBigEndianFlag);
-            case ProtocolSettings.COLOR_DEPTH_16:
-                return PixelFormat.create16bitColorDepthPixelFormat(serverBigEndianFlag);
-            case ProtocolSettings.COLOR_DEPTH_8:
-                return hackForMacOsXScreenSharingServer(PixelFormat.create8bitColorDepthBGRPixelFormat(serverBigEndianFlag));
-            case ProtocolSettings.COLOR_DEPTH_6:
-                return hackForMacOsXScreenSharingServer(PixelFormat.create6bitColorDepthPixelFormat(serverBigEndianFlag));
-            case ProtocolSettings.COLOR_DEPTH_3:
-                return hackForMacOsXScreenSharingServer(PixelFormat.create3bitColorDepthPixelFormat(serverBigEndianFlag));
-            case ProtocolSettings.COLOR_DEPTH_SERVER_SETTINGS:
-                return serverPixelFormat;
-            default:
-                // unsupported bpp, use default
-                return PixelFormat.create24bitColorDepthPixelFormat(serverBigEndianFlag);
-        }
+        var serverBigEndianFlag = serverPixelFormat.bigEndianFlag;
+        return switch (settings.getColorDepth()) {
+            case ProtocolSettings.COLOR_DEPTH_24 ->
+                PixelFormat.create24bitColorDepthPixelFormat(serverBigEndianFlag);
+            case ProtocolSettings.COLOR_DEPTH_16 ->
+                PixelFormat.create16bitColorDepthPixelFormat(serverBigEndianFlag);
+            case ProtocolSettings.COLOR_DEPTH_8 ->
+                hackForMacOsXScreenSharingServer(PixelFormat.create8bitColorDepthBGRPixelFormat(serverBigEndianFlag));
+            case ProtocolSettings.COLOR_DEPTH_6 ->
+                hackForMacOsXScreenSharingServer(PixelFormat.create6bitColorDepthPixelFormat(serverBigEndianFlag));
+            case ProtocolSettings.COLOR_DEPTH_3 ->
+                hackForMacOsXScreenSharingServer(PixelFormat.create3bitColorDepthPixelFormat(serverBigEndianFlag));
+            case ProtocolSettings.COLOR_DEPTH_SERVER_SETTINGS ->
+                serverPixelFormat;
+            default ->
+                PixelFormat.create24bitColorDepthPixelFormat(serverBigEndianFlag);
+        }; // unsupported bpp, use default
     }
 
     private PixelFormat hackForMacOsXScreenSharingServer(PixelFormat pixelFormat) {
@@ -274,7 +275,7 @@ public class Protocol implements IChangeSettingsListener {
 
     @Override
     public void settingsChanged(SettingsChangedEvent e) {
-        ProtocolSettings settings = (ProtocolSettings) e.getSource();
+        var settings = (ProtocolSettings) e.getSource();
         if (settings.isChangedEncodings()) {
             sendSupportedEncodingsMessage(settings);
         }
@@ -409,11 +410,11 @@ public class Protocol implements IChangeSettingsListener {
     }
 
     public void resetDecoders() {
-        for (Decoder decoder : decoders.values()) {
-            if (decoder != null) {
-                decoder.reset();
-            }
-        }
+        decoders.values().stream()
+                .filter(decoder -> (decoder != null))
+                .forEachOrdered(decoder -> {
+                    decoder.reset();
+                });
     }
 
     public Decoder getDecoderByType(EncodingType type) {
@@ -422,35 +423,27 @@ public class Protocol implements IChangeSettingsListener {
 
     public void registerEncoding(RfbCapabilityInfo capInfo) {
         try {
-            final EncodingType encodingType = EncodingType.byId(capInfo.getCode());
+            final var encodingType = EncodingType.byId(capInfo.getCode());
             if (!decoders.containsKey(encodingType)) {
 //                final Decoder decoder = encodingType.klass.newInstance();
-                final Decoder decoder = encodingType.klass.getDeclaredConstructor().newInstance();
+                final var decoder = encodingType.klass.getDeclaredConstructor().newInstance();
                 if (decoder != null) {
                     decoders.put(encodingType, decoder);
-                    logger.finer("Register encoding: " + encodingType);
+                    logger.finer("Register encoding: %s".formatted(encodingType.toString()));
                 }
             }
         } catch (IllegalArgumentException e) {
             logger.finer(e.getMessage());
-        } catch (InstantiationException e) {
-            logger.warning(e.getMessage());
-        } catch (IllegalAccessException e) {
-            logger.warning(e.getMessage());
-        } catch (NoSuchMethodException e) {
-            logger.warning(e.getMessage());
-        } catch (SecurityException e) {
-            logger.warning(e.getMessage());
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             logger.warning(e.getMessage());
         }
     }
 
     public void registerClientMessageType(RfbCapabilityInfo capInfo) {
         try {
-            final ClientMessageType clientMessageType = ClientMessageType.byId(capInfo.getCode());
+            final var clientMessageType = ClientMessageType.byId(capInfo.getCode());
             clientMessageTypes.add(clientMessageType);
-            logger.finer("Register client message type: " + clientMessageType);
+            logger.finer("Register client message type: %s".formatted(clientMessageType.toString()));
         } catch (IllegalArgumentException e) {
             logger.finer(e.getMessage());
         }

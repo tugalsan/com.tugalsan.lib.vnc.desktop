@@ -31,20 +31,20 @@ import java.util.prefs.Preferences;
 
 public class PrefsHelper {
 
-    private static Logger logger = Logger.getLogger(PrefsHelper.class.getName());
+    private static final Logger logger = Logger.getLogger(PrefsHelper.class.getName());
 
     static void clearNode(Preferences node) {
         try { // clear wrong data
-            logger.finer("Clear wrong data from preferences node " + node.name());
+            logger.finer("Clear wrong data from preferences node %s".formatted(node.name()));
             node.clear();
             node.sync();
         } catch (BackingStoreException e) {
-            logger.warning("Cannot clear/sync preferences node '" + node.name() + "': " + e.getMessage());
+            logger.warning("Cannot clear/sync preferences node '%s': %s".formatted(node.name(), e.getMessage()));
         }
     }
 
     static void addRecordTo(Preferences node, String key, String record) throws IOException {
-        String out = getStringFrom(node, key);
+        var out = getStringFrom(node, key);
         if (out.length() > 0 && !out.endsWith("\n")) {
             out += ('\n');
         }
@@ -54,7 +54,7 @@ public class PrefsHelper {
     }
 
     private static void update(Preferences node, String key, String value) {
-        final int length = value.length();
+        var length = value.length();
         if (length <= Preferences.MAX_VALUE_LENGTH) {
             node.put(key, value);
         } else {
@@ -71,18 +71,18 @@ public class PrefsHelper {
         try {
             node.sync();
         } catch (BackingStoreException e) {
-            logger.warning("Cannot sync preferences node '" + node.name() + "': " + e.getMessage());
+            logger.warning("Cannot sync preferences node '%s': %s".formatted(node.name(), e.getMessage()));
         }
     }
 
     static String getStringFrom(Preferences sshNode, String key) {
-        StringBuilder out = new StringBuilder();
+        var out = new StringBuilder();
         try {
-            final String str = sshNode.get(key, "");
+            var str = sshNode.get(key, "");
             out.append(str);
-            for (int cnt = 1;; ++cnt) {
-                final String partKey = key + "." + cnt;
-                String part = sshNode.get(partKey, "");
+            for (var cnt = 1;; ++cnt) {
+                var partKey = key + "." + cnt;
+                var part = sshNode.get(partKey, "");
                 if (part.length() > 0) {
                     out.append(part);
                 } else {
@@ -91,10 +91,10 @@ public class PrefsHelper {
             }
         } catch (Exception r) {
             TGS_UnSafe.throwIfInterruptedException(r);
-            logger.warning("Wrong data at '" + sshNode.absolutePath() + "#" + key + "' prefs: " + r.getMessage());
+            logger.warning("Wrong data at '%s#%s' prefs: %s".formatted(sshNode.absolutePath(), key, r.getMessage()));
             clearNode(sshNode);
         }
-        logger.finer("KnownHosts: \n" + out.toString());
+        logger.finer("KnownHosts: \n%s".formatted(out.toString()));
         return out.toString();
     }
 }

@@ -29,12 +29,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class KeyboardConvertor {
 
-    private static final boolean isWindows = Platform.isWindows();
+    private static final boolean IS_WINDOWS = Platform.isWindows();
     private static final String PATTERN_STRING_FOR_SCANCODE = "scancode=(\\d+)";
     private Pattern patternForScancode;
     @SuppressWarnings("serial")
@@ -97,32 +96,32 @@ public class KeyboardConvertor {
         }
     };
 
-    private boolean canCheckCapsWithToolkit;
+    private final boolean canCheckCapsWithToolkit;
 
     public KeyboardConvertor() {
-        try {
+        canCheckCapsWithToolkit = TGS_UnSafe.call(() -> {
             Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
-            canCheckCapsWithToolkit = true;
-        } catch (UnsupportedOperationException e) {
-            canCheckCapsWithToolkit = false;
-        }
-        if (isWindows) {
+            return true;
+        }, e -> {
+            return false;
+        });
+        if (IS_WINDOWS) {
             patternForScancode = Pattern.compile(PATTERN_STRING_FOR_SCANCODE);
         }
     }
 
     public int convert(int keyChar, KeyEvent ev) {
-        int keyCode = ev.getKeyCode();
-        boolean isShiftDown = ev.isShiftDown();
-        CodePair codePair = keyMap.get(keyCode);
+        var keyCode = ev.getKeyCode();
+        var isShiftDown = ev.isShiftDown();
+        var codePair = keyMap.get(keyCode);
         if (null == codePair) {
             return keyChar;
         }
-        if (isWindows) {
-            final Matcher matcher = patternForScancode.matcher(ev.paramString());
+        if (IS_WINDOWS) {
+            var matcher = patternForScancode.matcher(ev.paramString());
             if (matcher.matches()) {
                 try {
-                    int scancode = Integer.parseInt(matcher.group(1));
+                    var scancode = Integer.parseInt(matcher.group(1));
                     if (90 == keyCode && 21 == scancode) { // deutsch z->y
                         codePair = keyMap.get(89); // y
                     } else if (89 == keyCode && 44 == scancode) { // deutsch y->z
@@ -132,7 +131,7 @@ public class KeyboardConvertor {
                     /*nop*/ }
             }
         }
-        boolean isCapsLock = false;
+        var isCapsLock = false;
         if (Character.isLetter(codePair.code)) {
             if (canCheckCapsWithToolkit) {
                 try {

@@ -23,7 +23,6 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder;
 
-import com.tugalsan.lib.vnc.desktop.server.drawing.ColorDecoder;
 import com.tugalsan.lib.vnc.desktop.server.drawing.Renderer;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TransportException;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
@@ -37,7 +36,7 @@ import java.util.zip.Inflater;
  */
 public class TightDecoder extends Decoder {
 
-    private static Logger logger = Logger.getLogger("com.glavsoft.rfb.encoding.decoder");
+    final private static Logger logger = Logger.getLogger("com.glavsoft.rfb.encoding.decoder");
 
     private static final int FILL_TYPE = 0x08;
     private static final int JPEG_TYPE = 0x09;
@@ -63,7 +62,7 @@ public class TightDecoder extends Decoder {
     @Override
     public void decode(Transport transport, Renderer renderer,
             FramebufferUpdateRectangle rect) throws TransportException {
-        int bytesPerPixel = renderer.getBytesPerPixelTight();
+        var bytesPerPixel = renderer.getBytesPerPixelTight();
 
         /**
          * bits 7 - FILL or JPEG type 6 - filter presence flag 5, 4 - decoder to
@@ -71,22 +70,23 @@ public class TightDecoder extends Decoder {
          * - reset decoder #3 2 - reset decoder #2 1 - reset decoder #1 0 -
          * reset decoder #0
          */
-        int compControl = transport.readUInt8();
+        var compControl = transport.readUInt8();
         resetDecoders(compControl);
 
-        int compType = compControl >> 4 & 0x0F;
+        var compType = compControl >> 4 & 0x0F;
         switch (compType) {
-            case FILL_TYPE:
-                int color = renderer.readTightPixelColor(transport);
+            case FILL_TYPE -> {
+                var color = renderer.readTightPixelColor(transport);
                 renderer.fillRect(color, rect);
-                break;
-            case JPEG_TYPE:
+            }
+            case JPEG_TYPE -> {
                 assert 3 == bytesPerPixel : "Tight doesn't support JPEG subencoding while depth not equal to 24bpp is used";
                 processJpegType(transport, renderer, rect);
-                break;
-            default:
+            }
+            default -> {
                 assert compType <= JPEG_TYPE : "Compression control byte is incorrect!";
                 processBasicType(compControl, transport, renderer, rect);
+            }
         }
     }
 
@@ -94,57 +94,57 @@ public class TightDecoder extends Decoder {
             Renderer renderer, FramebufferUpdateRectangle rect) throws TransportException {
         decoderId = (compControl & STREAM_ID_MASK) >> 4;
 
-        int filterId = 0;
+        var filterId = 0;
         if ((compControl & FILTER_ID_MASK) > 0) { // filter byte presence
             filterId = transport.readUInt8();
         }
-        int bytesPerCPixel = renderer.getBytesPerPixelTight();
-        int lengthCurrentbpp = bytesPerCPixel * rect.width * rect.height;
+        var bytesPerCPixel = renderer.getBytesPerPixelTight();
+        var lengthCurrentbpp = bytesPerCPixel * rect.width * rect.height;
         byte[] buffer;
         switch (filterId) {
-            case BASIC_FILTER:
+            case BASIC_FILTER -> {
                 buffer = readTightData(lengthCurrentbpp, transport);
                 renderer.drawTightBytes(buffer, 0, rect.x, rect.y, rect.width, rect.height);
-                break;
-            case PALETTE_FILTER:
-                int paletteSize = transport.readUInt8() + 1;
+            }
+            case PALETTE_FILTER -> {
+                var paletteSize = transport.readUInt8() + 1;
                 completePalette(paletteSize, transport, renderer);
-                int dataLength = paletteSize == 2
+                var dataLength = paletteSize == 2
                         ? rect.height * ((rect.width + 7) / 8)
                         : rect.width * rect.height;
                 buffer = readTightData(dataLength, transport);
                 renderer.drawBytesWithPalette(buffer, rect, palette, paletteSize);
-                break;
-            case GRADIENT_FILTER:
+            }
+            case GRADIENT_FILTER -> {
                 /*
- * The "gradient" filter pre-processes pixel data with a simple algorithm
- * which converts each color component to a difference between a "predicted"
- * intensity and the actual intensity. Such a technique does not affect
- * uncompressed data size, but helps to compress photo-like images better.
- * Pseudo-code for converting intensities to differences is the following:
- *
- * 	P[i,j] := V[i-1,j] + V[i,j-1] - V[i-1,j-1];
- * 	if (P[i,j] < 0) then P[i,j] := 0;
- * 	if (P[i,j] > MAX) then P[i,j] := MAX;
- * 	D[i,j] := V[i,j] - P[i,j];
- *
- * Here V[i,j] is the intensity of a color component for a pixel at
- * coordinates (i,j). MAX is the maximum value of intensity for a color
- * component.*/
+                * The "gradient" filter pre-processes pixel data with a simple algorithm
+                * which converts each color component to a difference between a "predicted"
+                * intensity and the actual intensity. Such a technique does not affect
+                * uncompressed data size, but helps to compress photo-like images better.
+                * Pseudo-code for converting intensities to differences is the following:
+                *
+                * 	P[i,j] := V[i-1,j] + V[i,j-1] - V[i-1,j-1];
+                * 	if (P[i,j] < 0) then P[i,j] := 0;
+                * 	if (P[i,j] > MAX) then P[i,j] := MAX;
+                * 	D[i,j] := V[i,j] - P[i,j];
+                *
+                * Here V[i,j] is the intensity of a color component for a pixel at
+                * coordinates (i,j). MAX is the maximum value of intensity for a color
+                * component.*/
                 buffer = readTightData(bytesPerCPixel * rect.width * rect.height, transport);
-                byte[][] opRows = new byte[2][rect.width * 3 + 3];
-                int opRowIndex = 0;
-                byte[] components = new byte[3];
-                int pixelOffset = 0;
-                ColorDecoder colorDecoder = renderer.getColorDecoder();
-                for (int i = 0; i < rect.height; ++i) {
+                var opRows = new byte[2][rect.width * 3 + 3];
+                var opRowIndex = 0;
+                var components = new byte[3];
+                var pixelOffset = 0;
+                var colorDecoder = renderer.getColorDecoder();
+                for (var i = 0; i < rect.height; ++i) {
                     // exchange thisRow and prevRow:
-                    byte[] thisRow = opRows[opRowIndex];
-                    byte[] prevRow = opRows[opRowIndex = (opRowIndex + 1) % 2];
-                    for (int j = 3; j < rect.width * 3 + 3; j += 3) {
+                    var thisRow = opRows[opRowIndex];
+                    var prevRow = opRows[opRowIndex = (opRowIndex + 1) % 2];
+                    for (var j = 3; j < rect.width * 3 + 3; j += 3) {
                         colorDecoder.fillRawComponents(components, buffer, pixelOffset);
                         pixelOffset += bytesPerCPixel;
-                        int d = (0xff & prevRow[j + 0])
+                        var d = (0xff & prevRow[j + 0])
                                 + // "upper" pixel (from prev row)
                                 (0xff & thisRow[j + 0 - 3])
                                 - // prev pixel
@@ -161,10 +161,9 @@ public class TightDecoder extends Decoder {
                     }
                     renderer.drawUncaliberedRGBLine(thisRow, rect.x, rect.y + i, rect.width);
                 }
-
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
     }
 
@@ -181,7 +180,7 @@ public class TightDecoder extends Decoder {
         if (null == palette) {
             palette = new int[256];
         }
-        for (int i = 0; i < paletteSize; ++i) {
+        for (var i = 0; i < paletteSize; ++i) {
             palette[i] = renderer.readTightPixelColor(transport);
         }
     }
@@ -197,7 +196,7 @@ public class TightDecoder extends Decoder {
      */
     private byte[] readTightData(int expectedLength, Transport transport) throws TransportException {
         if (expectedLength < MIN_SIZE_TO_COMPRESS) {
-            byte[] buffer = ByteBuffer.getInstance().getBuffer(expectedLength);
+            var buffer = ByteBuffer.getInstance().getBuffer(expectedLength);
             transport.readBytes(buffer, 0, expectedLength);
             return buffer;
         } else {
@@ -219,15 +218,15 @@ public class TightDecoder extends Decoder {
      * @throws TransportException
      */
     private byte[] readCompressedData(int expectedLength, Transport transport) throws TransportException {
-        int rawDataLength = readCompactSize(transport);
+        var rawDataLength = readCompactSize(transport);
 
-        byte[] buffer = ByteBuffer.getInstance().getBuffer(expectedLength + rawDataLength);
+        var buffer = ByteBuffer.getInstance().getBuffer(expectedLength + rawDataLength);
         // read compressed (raw) data behind space allocated for decompressed data
         transport.readBytes(buffer, expectedLength, rawDataLength);
         if (null == decoders[decoderId]) {
             decoders[decoderId] = new Inflater();
         }
-        Inflater decoder = decoders[decoderId];
+        var decoder = decoders[decoderId];
         decoder.setInput(buffer, expectedLength, rawDataLength);
         try {
             decoder.inflate(buffer, 0, expectedLength);
@@ -240,8 +239,8 @@ public class TightDecoder extends Decoder {
 
     private void processJpegType(Transport transport, Renderer renderer,
             FramebufferUpdateRectangle rect) throws TransportException {
-        int jpegBufferLength = readCompactSize(transport);
-        byte[] bytes = ByteBuffer.getInstance().getBuffer(jpegBufferLength);
+        var jpegBufferLength = readCompactSize(transport);
+        var bytes = ByteBuffer.getInstance().getBuffer(jpegBufferLength);
         transport.readBytes(bytes, 0, jpegBufferLength);
         renderer.drawJpegImage(bytes, 0, jpegBufferLength, rect);
     }
@@ -257,8 +256,8 @@ public class TightDecoder extends Decoder {
      * @throws TransportException
      */
     private int readCompactSize(Transport transport) throws TransportException {
-        int b = transport.readUInt8();
-        int size = b & 0x7F;
+        var b = transport.readUInt8();
+        var size = b & 0x7F;
         if ((b & 0x80) != 0) {
             b = transport.readUInt8();
             size += (b & 0x7F) << 7;
@@ -275,7 +274,7 @@ public class TightDecoder extends Decoder {
      * @param compControl control flags
      */
     private void resetDecoders(int compControl) {
-        for (int i = 0; i < DECODERS_NUM; ++i) {
+        for (var i = 0; i < DECODERS_NUM; ++i) {
             if ((compControl & 1) != 0 && decoders[i] != null) {
                 decoders[i].reset();
             }
@@ -285,7 +284,7 @@ public class TightDecoder extends Decoder {
     }
 
     @Override
-    public void reset() {
+   final public void reset() {
         decoders = new Inflater[DECODERS_NUM];
     }
 

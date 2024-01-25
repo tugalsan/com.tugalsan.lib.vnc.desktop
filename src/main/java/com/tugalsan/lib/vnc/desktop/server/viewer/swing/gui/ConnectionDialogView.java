@@ -50,7 +50,7 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
     private static final int COLUMNS_PORT_USER_FIELD = 13;
     private static final String CLOSE = "Close";
     private static final String CANCEL = "Cancel";
-    private ViewerEventsListener onCloseListener;
+    private final ViewerEventsListener onCloseListener;
     private final boolean hasSshSupport;
     public final JTextField serverPortField;
     public JCheckBox useSshTunnelingCheckbox;
@@ -68,8 +68,8 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
     private final StatusBar statusBar;
     private boolean connectionInProgress;
     private JButton closeCancelButton;
-    private Viewer viewer;
-    private Window window;
+    private final Viewer viewer;
+    private final Window window;
 
     public ConnectionDialogView(final ViewerEventsListener onCloseListener, final ConnectionPresenter presenter, JDesktopPane pane, Window window) {
         this.onCloseListener = onCloseListener;
@@ -78,13 +78,13 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
         this.window = window;
 
         setLayout(new BorderLayout(0, 0));
-        JPanel optionsPane = new JPanel(new GridBagLayout());
+        var optionsPane = new JPanel(new GridBagLayout());
         add(optionsPane, BorderLayout.CENTER);
         optionsPane.setBorder(new EmptyBorder(PADDING, PADDING, PADDING, PADDING));
 
         setLayout(new GridBagLayout());
 
-        int gridRow = 0;
+        var gridRow = 0;
 
         viewer = (Viewer) onCloseListener;
         serverNameField = new JTextField(viewer.connectionParams.hostName);
@@ -102,9 +102,9 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
             gridRow = createSshOptions(optionsPane, gridRow);
         }
 
-        JPanel buttonPanel = createButtons();
+        var buttonPanel = createButtons();
 
-        GridBagConstraints cButtons = new GridBagConstraints();
+        var cButtons = new GridBagConstraints();
         cButtons.gridx = 0;
         cButtons.gridy = gridRow;
         cButtons.weightx = 100;
@@ -132,13 +132,13 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
     }
 
     private void initConnectionsHistoryCombo() {
-        ConnectionParams prototypeDisplayValue = new ConnectionParams();
+        var prototypeDisplayValue = new ConnectionParams();
         prototypeDisplayValue.hostName = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
     }
 
     @Override
     public void showReconnectDialog(final String title, final String message) {
-        int val = JOptionPane.showConfirmDialog(view,
+        var val = JOptionPane.showConfirmDialog(view,
                 message + "\nTry another connection?",
                 title,
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -166,41 +166,32 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
     }
 
     private JPanel createButtons() {
-        JPanel buttonPanel = new JPanel();
+        var buttonPanel = new JPanel();
 
         closeCancelButton = new JButton(CLOSE);
-        closeCancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (connectionInProgress) {
-                    presenter.cancelConnection();
-                    setConnectionInProgress(false);
-                } else {
-                    closeView();
-                    closeApp();
-                }
+        closeCancelButton.addActionListener((ActionEvent e) -> {
+            if (connectionInProgress) {
+                presenter.cancelConnection();
+                setConnectionInProgress(false);
+            } else {
+                closeView();
+                closeApp();
             }
         });
 
         connectButton = new JButton("Connect");
         buttonPanel.add(connectButton);
-        connectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                connectAction();
-            }
+        connectButton.addActionListener((ActionEvent e) -> {
+            connectAction();
         });
 
-        JButton optionsButton = new JButton("Options...");
+        var optionsButton = new JButton("Options...");
         buttonPanel.add(optionsButton);
-        optionsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                OptionsDialog od = new OptionsDialog(window);
-                od.initControlsFromSettings(presenter.getRfbSettings(), presenter.getUiSettings(), true);
-                od.setVisible(true);
-                view.toFront();
-            }
+        optionsButton.addActionListener((ActionEvent e) -> {
+            var od = new OptionsDialog(window);
+            od.initControlsFromSettings(presenter.getRfbSettings(), presenter.getUiSettings(), true);
+            od.setVisible(true);
+            view.toFront();
         });
 
         buttonPanel.add(closeCancelButton);
@@ -209,7 +200,7 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
 
     public void connectAction() {
         setMessage("");
-        String hostName = serverNameField.getText();
+        var hostName = serverNameField.getText();
         try {
             setConnectionInProgress(true);
             presenter.submitConnection(hostName);
@@ -226,7 +217,7 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
     }
 
     private int createSshOptions(JPanel pane, int gridRow) {
-        GridBagConstraints cUseSshTunnelLabel = new GridBagConstraints();
+        var cUseSshTunnelLabel = new GridBagConstraints();
         cUseSshTunnelLabel.gridx = 0;
         cUseSshTunnelLabel.gridy = gridRow;
         cUseSshTunnelLabel.weightx = 100;
@@ -252,27 +243,24 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
 
         sshUserLabel = new JLabel("SSH User:");
         sshUserField = new JTextField(COLUMNS_PORT_USER_FIELD);
-        JPanel sshUserFieldPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        var sshUserFieldPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         sshUserFieldPane.add(sshUserField);
         ssUserWarningLabel = new JLabel(" (will be asked if not specified)");
         sshUserFieldPane.add(ssUserWarningLabel);
         addFormFieldRow(pane, gridRow, sshUserLabel, sshUserFieldPane, false);
         ++gridRow;
 
-        useSshTunnelingCheckbox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                final boolean useSsh = e.getStateChange() == ItemEvent.SELECTED;
-                setUseSsh(useSsh);
-                presenter.setUseSsh(useSsh);
-            }
+        useSshTunnelingCheckbox.addItemListener((ItemEvent e) -> {
+            var useSsh = e.getStateChange() == ItemEvent.SELECTED;
+            setUseSsh(useSsh);
+            presenter.setUseSsh(useSsh);
         });
         presenter.setUseSsh(viewer.connectionParams.getUseSsh());
         return gridRow;
     }
 
     private void addFormFieldRow(JPanel pane, int gridRow, JLabel label, JComponent field, boolean fill) {
-        GridBagConstraints cLabel = new GridBagConstraints();
+        var cLabel = new GridBagConstraints();
         cLabel.gridx = 0;
         cLabel.gridy = gridRow;
         cLabel.weightx = 0;
@@ -283,7 +271,7 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
         cLabel.ipady = 10;
         pane.add(label, cLabel);
 
-        GridBagConstraints cField = new GridBagConstraints();
+        var cField = new GridBagConstraints();
         cField.gridx = 1;
         cField.gridy = gridRow;
         cField.weightx = 0;
@@ -423,18 +411,18 @@ class StatusBar extends JPanel {
         setPreferredSize(new Dimension(10, 23));
 
         messageLabel = new JLabel("");
-        final Font f = messageLabel.getFont();
+        var f = messageLabel.getFont();
         messageLabel.setFont(f.deriveFont(f.getStyle() & ~Font.BOLD));
         add(messageLabel, BorderLayout.CENTER);
 
-        JPanel rightPanel = new JPanel(new BorderLayout());
+        var rightPanel = new JPanel(new BorderLayout());
         rightPanel.setOpaque(false);
 
         add(rightPanel, BorderLayout.EAST);
         setBorder(new Border() {
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-                Color oldColor = g.getColor();
+                var oldColor = g.getColor();
                 g.translate(x, y);
                 g.setColor(c.getBackground().darker());
                 g.drawLine(0, 0, width - 1, 0);

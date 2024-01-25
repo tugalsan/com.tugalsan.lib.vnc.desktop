@@ -28,7 +28,7 @@ package com.tugalsan.lib.vnc.desktop.server.rfb.encoding.decoder;
  */
 public class ByteBuffer {
 
-    private static ThreadLocal<ByteBuffer> threadLocal = new ThreadLocal<ByteBuffer>() {
+    private static final ThreadLocal<ByteBuffer> threadLocal = new ThreadLocal<ByteBuffer>() {
         @Override
         protected ByteBuffer initialValue() {
             return new ByteBuffer();

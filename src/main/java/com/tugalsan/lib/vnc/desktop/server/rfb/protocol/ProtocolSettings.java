@@ -107,7 +107,7 @@ public class ProtocolSettings implements Serializable {
         allowClipboardTransfer = true;
         colorDepth = COLOR_DEPTH_SERVER_SETTINGS;
 
-        listeners = new CopyOnWriteArrayList<IChangeSettingsListener>();
+        listeners = new CopyOnWriteArrayList();
         changedSettingsMask = 0;
     }
 
@@ -117,7 +117,7 @@ public class ProtocolSettings implements Serializable {
         changedSettingsMask = s.changedSettingsMask;
     }
 
-    public void copyDataFrom(ProtocolSettings s) {
+    final public void copyDataFrom(ProtocolSettings s) {
         copyDataFrom(s, 0);
     }
 
@@ -202,21 +202,11 @@ public class ProtocolSettings implements Serializable {
     public void setColorDepth(int depth) {
         if (colorDepth != depth) {
             changedSettingsMask |= CHANGED_COLOR_DEPTH | CHANGED_ENCODINGS;
-            switch (depth) {
-                case COLOR_DEPTH_32:
-                    colorDepth = COLOR_DEPTH_24;
-                    break;
-                case COLOR_DEPTH_24:
-                case COLOR_DEPTH_16:
-                case COLOR_DEPTH_8:
-                case COLOR_DEPTH_6:
-                case COLOR_DEPTH_3:
-                case COLOR_DEPTH_SERVER_SETTINGS:
-                    colorDepth = depth;
-                    break;
-                default:
-                    colorDepth = DEFAULT_COLOR_DEPTH;
-            }
+            colorDepth = switch (depth) {
+                case COLOR_DEPTH_32 -> COLOR_DEPTH_24;
+                case COLOR_DEPTH_24, COLOR_DEPTH_16, COLOR_DEPTH_8, COLOR_DEPTH_6, COLOR_DEPTH_3, COLOR_DEPTH_SERVER_SETTINGS -> depth;
+                default -> DEFAULT_COLOR_DEPTH;
+            };
         }
     }
 
@@ -224,11 +214,11 @@ public class ProtocolSettings implements Serializable {
         if (null == listeners) {
             return;
         }
-        final SettingsChangedEvent event = new SettingsChangedEvent(new ProtocolSettings(this));
+        final var event = new SettingsChangedEvent(new ProtocolSettings(this));
         changedSettingsMask = 0;
-        for (IChangeSettingsListener listener : listeners) {
+        listeners.forEach(listener -> {
             listener.settingsChanged(event);
-        }
+        });
     }
 
     public static boolean isRfbSettingsChangedFired(SettingsChangedEvent event) {

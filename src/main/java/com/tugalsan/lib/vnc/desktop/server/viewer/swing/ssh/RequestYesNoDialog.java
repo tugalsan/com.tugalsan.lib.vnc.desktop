@@ -46,16 +46,11 @@ public class RequestYesNoDialog {
     public boolean ask() {
         var result = new int[1];
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    result[0] = JOptionPane.showConfirmDialog(parent, message, title,
-                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                }
+            SwingUtilities.invokeAndWait(() -> {
+                result[0] = JOptionPane.showConfirmDialog(parent, message, title,
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             });
-        } catch (InterruptedException e) {
-            Logger.getLogger(this.getClass().getName()).severe(e.getMessage());
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
             Logger.getLogger(this.getClass().getName()).severe(e.getMessage());
         }
         return JOptionPane.YES_OPTION == result[0];

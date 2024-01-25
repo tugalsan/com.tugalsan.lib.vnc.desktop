@@ -68,11 +68,11 @@ public class SenderTask implements Runnable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (TransportException e) {
-            Logger.getLogger(getClass().getName()).severe("Close session: " + e.getMessage());
+            Logger.getLogger(getClass().getName()).severe("Close session: %s".formatted(e.getMessage()));
             protocol.cleanUpSession("Connection closed");
         } catch (Throwable te) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
+            var sw = new StringWriter();
+            var pw = new PrintWriter(sw);
             te.printStackTrace(pw);
             protocol.cleanUpSession(te.getMessage() + "\n" + sw.toString());
         }

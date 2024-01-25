@@ -45,7 +45,7 @@ public enum TunnelType {
     }
 
     public static TunnelType byCode(int code) {
-        for (TunnelType type : values()) {
+        for (var type : values()) {
             if (type.code == code) {
                 return type;
             }

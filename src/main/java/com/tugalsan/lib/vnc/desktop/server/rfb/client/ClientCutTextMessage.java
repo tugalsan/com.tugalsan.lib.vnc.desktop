@@ -43,7 +43,7 @@ public class ClientCutTextMessage implements ClientToServerMessage {
     private final byte[] bytes;
 
     public ClientCutTextMessage(String str, Charset charset) {
-        final byte[] b = charset != null ? getBytesWithCharset(str, charset) : str.getBytes();
+        var b = charset != null ? getBytesWithCharset(str, charset) : str.getBytes();
         this.bytes = Arrays.copyOf(b, b.length);
     }
 

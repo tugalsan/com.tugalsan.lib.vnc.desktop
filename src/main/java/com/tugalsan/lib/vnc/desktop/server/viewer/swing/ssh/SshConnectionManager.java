@@ -36,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +50,7 @@ public abstract class SshConnectionManager {
     private static final String SSH_LIB_SOME_CLASS_NAME_FOR_CHECKING = "com.trilead.ssh2.Connection";
     String errorMessage = "";
     Component parent;
-    protected Logger logger;
+    private static final Logger logger = Logger.getLogger(SshConnectionManager.class.getName());
 
     SshConnectionManager(Component parent) {
         this.parent = parent;
@@ -62,9 +61,8 @@ public abstract class SshConnectionManager {
         Throwable ex;
         try {
             @SuppressWarnings("unchecked")
-            final Class<SshConnectionManager> managerClass
-                    = (Class<SshConnectionManager>) Class.forName(SSH_CONNECTION_MANAGER_IMPLEMENTATION_CLASS_NAME);
-            final Constructor<SshConnectionManager> constructor = managerClass.getConstructor(JFrame.class);
+            var managerClass = (Class<SshConnectionManager>) Class.forName(SSH_CONNECTION_MANAGER_IMPLEMENTATION_CLASS_NAME);
+            var constructor = managerClass.getConstructor(JFrame.class);
             return constructor.newInstance(parentWindow);
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
             ex = e;
@@ -76,8 +74,7 @@ public abstract class SshConnectionManager {
 
     public int connect(ConnectionParams connectionParams) throws CancelConnectionException, ConnectionErrorException {
         if (Strings.isTrimmedEmpty(connectionParams.sshUserName)) {
-            RequestSomethingDialog dialog = new RequestSomethingDialog(parent,
-                    "SSH User Name", false, "Please enter the user name for SSH connection:");
+            var dialog = new RequestSomethingDialog(parent, "SSH User Name", false, "Please enter the user name for SSH connection:");
             if (dialog.askResult()) {
                 connectionParams.sshUserName = dialog.getResult();
             } else {
@@ -102,7 +99,7 @@ public abstract class SshConnectionManager {
         try {
             fileReader = new FileReader(keyFile);
             reader = new BufferedReader(fileReader);
-            String line = reader.readLine();
+            var line = reader.readLine();
             if (line.startsWith("-----BEGIN ENCRYPTED PRIVATE KEY-----")) {//PKCS #8
                 return true;
             }
@@ -112,7 +109,7 @@ public abstract class SshConnectionManager {
                 }
             }
         } catch (IOException e) {
-            logger.warning("Cannot read key file '" + keyFile.getName() + "': " + e.getMessage());
+            logger.warning("Cannot read key file '%s': %s".formatted(keyFile.getName(), e.getMessage()));
         } finally {
             if (reader != null) {
                 try {
@@ -133,8 +130,8 @@ public abstract class SshConnectionManager {
     }
 
     private void addIdentityFiles() {
-        for (String fileName : PRIV_KEY_FILE_NAMES) {
-            File keyFile = new File(OPENSSH_CONFIG_DIR_NAME, fileName);
+        for (var fileName : PRIV_KEY_FILE_NAMES) {
+            var keyFile = new File(OPENSSH_CONFIG_DIR_NAME, fileName);
             if (keyFile.exists() && keyFile.isFile()) {
                 addIdentityFile(keyFile);
             }
@@ -152,9 +149,7 @@ public abstract class SshConnectionManager {
             Class.forName(SSH_CONNECTION_MANAGER_IMPLEMENTATION_CLASS_NAME);
             Class.forName(SSH_LIB_SOME_CLASS_NAME_FOR_CHECKING);
             return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        } catch (NoClassDefFoundError e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;
         }
     }

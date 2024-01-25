@@ -32,15 +32,15 @@ public class RREDecoder extends Decoder {
     @Override
     public void decode(Transport transport, Renderer renderer,
             FramebufferUpdateRectangle rect) throws TransportException {
-        int numOfSubrectangles = transport.readInt32();
-        int color = renderer.readPixelColor(transport);
+        var numOfSubrectangles = transport.readInt32();
+        var color = renderer.readPixelColor(transport);
         renderer.fillRect(color, rect);
-        for (int i = 0; i < numOfSubrectangles; ++i) {
+        for (var i = 0; i < numOfSubrectangles; ++i) {
             color = renderer.readPixelColor(transport);
-            int x = transport.readUInt16();
-            int y = transport.readUInt16();
-            int width = transport.readUInt16();
-            int height = transport.readUInt16();
+            var x = transport.readUInt16();
+            var y = transport.readUInt16();
+            var width = transport.readUInt16();
+            var height = transport.readUInt16();
             renderer.fillRect(color, rect.x + x, rect.y + y, width, height);
         }
 

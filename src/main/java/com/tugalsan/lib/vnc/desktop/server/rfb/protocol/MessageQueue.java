@@ -38,12 +38,12 @@ public class MessageQueue {
     private final BlockingQueue<ClientToServerMessage> queue;
 
     public MessageQueue() {
-        queue = new LinkedBlockingQueue<ClientToServerMessage>();
+        queue = new LinkedBlockingQueue();
     }
 
     public void put(ClientToServerMessage message) {
         if (!queue.offer(message)) {
-            Logger.getLogger(getClass().getName()).severe("Cannot put message into message queue. Skip: " + message);
+            Logger.getLogger(getClass().getName()).severe("Cannot put message into message queue. Skip: %s".formatted(message.toString()));
         }
     }
 

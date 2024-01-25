@@ -116,14 +116,11 @@ public class ParametersHandler {
     }
 
     static int completeSettingsFromCLI(final Parser parser, ConnectionParams connectionParams, ProtocolSettings rfbSettings, UiSettings uiSettings, ApplicationSettings applicationSettings) {
-        int mask = completeSettings(new ParamsRetriever() {
-            @Override
-            public String getParamByName(String name) {
-                if (TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE, name) || TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE_MORE, name)) {
-                    return parser.isSet(name) ? name : null;
-                }
-                return parser.getValueFor(name);
+        var mask = completeSettings((String name) -> {
+            if (TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE, name) || TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE_MORE, name)) {
+                return parser.isSet(name) ? name : null;
             }
+            return parser.getValueFor(name);
         },
                 connectionParams, rfbSettings, uiSettings, applicationSettings);
         // when hostName == a.b.c.d:3 where :3 is display num (X Window) we need add display num to port number
@@ -149,9 +146,9 @@ public class ParametersHandler {
      * hostName == a.b.c.d, portNumber == 5000
      */
     private static void splitConnectionParams(final ConnectionParams connectionParams, String host) {
-        int indexOfColon = host.indexOf(':');
+        var indexOfColon = host.indexOf(':');
         if (indexOfColon > 0) {
-            String[] splitted = host.split(":");
+            var splitted = host.split(":");
             connectionParams.hostName = splitted[0];
             if (splitted.length > 1) {
                 try {
@@ -173,26 +170,26 @@ public class ParametersHandler {
     private static int completeSettings(ParamsRetriever pr, ConnectionParams connectionParams, ProtocolSettings rfbSettings, UiSettings uiSettings, ApplicationSettings applicationSettings) {
         completeConnectionSettings(pr, connectionParams);
         completeApplicationSettings(pr, applicationSettings);
-        int uiMask = completeUiSettings(pr, uiSettings);
-        int rfbMask = completeRfbSettings(pr, rfbSettings);
+        var uiMask = completeUiSettings(pr, uiSettings);
+        var rfbMask = completeRfbSettings(pr, rfbSettings);
         return (uiMask << 16) | rfbMask;
     }
 
     private static int completeRfbSettings(ParamsRetriever pr, ProtocolSettings rfbSettings) {
-        String viewOnlyParam = pr.getParamByName(ARG_VIEW_ONLY);
-        String allowClipboardTransfer = pr.getParamByName(ARG_ALLOW_CLIPBOARD_TRANSFER);
-        String remoteCharsetName = pr.getParamByName(ARG_REMOTE_CHARSET);
-        String allowCopyRectParam = pr.getParamByName(ARG_ALLOW_COPY_RECT);
-        String shareDesktopParam = pr.getParamByName(ARG_SHARE_DESKTOP);
-        String encodingParam = pr.getParamByName(ARG_ENCODING);
-        String compressionLevelParam = pr.getParamByName(ARG_COMPRESSION_LEVEL);
-        String jpegQualityParam = pr.getParamByName(ARG_JPEG_IMAGE_QUALITY);
-        String colorDepthParam = pr.getParamByName(ARG_COLOR_DEPTH);
-        String localPointerParam = pr.getParamByName(ARG_LOCAL_POINTER);
-        String convertToAsciiParam = pr.getParamByName(ARG_CONVERT_TO_ASCII);
-        String tunneling = pr.getParamByName(ARG_TUNNELING);
+        var viewOnlyParam = pr.getParamByName(ARG_VIEW_ONLY);
+        var allowClipboardTransfer = pr.getParamByName(ARG_ALLOW_CLIPBOARD_TRANSFER);
+        var remoteCharsetName = pr.getParamByName(ARG_REMOTE_CHARSET);
+        var allowCopyRectParam = pr.getParamByName(ARG_ALLOW_COPY_RECT);
+        var shareDesktopParam = pr.getParamByName(ARG_SHARE_DESKTOP);
+        var encodingParam = pr.getParamByName(ARG_ENCODING);
+        var compressionLevelParam = pr.getParamByName(ARG_COMPRESSION_LEVEL);
+        var jpegQualityParam = pr.getParamByName(ARG_JPEG_IMAGE_QUALITY);
+        var colorDepthParam = pr.getParamByName(ARG_COLOR_DEPTH);
+        var localPointerParam = pr.getParamByName(ARG_LOCAL_POINTER);
+        var convertToAsciiParam = pr.getParamByName(ARG_CONVERT_TO_ASCII);
+        var tunneling = pr.getParamByName(ARG_TUNNELING);
 
-        int rfbMask = 0;
+        var rfbMask = 0;
         rfbSettings.setViewOnly(parseBooleanOrDefault(viewOnlyParam, false));
         if (isGiven(viewOnlyParam)) {
             rfbMask |= ProtocolSettings.CHANGED_VIEW_ONLY;
@@ -231,14 +228,14 @@ public class ParametersHandler {
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
         try {
-            int compLevel = Integer.parseInt(compressionLevelParam);
+            var  compLevel = Integer.parseInt(compressionLevelParam);
             if (rfbSettings.setCompressionLevel(compLevel) == compLevel) {
                 rfbMask |= ProtocolSettings.CHANGED_COMPRESSION_LEVEL;
             }
         } catch (NumberFormatException e) {
             /* nop */ }
         try {
-            int jpegQuality = Integer.parseInt(jpegQualityParam);
+            var  jpegQuality = Integer.parseInt(jpegQualityParam);
             if (jpegQuality > 0 && jpegQuality <= 9) {
                 rfbSettings.setJpegQuality(jpegQuality);
                 rfbMask |= ProtocolSettings.CHANGED_JPEG_QUALITY;
@@ -249,7 +246,7 @@ public class ParametersHandler {
             }
         }
         try {
-            int colorDepth = Integer.parseInt(colorDepthParam);
+            var  colorDepth = Integer.parseInt(colorDepthParam);
             rfbSettings.setColorDepth(colorDepth);
             rfbMask |= ProtocolSettings.CHANGED_COLOR_DEPTH;
         } catch (NumberFormatException e) {
@@ -276,13 +273,13 @@ public class ParametersHandler {
     }
 
     private static int completeUiSettings(ParamsRetriever pr, UiSettings uiSettings) {
-        int uiMask = 0;
-        String scaleFactorParam = pr.getParamByName(ARG_SCALING_FACTOR);
+        var  uiMask = 0;
+        var  scaleFactorParam = pr.getParamByName(ARG_SCALING_FACTOR);
         uiSettings.showControls = parseBooleanOrDefault(pr.getParamByName(ARG_SHOW_CONTROLS), true);
         uiSettings.showConnectionDialog = parseBooleanOrDefault(pr.getParamByName(ARG_SHOW_CONNECTION_DIALOG), true);
         if (scaleFactorParam != null) {
             try {
-                int scaleFactor = Integer.parseInt(scaleFactorParam.replaceAll("\\D", ""));
+                var  scaleFactor = Integer.parseInt(scaleFactorParam.replaceAll("\\D", ""));
                 if (scaleFactor >= 10 && scaleFactor <= 200) {
                     uiSettings.setScalePercent(scaleFactor);
                     uiMask |= UiSettings.CHANGED_SCALE_FACTOR;
@@ -307,7 +304,7 @@ public class ParametersHandler {
         } catch (WrongParameterException e) {
             Logger.getLogger(ParametersHandler.class.getName()).warning(e.getMessage());
         }
-        String sshHostNameParam = pr.getParamByName(ARG_SSH_HOST);
+        var  sshHostNameParam = pr.getParamByName(ARG_SSH_HOST);
         connectionParams.sshHostName = sshHostNameParam;
         connectionParams.setUseSsh(TGS_CharSetCast.equalsLocaleIgnoreCase("yes", pr.getParamByName(ARG_TUNNELING)));
         try {

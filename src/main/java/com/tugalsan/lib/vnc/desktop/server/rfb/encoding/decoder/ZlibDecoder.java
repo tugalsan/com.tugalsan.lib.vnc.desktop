@@ -38,13 +38,13 @@ public class ZlibDecoder extends Decoder {
     @Override
     public void decode(Transport transport, Renderer renderer,
             FramebufferUpdateRectangle rect) throws TransportException {
-        int zippedLength = (int) transport.readUInt32();
+        var zippedLength = (int) transport.readUInt32();
         if (0 == zippedLength) {
             return;
         }
-        int length = rect.width * rect.height * renderer.getBytesPerPixel();
-        byte[] bytes = unzip(transport, zippedLength, length);
-        Transport unzippedReader
+        var length = rect.width * rect.height * renderer.getBytesPerPixel();
+        var bytes = unzip(transport, zippedLength, length);
+        var unzippedReader
                 = new Transport(
                         new ByteArrayInputStream(bytes, zippedLength, length));
         RawDecoder.getInstance().decode(unzippedReader, renderer, rect);
@@ -52,7 +52,7 @@ public class ZlibDecoder extends Decoder {
 
     protected byte[] unzip(Transport transport, int zippedLength, int length)
             throws TransportException {
-        byte[] bytes = ByteBuffer.getInstance().getBuffer(zippedLength + length);
+        var bytes = ByteBuffer.getInstance().getBuffer(zippedLength + length);
         transport.readBytes(bytes, 0, zippedLength);
         if (null == decoder) {
             decoder = new Inflater();

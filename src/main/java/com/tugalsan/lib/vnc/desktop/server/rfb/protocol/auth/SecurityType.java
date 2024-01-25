@@ -37,7 +37,7 @@ public enum SecurityType {
 //	int TLS_AUTHENTICATION = 18;
 //	int VENCRYPT_AUTHENTICATION = 19;
 
-    private int id;
+    private final int id;
 
     private SecurityType(int id) {
         this.id = id;

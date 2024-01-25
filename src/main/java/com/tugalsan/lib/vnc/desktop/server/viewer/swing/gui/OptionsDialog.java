@@ -44,7 +44,6 @@ public class OptionsDialog extends JDialog {
     private JSlider compressionLevel;
     private JCheckBox viewOnlyCheckBox;
     private ProtocolSettings settings;
-    private UiSettings uiSettings;
     private JCheckBox sharedSession;
 
     private RadioButtonSelectedState<LocalPointer> mouseCursorTrackSelected;
@@ -70,7 +69,7 @@ public class OptionsDialog extends JDialog {
         };
         addWindowListener(onClose);
 
-        JPanel optionsPane = new JPanel(new GridLayout(0, 2));
+        var optionsPane = new JPanel(new GridLayout(0, 2));
         add(optionsPane, BorderLayout.CENTER);
 
         optionsPane.add(createLeftPane());
@@ -83,14 +82,13 @@ public class OptionsDialog extends JDialog {
 
     public void initControlsFromSettings(ProtocolSettings settings, UiSettings uiSettings, boolean isOnConnect) {
         this.settings = settings;
-        this.uiSettings = uiSettings;
 
         viewOnlyCheckBox.setSelected(settings.isViewOnly());
 
-        int i = 0;
-        boolean isNotSetEncoding = true;
+        var i = 0;
+        var isNotSetEncoding = true;
         while (encodings.getItemAt(i) != null) {
-            EncodingType item = encodings.getItemAt(i).type;
+            var item = encodings.getItemAt(i).type;
             if (item.equals(settings.getPreferredEncoding())) {
                 encodings.setSelectedIndex(i);
                 isNotSetEncoding = false;
@@ -108,11 +106,11 @@ public class OptionsDialog extends JDialog {
         mouseCursorTrackMap.get(settings.getMouseCursorTrack()).setSelected(true);
         mouseCursorTrackSelected.setSelected(settings.getMouseCursorTrack());
 
-        int depth = settings.getColorDepth();
+        var depth = settings.getColorDepth();
         i = 0;
-        boolean isNotSet = true;
+        var isNotSet = true;
         while (colorDepth.getItemAt(i) != null) {
-            int itemDepth = colorDepth.getItemAt(i).depth;
+            var itemDepth = colorDepth.getItemAt(i).depth;
             if (itemDepth == depth) {
                 colorDepth.setSelectedIndex(i);
                 isNotSet = false;
@@ -157,7 +155,7 @@ public class OptionsDialog extends JDialog {
     }
 
     private Component createLeftPane() {
-        Box box = Box.createVerticalBox();
+        var box = Box.createVerticalBox();
         box.setAlignmentX(LEFT_ALIGNMENT);
 
         box.add(createEncodingsPanel());
@@ -167,7 +165,7 @@ public class OptionsDialog extends JDialog {
     }
 
     private Component createRightPane() {
-        Box box = Box.createVerticalBox();
+        var box = Box.createVerticalBox();
         box.setAlignmentX(LEFT_ALIGNMENT);
 
         box.add(createRestrictionsPanel());
@@ -182,12 +180,12 @@ public class OptionsDialog extends JDialog {
     }
 
     private JPanel createRestrictionsPanel() {
-        JPanel restrictionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        var restrictionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         restrictionsPanel.setBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEtchedBorder(), "Restrictions"));
 
-        Box restrictionsBox = Box.createVerticalBox();
+        var restrictionsBox = Box.createVerticalBox();
         restrictionsBox.setAlignmentX(LEFT_ALIGNMENT);
         restrictionsPanel.add(restrictionsBox);
         viewOnlyCheckBox = new JCheckBox("View only (inputs ignored)");
@@ -202,14 +200,14 @@ public class OptionsDialog extends JDialog {
     }
 
     private JPanel createEncodingsPanel() {
-        JPanel encodingsPanel = new JPanel();
+        var encodingsPanel = new JPanel();
         encodingsPanel.setAlignmentX(LEFT_ALIGNMENT);
         encodingsPanel.setLayout(new BoxLayout(encodingsPanel, BoxLayout.Y_AXIS));
         encodingsPanel.setBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEtchedBorder(), "Format and Encodings"));
 
-        JPanel encPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        var encPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
         encPane.setAlignmentX(LEFT_ALIGNMENT);
         encPane.add(new JLabel("Preferred encoding: "));
 
@@ -267,7 +265,7 @@ public class OptionsDialog extends JDialog {
     }
 
     private JPanel createColorDepthPanel() {
-        JPanel colorDepthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        var colorDepthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         colorDepthPanel.setAlignmentX(LEFT_ALIGNMENT);
         colorDepthPanel.add(new JLabel("Color format: "));
 
@@ -286,11 +284,8 @@ public class OptionsDialog extends JDialog {
                 "8 colors"));
 
         colorDepthPanel.add(colorDepth);
-        colorDepth.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setJpegQualityPaneEnable();
-            }
+        colorDepth.addItemListener((ItemEvent e) -> {
+            setJpegQualityPaneEnable();
         });
         return colorDepthPanel;
     }
@@ -300,7 +295,7 @@ public class OptionsDialog extends JDialog {
         useJpegQuality.setAlignmentX(LEFT_ALIGNMENT);
         encodingsPanel.add(useJpegQuality);
 
-        JPanel jpegQualityPane = new JPanel();
+        var jpegQualityPane = new JPanel();
         jpegQualityPane.setAlignmentX(LEFT_ALIGNMENT);
         jpegQualityPoorLabel = new JLabel("poor");
         jpegQualityPane.add(jpegQualityPoorLabel);
@@ -320,17 +315,14 @@ public class OptionsDialog extends JDialog {
         jpegQualityPoorLabel.setFont(jpegQualityPoorLabel.getFont().deriveFont((float) 10));
         jpegQualityBestLabel.setFont(jpegQualityBestLabel.getFont().deriveFont((float) 10));
 
-        useJpegQuality.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setJpegQualityPaneEnable();
-            }
+        useJpegQuality.addActionListener((ActionEvent e) -> {
+            setJpegQualityPaneEnable();
         });
     }
 
     private void setJpegQualityPaneEnable() {
         if (useJpegQuality != null && colorDepth != null) {
-            int depth = ((ColorDepthSelectItem) colorDepth.getSelectedItem()).depth;
+            var depth = ((ColorDepthSelectItem) colorDepth.getSelectedItem()).depth;
             setEnabled(whetherJpegQualityPaneBeEnabled(depth), useJpegQuality);
             setEnabled(useJpegQuality.isSelected() && whetherJpegQualityPaneBeEnabled(depth),
                     jpegQuality, jpegQualityPoorLabel, jpegQualityBestLabel);
@@ -348,7 +340,7 @@ public class OptionsDialog extends JDialog {
         useCompressionLevel.setAlignmentX(LEFT_ALIGNMENT);
         encodingsPanel.add(useCompressionLevel);
 
-        JPanel compressionLevelPane = new JPanel();
+        var compressionLevelPane = new JPanel();
         compressionLevelPane.setAlignmentX(LEFT_ALIGNMENT);
         compressionLevelFastLabel = new JLabel("fast");
         compressionLevelPane.add(compressionLevelFastLabel);
@@ -367,12 +359,9 @@ public class OptionsDialog extends JDialog {
         compressionLevelFastLabel.setFont(compressionLevelFastLabel.getFont().deriveFont((float) 10));
         compressionLevelBestLabel.setFont(compressionLevelBestLabel.getFont().deriveFont((float) 10));
 
-        useCompressionLevel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setEnabled(useCompressionLevel.isSelected(),
-                        compressionLevel, compressionLevelFastLabel, compressionLevelBestLabel);
-            }
+        useCompressionLevel.addActionListener((ActionEvent e) -> {
+            setEnabled(useCompressionLevel.isSelected(),
+                    compressionLevel, compressionLevelFastLabel, compressionLevelBestLabel);
         });
         setCompressionLevelPaneEnable();
     }
@@ -383,18 +372,18 @@ public class OptionsDialog extends JDialog {
     }
 
     private void setEnabled(boolean isEnabled, JComponent... comp) {
-        for (JComponent c : comp) {
+        for (var c : comp) {
             c.setEnabled(isEnabled);
         }
     }
 
     private JPanel createLocalShapePanel() {
-        JPanel localCursorShapePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        var localCursorShapePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 //		localCursorShapePanel.setLayout(new BoxLayout(localCursorShapePanel, BoxLayout.Y_AXIS));
         localCursorShapePanel.setBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEtchedBorder(), "Local cursor shape"));
-        Box localCursorShapeBox = Box.createVerticalBox();
+        var localCursorShapeBox = Box.createVerticalBox();
         localCursorShapePanel.add(localCursorShapeBox);
 
 //        ButtonGroup mouseCursorShapeTrackGroup = new ButtonGroup();
@@ -409,14 +398,14 @@ public class OptionsDialog extends JDialog {
     }
 
     private JPanel createMouseCursorPanel() {
-        JPanel mouseCursorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        var mouseCursorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         mouseCursorPanel.setBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEtchedBorder(), "Mouse Cursor"));
-        Box mouseCursorBox = Box.createVerticalBox();
+        var mouseCursorBox = Box.createVerticalBox();
         mouseCursorPanel.add(mouseCursorBox);
 
-        ButtonGroup mouseCursorTrackGroup = new ButtonGroup();
+        var mouseCursorTrackGroup = new ButtonGroup();
 
         mouseCursorTrackSelected = new RadioButtonSelectedState<>();
         mouseCursorTrackMap = new HashMap<>();
@@ -451,12 +440,9 @@ public class OptionsDialog extends JDialog {
     private <T> JRadioButton addRadioButton(String text, final T state,
             final RadioButtonSelectedState<T> selected,
             Map<T, JRadioButton> state2buttonMap, JComponent component, ButtonGroup group) {
-        JRadioButton radio = new JRadioButton(text);
-        radio.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selected.setSelected(state);
-            }
+        var radio = new JRadioButton(text);
+        radio.addActionListener((ActionEvent e) -> {
+            selected.setSelected(state);
         });
         component.add(radio);
         group.add(radio);
@@ -465,24 +451,18 @@ public class OptionsDialog extends JDialog {
     }
 
     private void addButtons(final WindowListener onClose) {
-        JPanel buttonPanel = new JPanel();
-        JButton loginButton = new JButton("Ok");
+        var buttonPanel = new JPanel();
+        var loginButton = new JButton("Ok");
         buttonPanel.add(loginButton);
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setSettingsFromControls();
-                setVisible(false);
-            }
+        loginButton.addActionListener((ActionEvent e) -> {
+            setSettingsFromControls();
+            setVisible(false);
         });
 
-        JButton closeButton = new JButton("Cancel");
+        var closeButton = new JButton("Cancel");
         buttonPanel.add(closeButton);
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onClose.windowClosing(null);
-            }
+        closeButton.addActionListener((ActionEvent e) -> {
+            onClose.windowClosing(null);
         });
         add(buttonPanel, BorderLayout.SOUTH);
     }

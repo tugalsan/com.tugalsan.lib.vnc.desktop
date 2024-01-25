@@ -38,15 +38,12 @@ public abstract class AuthHandler {
 
     private static final int AUTH_RESULT_OK = 0;
 //	private static final int AUTH_RESULT_FAILED = 1;
-    private Logger logger;
-
+    private static final Logger logger = Logger.getLogger(AuthHandler.class.getName());
+    
     /**
      * Not thread safe, no need to be thread safe
      */
     protected Logger logger() {
-        if (null == logger) {
-            logger = Logger.getLogger(getClass().getName());
-        }
         return logger;
     }
 
@@ -77,12 +74,12 @@ public abstract class AuthHandler {
      */
     public void checkSecurityResult(Transport transport) throws TransportException,
             AuthenticationFailedException {
-        final int securityResult = transport.readInt32();
-        logger().fine("Security result: " + securityResult + (AUTH_RESULT_OK == securityResult ? " (OK)" : " (Failed)"));
+        final var securityResult = transport.readInt32();
+        logger().fine("Security result: %d%s".formatted(securityResult , (AUTH_RESULT_OK == securityResult ? " (OK)" : " (Failed)")));
         if (securityResult != AUTH_RESULT_OK) {
             try {
-                String reason = transport.readString();
-                logger().fine("Security result reason: " + reason);
+                var reason = transport.readString();
+                logger().fine("Security result reason: %s".formatted(reason));
                 throw new AuthenticationFailedException(reason);
             } catch (ClosedConnectionException e) {
                 // protocol version 3.3 and 3.7 does not send reason string,
@@ -94,19 +91,19 @@ public abstract class AuthHandler {
 
     public void initProcedure(Transport transport, Protocol protocol) throws TransportException {
         sendClientInitMessage(transport, protocol.getSettings().getSharedFlag());
-        ServerInitMessage serverInitMessage = readServerInitMessage(transport);
+        var serverInitMessage = readServerInitMessage(transport);
         completeContextData(serverInitMessage, protocol);
         protocol.registerRfbEncodings();
     }
 
     protected ServerInitMessage readServerInitMessage(Transport transport) throws TransportException {
-        final ServerInitMessage serverInitMessage = new ServerInitMessage().readFrom(transport);
-        logger().fine("Read: " + serverInitMessage);
+        var serverInitMessage = new ServerInitMessage().readFrom(transport);
+        logger().fine("Read: %s".formatted(serverInitMessage.toString()));
         return serverInitMessage;
     }
 
     protected void sendClientInitMessage(Transport transport, byte sharedFlag) throws TransportException {
-        logger().fine("Sent client-init-message: " + sharedFlag);
+        logger().fine("Sent client-init-message: %s".formatted(String.valueOf(sharedFlag)));
         transport.writeByte(sharedFlag).flush();
     }
 

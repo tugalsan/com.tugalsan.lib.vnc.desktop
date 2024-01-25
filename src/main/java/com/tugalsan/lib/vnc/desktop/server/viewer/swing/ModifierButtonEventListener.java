@@ -30,14 +30,14 @@ import java.util.Map;
 
 public class ModifierButtonEventListener {
 
-    Map<Integer, JToggleButton> buttons = new HashMap<Integer, JToggleButton>();
+    Map<Integer, JToggleButton> buttons = new HashMap();
 
     public void addButton(int keyCode, JToggleButton button) {
         buttons.put(keyCode, button);
     }
 
     public void fireEvent(KeyEvent e) {
-        int code = e.getKeyCode();
+        var code = e.getKeyCode();
         if (buttons.containsKey(code)) {
             buttons.get(code).setSelected(e.getID() == KeyEvent.KEY_PRESSED);
         }

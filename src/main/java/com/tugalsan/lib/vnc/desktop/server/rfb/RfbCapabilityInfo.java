@@ -94,7 +94,7 @@ public class RfbCapabilityInfo {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        RfbCapabilityInfo that = (RfbCapabilityInfo) o;
+        var that = (RfbCapabilityInfo) o;
         return code == that.code
                 && nameSignature.equals(that.nameSignature)
                 && vendorSignature.equals(that.vendorSignature);

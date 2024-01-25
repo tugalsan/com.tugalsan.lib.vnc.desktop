@@ -33,16 +33,13 @@ import com.tugalsan.lib.vnc.desktop.server.exceptions.TransportException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.UnsupportedProtocolVersionException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.UnsupportedSecurityTypeException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.FatalException;
-import com.tugalsan.lib.vnc.desktop.server.rfb.IRequestString;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.tunnel.SslTunnel;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.tunnel.TunnelType;
 import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
-
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -62,17 +59,16 @@ public class Handshaker {
     protected static final int DISPATCHER_PROTOCOL_VERSION = 3;
     protected static final int KEEP_ALIVE_BYTE = 0;
     protected static final int START_BYTE = 1;
-    private Protocol protocol;
-    private Logger logger;
-    private final Map<Integer, AuthHandler> registeredAuthHandlers = new HashMap<Integer, AuthHandler>();
+    private final Protocol protocol;
+    private static final Logger logger = Logger.getLogger(Handshaker.class.getName());
+    private final Map<Integer, AuthHandler> registeredAuthHandlers = new HashMap();
 
     public Handshaker(Protocol protocol) {
         this.protocol = protocol;
-        logger = Logger.getLogger(getClass().getName());
         registerAuthHandler(SecurityType.NONE_AUTHENTICATION.getId(), new NoneAuthentication());
         registerAuthHandler(SecurityType.VNC_AUTHENTICATION.getId(), new VncAuthentication());
 
-        final TightAuthentication tightAuthentication = new TightAuthentication();
+        final var tightAuthentication = new TightAuthentication();
         tightAuthentication.registerAuthHandler(new NoneAuthentication());
         tightAuthentication.registerAuthHandler(new VncAuthentication());
         if (protocol.getSettings().getTunnelType() != TunnelType.NOTUNNEL
@@ -84,15 +80,15 @@ public class Handshaker {
     }
 
     public Transport handshake(Transport transport) throws TransportException, UnsupportedProtocolVersionException, AuthenticationFailedException, FatalException, UnsupportedSecurityTypeException {
-        String protocolString = transport.readString(PROTOCOL_STRING_LENGTH);
+        var protocolString = transport.readString(PROTOCOL_STRING_LENGTH);
         if (isDispatcherConnection(protocolString)) {
             handshakeToDispatcher(transport);
             protocolString = transport.readString(PROTOCOL_STRING_LENGTH);
         }
-        ProtocolVersion ver = matchProtocolVersion(protocolString);
+        var ver = matchProtocolVersion(protocolString);
         transport.write(Strings.getBytesWithCharset("RFB 00" + ver.major + ".00" + ver.minor + "\n", Transport.ISO_8859_1)).flush();
         protocol.setProtocolVersion(ver);
-        logger.info("Set protocol version to: " + ver);
+        logger.info("Set protocol version to: %s".formatted(ver.toString()));
         transport = auth(transport, ver);
         logger.info("Transport created");
         return transport;
@@ -124,23 +120,23 @@ public class Handshaker {
      * is wrong
      */
     private void handshakeToDispatcher(Transport transport) throws TransportException, UnsupportedProtocolVersionException, AuthenticationFailedException {
-        int numSupportedVersions = transport.readUInt8(); // receive num of supported version followed (u8)
-        List<Integer> remoteVersions = new ArrayList<Integer>(numSupportedVersions);
-        for (int i = 0; i < numSupportedVersions; ++i) {
+        var numSupportedVersions = transport.readUInt8(); // receive num of supported version followed (u8)
+        List<Integer> remoteVersions = new ArrayList(numSupportedVersions);
+        for (var i = 0; i < numSupportedVersions; ++i) {
             remoteVersions.add(transport.readUInt8()); // receive supported protocol versions (numSupportedVersions x u8)
         }
-        logger.fine("Dispatcher protocol versions: " + Arrays.toString(remoteVersions.toArray()));
+        logger.fine("Dispatcher protocol versions: %s".formatted(Arrays.toString(remoteVersions.toArray())));
         if (!remoteVersions.contains(DISPATCHER_PROTOCOL_VERSION)) {
             throw new UnsupportedProtocolVersionException("Dispatcher unsupported protocol versions");
         }
         transport.writeByte(DISPATCHER_PROTOCOL_VERSION); // send protocol version we use (u8)
         transport.writeByte(1).flush(); // send we are the viewer (u8)
         long connectionId = 0;
-        IRequestString connIdRetriever = protocol.getConnectionIdRetriever();
+        var connIdRetriever = protocol.getConnectionIdRetriever();
         if (null == connIdRetriever) {
             throw new IllegalStateException("ConnectionIdRetriever is null");
         }
-        String sId = connIdRetriever.getResult();
+        var sId = connIdRetriever.getResult();
         if (Strings.isTrimmedEmpty(sId)) {
             throw new AuthenticationFailedException("ConnectionId is empty");
         }
@@ -161,9 +157,9 @@ public class Handshaker {
         // send  -> String (byte array of ASCII characters) - dispatcher name.
         // Skip if none
         //logger.fine("Sent: version3, viewer, connectionId: " + connectionId + " secret:0, token: 0");
-        int tokenLength = transport.readUInt8(); // receive UInt8 token length
+        var tokenLength = transport.readUInt8(); // receive UInt8 token length
         // receive byte array  - dispatcher token
-        byte[] token = transport.readBytes(tokenLength);
+        var token = transport.readBytes(tokenLength);
         //logger.fine("token: #" + tokenLength + " " + (tokenLength>0?token[0]:"") +(tokenLength>1?token[1]:"")+(tokenLength>2?token[2]:""));
         // receive 0 'keep alive byte' or non zero 'start byte' (1)
         // on keep alive byte send the same to remote
@@ -187,7 +183,7 @@ public class Handshaker {
      * @return true when we connects to dispatcher, not remote rfb server
      */
     private boolean isDispatcherConnection(String protocolString) {
-        final boolean dispatcherDetected = DISPATCHER_PROTOCOL_STRING.equals(protocolString);
+        final var dispatcherDetected = DISPATCHER_PROTOCOL_STRING.equals(protocolString);
         if (dispatcherDetected) {
             logger.info("Dispatcher connection detected");
         }
@@ -205,17 +201,17 @@ public class Handshaker {
      * @return version of protocol will be used
      */
     private ProtocolVersion matchProtocolVersion(String protocolString) throws UnsupportedProtocolVersionException {
-        logger.info("Server protocol string: " + protocolString.substring(0, protocolString.length() - 1));
-        Pattern pattern = Pattern.compile(RFB_PROTOCOL_STRING_REGEXP);
-        final Matcher matcher = pattern.matcher(protocolString);
+        logger.info("Server protocol string: %s".formatted(protocolString.substring(0, protocolString.length() - 1)));
+        var pattern = Pattern.compile(RFB_PROTOCOL_STRING_REGEXP);
+        final var matcher = pattern.matcher(protocolString);
         if (!matcher.matches()) {
             throw new UnsupportedProtocolVersionException(
-                    "Unsupported protocol version: " + protocolString);
+                    "Unsupported protocol version: %s".formatted(protocolString));
         }
-        int major = Integer.parseInt(matcher.group(1));
-        int minor = Integer.parseInt(matcher.group(2));
+        var major = Integer.parseInt(matcher.group(1));
+        var minor = Integer.parseInt(matcher.group(2));
         ProtocolVersion ver;
-        boolean isMac = false;
+        var isMac = false;
         if (889 == minor) {
             isMac = true;
         }
@@ -245,17 +241,10 @@ public class Handshaker {
     private Transport auth(Transport transport, ProtocolVersion ver) throws UnsupportedSecurityTypeException, TransportException, FatalException, AuthenticationFailedException {
         AuthHandler handler;
         switch (ver) {
-            case PROTOCOL_VERSION_3_3:
-                handler = auth33(transport);
-                break;
-            case PROTOCOL_VERSION_3_7:
-                handler = auth37_38(transport);
-                break;
-            case PROTOCOL_VERSION_3_8:
-                handler = auth37_38(transport);
-                break;
-            default:
-                throw new IllegalStateException();
+            case PROTOCOL_VERSION_3_3 -> handler = auth33(transport);
+            case PROTOCOL_VERSION_3_7 -> handler = auth37_38(transport);
+            case PROTOCOL_VERSION_3_8 -> handler = auth37_38(transport);
+            default -> throw new IllegalStateException();
         }
         transport = handler.authenticate(transport, protocol);
         if (ver == ProtocolVersion.PROTOCOL_VERSION_3_8
@@ -267,24 +256,23 @@ public class Handshaker {
     }
 
     private AuthHandler auth33(Transport transport) throws TransportException, UnsupportedSecurityTypeException {
-        int type = transport.readInt32();
-        logger.info("Type received: " + type);
+        var type = transport.readInt32();
+        logger.info("Type received: %d".formatted(type));
         if (0 == type) {
             throw new UnsupportedSecurityTypeException(transport.readString());
         }
-        AuthHandler handler = registeredAuthHandlers.get(selectAuthHandlerId((byte) (0xff & type)));
-        return handler;
+        return registeredAuthHandlers.get(selectAuthHandlerId((byte) (0xff & type)));
     }
 
     private AuthHandler auth37_38(Transport transport) throws TransportException, UnsupportedSecurityTypeException {
-        int secTypesNum = transport.readUInt8();
+        var secTypesNum = transport.readUInt8();
         if (0 == secTypesNum) {
             throw new UnsupportedSecurityTypeException(transport.readString());
         }
-        byte[] secTypes = transport.readBytes(secTypesNum);
-        logger.info("Security Types received (" + secTypesNum + "): " + Strings.toString(secTypes));
-        final int typeIdAccepted = selectAuthHandlerId(secTypes);
-        final AuthHandler authHandler = registeredAuthHandlers.get(typeIdAccepted);
+        var secTypes = transport.readBytes(secTypesNum);
+        logger.info("Security Types received (%d): %s".formatted(secTypesNum,Strings.toString(secTypes)));
+        final var typeIdAccepted = selectAuthHandlerId(secTypes);
+        final var authHandler = registeredAuthHandlers.get(typeIdAccepted);
         transport.writeByte(typeIdAccepted).flush();
         return authHandler;
     }
@@ -293,29 +281,29 @@ public class Handshaker {
             throws UnsupportedSecurityTypeException, TransportException {
         AuthHandler handler;
         // Tight2 Authentication very first
-        for (byte type : secTypes) {
+        for (var type : secTypes) {
             if (SecurityType.TIGHT2_AUTHENTICATION.getId() == (0xff & type)) {
                 handler = registeredAuthHandlers.get(SecurityType.TIGHT2_AUTHENTICATION.getId());
                 if (handler != null) {
-                    logger.info("Security Type accepted(TIGHT2): " + SecurityType.TIGHT2_AUTHENTICATION.name());
+                    logger.info("Security Type accepted(TIGHT2): %s".formatted(SecurityType.TIGHT2_AUTHENTICATION.name()));
                     return SecurityType.TIGHT2_AUTHENTICATION.getId();
                 }
             }
         }
         // Tight Authentication first
-        for (byte type : secTypes) {
+        for (var type : secTypes) {
             if (SecurityType.TIGHT_AUTHENTICATION.getId() == (0xff & type)) {
                 handler = registeredAuthHandlers.get(SecurityType.TIGHT_AUTHENTICATION.getId());
                 if (handler != null) {
-                    logger.info("Security Type accepted(TIGHT): " + SecurityType.TIGHT_AUTHENTICATION.name());
+                    logger.info("Security Type accepted(TIGHT): %s".formatted(SecurityType.TIGHT_AUTHENTICATION.name()));
                     return SecurityType.TIGHT_AUTHENTICATION.getId();
                 }
             }
         }
-        for (byte type : secTypes) {
+        for (var type : secTypes) {
             handler = registeredAuthHandlers.get(0xff & type);
             if (handler != null) {
-                logger.info("Security Type accepted(OTHER): " + handler.getType());
+                logger.info("Security Type accepted(OTHER): %s".formatted(handler.getType().toString()));
                 return handler.getType().getId();
             }
         }

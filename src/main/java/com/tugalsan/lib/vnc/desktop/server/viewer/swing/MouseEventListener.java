@@ -60,13 +60,13 @@ public class MouseEventListener extends MouseInputAdapter
             mouseEvent = mouseWheelEvent;
         }
         assert mouseEvent != null;
-        short x = (short) (mouseEvent.getX() / scaleFactor);
-        short y = (short) (mouseEvent.getY() / scaleFactor);
+        var x = (short) (mouseEvent.getX() / scaleFactor);
+        var y = (short) (mouseEvent.getY() / scaleFactor);
         if (moved) {
             repaintController.updateCursorPosition(x, y);
         }
 
-        int modifiersEx = mouseEvent.getModifiersEx();
+        var modifiersEx = mouseEvent.getModifiersEx();
         // left
         buttonMask |= (modifiersEx & InputEvent.BUTTON1_DOWN_MASK) != 0
                 ? BUTTON_LEFT : 0;
@@ -79,11 +79,11 @@ public class MouseEventListener extends MouseInputAdapter
 
         // wheel
         if (mouseWheelEvent != null) {
-            int notches = mouseWheelEvent.getWheelRotation();
-            byte wheelMask = notches < 0 ? WHEEL_UP : WHEEL_DOWN;
+            var notches = mouseWheelEvent.getWheelRotation();
+            var wheelMask = notches < 0 ? WHEEL_UP : WHEEL_DOWN;
             // handle more then 1 notches
             notches = Math.abs(notches);
-            for (int i = 1; i < notches; ++i) {
+            for (var i = 1; i < notches; ++i) {
                 protocol.sendMessage(new PointerEventMessage((byte) (buttonMask | wheelMask), x, y));
                 protocol.sendMessage(new PointerEventMessage(buttonMask, x, y));
             }

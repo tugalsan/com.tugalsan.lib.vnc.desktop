@@ -31,7 +31,7 @@ import com.tugalsan.lib.vnc.desktop.server.transport.Transport;
  */
 public class VideoFreezeMessage implements ClientToServerMessage {
 
-    private boolean freeze;
+    private final boolean freeze;
 
     public VideoFreezeMessage(boolean freeze) {
         this.freeze = freeze;

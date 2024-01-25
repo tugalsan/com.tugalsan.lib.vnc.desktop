@@ -35,30 +35,30 @@ public class RichCursorDecoder extends Decoder {
     @Override
     public void decode(Transport transport, Renderer renderer,
             FramebufferUpdateRectangle rect) throws TransportException {
-        int bytesPerPixel = renderer.getBytesPerPixel();
-        int length = rect.width * rect.height * bytesPerPixel;
+        var bytesPerPixel = renderer.getBytesPerPixel();
+        var length = rect.width * rect.height * bytesPerPixel;
         if (0 == length) {
             return;
         }
-        byte[] buffer = ByteBuffer.getInstance().getBuffer(length);
+        var buffer = ByteBuffer.getInstance().getBuffer(length);
         transport.readBytes(buffer, 0, length);
 
-        StringBuilder sb = new StringBuilder(" ");
-        for (int i = 0; i < length; ++i) {
+        var sb = new StringBuilder(" ");
+        for (var i = 0; i < length; ++i) {
             sb.append(Integer.toHexString(buffer[i] & 0xff)).append(" ");
         }
-        int scanLine = (rect.width + 7) / 8;
-        byte[] bitmask = new byte[scanLine * rect.height];
+        var scanLine = (rect.width + 7) / 8;
+        var bitmask = new byte[scanLine * rect.height];
         transport.readBytes(bitmask, 0, bitmask.length);
 
         sb = new StringBuilder(" ");
-        for (byte aBitmask : bitmask) {
+        for (var aBitmask : bitmask) {
             sb.append(Integer.toHexString(aBitmask & 0xff)).append(" ");
         }
-        int[] cursorPixels = new int[rect.width * rect.height];
-        for (int y = 0; y < rect.height; ++y) {
-            for (int x = 0; x < rect.width; ++x) {
-                int offset = y * rect.width + x;
+        var cursorPixels = new int[rect.width * rect.height];
+        for (var y = 0; y < rect.height; ++y) {
+            for (var x = 0; x < rect.width; ++x) {
+                var offset = y * rect.width + x;
                 cursorPixels[offset] = isBitSet(bitmask[y * scanLine + x / 8], x % 8)
                         ? 0xFF000000 | renderer.getPixelColor(buffer, offset * bytesPerPixel)
                         : 0; // transparent

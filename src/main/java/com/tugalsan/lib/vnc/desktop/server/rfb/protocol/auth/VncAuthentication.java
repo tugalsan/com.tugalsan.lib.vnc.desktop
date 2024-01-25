@@ -47,12 +47,12 @@ public class VncAuthentication extends AuthHandler {
     @Override
     public Transport authenticate(Transport transport, Protocol protocol)
             throws TransportException, FatalException {
-        byte[] challenge = transport.readBytes(16);
-        String password = protocol.getPasswordRetriever().getResult();
+        var challenge = transport.readBytes(16);
+        var password = protocol.getPasswordRetriever().getResult();
         if (null == password) {
             password = "";
         }
-        byte[] key = new byte[8];
+        var key = new byte[8];
         System.arraycopy(getBytesWithCharset(password, Transport.ISO_8859_1), 0, key, 0, Math.min(key.length, getBytesWithCharset(password, Transport.ISO_8859_1).length));
         transport.write(encrypt(challenge, key)).flush();
         return transport;
@@ -67,31 +67,21 @@ public class VncAuthentication extends AuthHandler {
      */
     public byte[] encrypt(byte[] challenge, byte[] key) throws CryptoException {
         try {
-            DESKeySpec desKeySpec = new DESKeySpec(mirrorBits(key));
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
-            SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
-            Cipher desCipher = Cipher.getInstance("DES/ECB/NoPadding");
+            var desKeySpec = new DESKeySpec(mirrorBits(key));
+            var keyFactory = SecretKeyFactory.getInstance("DES");
+            var secretKey = keyFactory.generateSecret(desKeySpec);
+            var desCipher = Cipher.getInstance("DES/ECB/NoPadding");
             desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return desCipher.doFinal(challenge);
-        } catch (NoSuchAlgorithmException e) {
-            throw new CryptoException("Cannot encrypt challenge", e);
-        } catch (NoSuchPaddingException e) {
-            throw new CryptoException("Cannot encrypt challenge", e);
-        } catch (IllegalBlockSizeException e) {
-            throw new CryptoException("Cannot encrypt challenge", e);
-        } catch (BadPaddingException e) {
-            throw new CryptoException("Cannot encrypt challenge", e);
-        } catch (InvalidKeyException e) {
-            throw new CryptoException("Cannot encrypt challenge", e);
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidKeySpecException e) {
             throw new CryptoException("Cannot encrypt challenge", e);
         }
     }
 
     private byte[] mirrorBits(byte[] k) {
-        byte[] key = new byte[8];
-        for (int i = 0; i < 8; i++) {
-            byte s = k[i];
+        var key = new byte[8];
+        for (var i = 0; i < 8; i++) {
+            var s = k[i];
             s = (byte) (((s >> 1) & 0x55) | ((s << 1) & 0xaa));
             s = (byte) (((s >> 2) & 0x33) | ((s << 2) & 0xcc));
             s = (byte) (((s >> 4) & 0x0f) | ((s << 4) & 0xf0));

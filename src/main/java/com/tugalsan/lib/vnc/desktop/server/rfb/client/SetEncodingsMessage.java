@@ -42,7 +42,7 @@ public class SetEncodingsMessage implements ClientToServerMessage {
         transport.writeByte(ClientMessageType.SET_ENCODINGS.id)
                 .zero(1) // padding byte
                 .writeInt16(encodings.size());
-        for (EncodingType enc : encodings) {
+        for (var enc : encodings) {
             transport.writeInt32(enc.getId());
         }
         transport.flush();
@@ -50,10 +50,10 @@ public class SetEncodingsMessage implements ClientToServerMessage {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("SetEncodingsMessage: [encodings: ");
-        for (EncodingType enc : encodings) {
+        var sb = new StringBuilder("SetEncodingsMessage: [encodings: ");
+        encodings.forEach(enc -> {
             sb.append(enc.name()).append(',');
-        }
+        });
         sb.setLength(sb.length() - 1);
         return sb.append(']').toString();
     }

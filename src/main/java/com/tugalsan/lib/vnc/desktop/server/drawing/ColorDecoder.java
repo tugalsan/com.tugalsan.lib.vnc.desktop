@@ -101,7 +101,7 @@ public class ColorDecoder {
     }
 
     public void fillRawComponents(byte[] comp, byte[] bytes, int offset) {
-        int rawColor = getRawTightColor(bytes, offset);
+        var rawColor = getRawTightColor(bytes, offset);
         comp[0] = (byte) (rawColor >> redShift & redMax);
         comp[1] = (byte) (rawColor >> greenShift & greenMax);
         comp[2] = (byte) (rawColor >> blueShift & blueMax);
@@ -126,20 +126,20 @@ public class ColorDecoder {
     }
 
     private int getRawColor(byte[] bytes, int offset) {
-        int shift = startShift;
-        int item = addShiftItem;
-        int rawColor = (bytes[offset++] & 0xff) << shift;
-        for (int i = 1; i < bytesPerPixel; ++i) {
+        var shift = startShift;
+        var item = addShiftItem;
+        var rawColor = (bytes[offset++] & 0xff) << shift;
+        for (var i = 1; i < bytesPerPixel; ++i) {
             rawColor |= (bytes[offset++] & 0xff) << (shift += item);
         }
         return rawColor;
     }
 
     protected int getCompactColor(byte[] bytes, int offset) {
-        int shift = startShiftCompact;
-        int item = addShiftItem;
-        int rawColor = (bytes[offset++] & 0xff) << shift;
-        for (int i = 1; i < bytesPerCPixel; ++i) {
+        var shift = startShiftCompact;
+        var item = addShiftItem;
+        var rawColor = (bytes[offset++] & 0xff) << shift;
+        for (var i = 1; i < bytesPerCPixel; ++i) {
             rawColor |= (bytes[offset++] & 0xff) << (shift += item);
         }
         return convertColor(rawColor);

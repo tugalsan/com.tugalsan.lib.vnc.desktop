@@ -121,18 +121,15 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
             updateFrameSize();
         } else {
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        init(renderer.getWidth(), renderer.getHeight());
-                        updateFrameSize();
-                    }
+                SwingUtilities.invokeAndWait(() -> {
+                    init(renderer.getWidth(), renderer.getHeight());
+                    updateFrameSize();
                 });
             } catch (InterruptedException e) {
-                Logger.getLogger(getClass().getName()).severe("Interrupted: " + e.getMessage());
+                Logger.getLogger(getClass().getName()).severe("Interrupted: %s".formatted(e.getMessage()));
                 protocol.cleanUpSession("Interrupted: " + e.getMessage());
             } catch (InvocationTargetException e) {
-                Logger.getLogger(getClass().getName()).severe("Fatal error: " + e.getCause().getMessage());
+                Logger.getLogger(getClass().getName()).severe("Fatal error: %s".formatted(e.getCause().getMessage()));
                 protocol.cleanUpSession("Fatal error: " + e.getCause().getMessage());
             }
         }
@@ -159,7 +156,7 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
         if (scaleFactor != 1.0) {
             ((Graphics2D) g).scale(scaleFactor, scaleFactor);
         }
-        final Object appleContentScaleFactor = Toolkit.getDefaultToolkit().getDesktopProperty("apple.awt.contentScaleFactor");
+        var appleContentScaleFactor = Toolkit.getDefaultToolkit().getDesktopProperty("apple.awt.contentScaleFactor");
         ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
                 (appleContentScaleFactor != null && (Integer) appleContentScaleFactor != 1)
                         ? RenderingHints.VALUE_RENDER_SPEED
@@ -172,7 +169,7 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
     }
 
     @Override
-    public Dimension getPreferredSize() {
+    final public Dimension getPreferredSize() {
         return new Dimension((int) (this.width * scaleFactor), (int) (this.height * scaleFactor));
     }
 
@@ -238,11 +235,11 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
     public void settingsChanged(SettingsChangedEvent e) {
         try {
             if (ProtocolSettings.isRfbSettingsChangedFired(e)) {
-                ProtocolSettings settings = (ProtocolSettings) e.getSource();
+                var settings = (ProtocolSettings) e.getSource();
                 setUserInputEnabled(!settings.isViewOnly(), settings.isConvertToAscii());
                 showCursor(settings.isShowRemoteCursor());
             } else if (UiSettings.isUiSettingsChangedFired(e)) {
-                UiSettings uiSettings = (UiSettings) e.getSource();
+                var uiSettings = (UiSettings) e.getSource();
                 oldSize = getPreferredSize();
                 scaleFactor = uiSettings.getScaleFactor();
             }

@@ -48,12 +48,12 @@ public class RendererImpl extends Renderer implements ImageObserver {
             height = 1;
         }
         init(width, height, pixelFormat);
-        ColorModel colorModel = new DirectColorModel(24, 0xff0000, 0xff00, 0xff);
-        SampleModel sampleModel = colorModel.createCompatibleSampleModel(width,
+        var colorModel = new DirectColorModel(24, 0xff0000, 0xff00, 0xff);
+        var sampleModel = colorModel.createCompatibleSampleModel(width,
                 height);
 
-        DataBuffer dataBuffer = new DataBufferInt(pixels, width * height);
-        WritableRaster raster = Raster.createWritableRaster(sampleModel,
+        var dataBuffer = new DataBufferInt(pixels, width * height);
+        var raster = Raster.createWritableRaster(sampleModel,
                 dataBuffer, null);
         offscreenImage = new BufferedImage(colorModel, raster, false, null);
         cursor = new SoftCursorImpl(0, 0, 0, 0);
@@ -70,34 +70,32 @@ public class RendererImpl extends Renderer implements ImageObserver {
     @Override
     public void drawJpegImage(byte[] bytes, int offset, int jpegBufferLength,
             FramebufferUpdateRectangle rect) {
-        Image jpegImage = Toolkit.getDefaultToolkit().createImage(bytes,
+        var jpegImage = Toolkit.getDefaultToolkit().createImage(bytes,
                 offset, jpegBufferLength);
         Toolkit.getDefaultToolkit().prepareImage(jpegImage, -1, -1, this);
         try {
             barrier.await(3, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            // nop
-        } catch (BrokenBarrierException e) {
-            // nop
-        } catch (TimeoutException e) {
+        } catch (InterruptedException | BrokenBarrierException | TimeoutException e) {
             // nop
         }
-        Graphics graphics = offscreenImage.getGraphics();
+        // nop
+        // nop
+        var graphics = offscreenImage.getGraphics();
         graphics.drawImage(jpegImage, rect.x, rect.y, rect.width, rect.height, this);
     }
 
     @Override
     public boolean imageUpdate(Image img, int infoflags, int x, int y,
             int width, int height) {
-        boolean isReady = (infoflags & (ALLBITS | ABORT)) != 0;
+        var isReady = (infoflags & (ALLBITS | ABORT)) != 0;
         if (isReady) {
             try {
                 barrier.await();
-            } catch (InterruptedException e) {
-                // nop
-            } catch (BrokenBarrierException e) {
+            } catch (InterruptedException | BrokenBarrierException e) {
                 // nop
             }
+            // nop
+            
         }
         return !isReady;
     }
@@ -120,7 +118,7 @@ public class RendererImpl extends Renderer implements ImageObserver {
 
     public void paintCursorOn(Graphics g, boolean force) {
         synchronized (cursor.getLock()) {
-            Image cursorImage = ((SoftCursorImpl) cursor).getImage();
+            var cursorImage = ((SoftCursorImpl) cursor).getImage();
             if (cursorImage != null && (force
                     || g.getClipBounds().intersects(cursor.rX, cursor.rY, cursor.width, cursor.height))) {
                 g.drawImage(cursorImage, cursor.rX, cursor.rY, null);

@@ -233,22 +233,17 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
 
     @Override
     public void settingsChanged(SettingsChangedEvent e) {
-        try {
-            if (ProtocolSettings.isRfbSettingsChangedFired(e)) {
-                var settings = (ProtocolSettings) e.getSource();
-                setUserInputEnabled(!settings.isViewOnly(), settings.isConvertToAscii());
-                showCursor(settings.isShowRemoteCursor());
-            } else if (UiSettings.isUiSettingsChangedFired(e)) {
-                var uiSettings = (UiSettings) e.getSource();
-                oldSize = getPreferredSize();
-                scaleFactor = uiSettings.getScaleFactor();
-            }
-            mouseEventListener.setScaleFactor(scaleFactor);
-            updateFrameSize();
-        } catch (Exception e2) {
-            TGS_UnSafe.throwIfInterruptedException(e2);
-            //noop
+        if (ProtocolSettings.isRfbSettingsChangedFired(e)) {
+            var settings = (ProtocolSettings) e.getSource();
+            setUserInputEnabled(!settings.isViewOnly(), settings.isConvertToAscii());
+            showCursor(settings.isShowRemoteCursor());
+        } else if (UiSettings.isUiSettingsChangedFired(e)) {
+            var uiSettings = (UiSettings) e.getSource();
+            oldSize = getPreferredSize();
+            scaleFactor = uiSettings.getScaleFactor();
         }
+        mouseEventListener.setScaleFactor(scaleFactor);
+        updateFrameSize();
     }
 
     @Override

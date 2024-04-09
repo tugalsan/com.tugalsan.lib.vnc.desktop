@@ -77,7 +77,7 @@ public class PrefsHelper {
 
     static String getStringFrom(Preferences sshNode, String key) {
         var out = new StringBuilder();
-        try {
+//        try {
             var str = sshNode.get(key, "");
             out.append(str);
             for (var cnt = 1;; ++cnt) {
@@ -89,11 +89,11 @@ public class PrefsHelper {
                     break;
                 }
             }
-        } catch (Exception r) {
-            TGS_UnSafe.throwIfInterruptedException(r);
-            logger.warning("Wrong data at '%s#%s' prefs: %s".formatted(sshNode.absolutePath(), key, r.getMessage()));
-            clearNode(sshNode);
-        }
+//        } catch (Exception r) {
+//            TGS_UnSafe.throwIfInterruptedException(r);
+//            logger.warning("Wrong data at '%s#%s' prefs: %s".formatted(sshNode.absolutePath(), key, r.getMessage()));
+//            clearNode(sshNode);
+//        }
         logger.finer("KnownHosts: \n%s".formatted(out.toString()));
         return out.toString();
     }

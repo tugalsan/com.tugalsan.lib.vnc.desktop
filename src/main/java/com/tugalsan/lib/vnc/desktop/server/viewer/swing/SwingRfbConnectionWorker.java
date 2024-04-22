@@ -117,7 +117,9 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
     @Override
     protected void done() { // EDT
         try {
+            logger.info("get begin...");
             get();
+            logger.info("get end...");
             presenter.showMessage("Handshake established");
             var clipboardController = new ClipboardControllerImpl(killTrigger, workingProtocol, rfbSettings.getRemoteCharsetName());
             clipboardController.setEnabled(rfbSettings.isAllowClipboardTransfer());

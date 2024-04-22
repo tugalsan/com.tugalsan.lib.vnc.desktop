@@ -58,8 +58,6 @@ import java.util.logging.Logger;
  */
 public class SwingRfbConnectionWorker extends SwingWorker<List<String>, String> implements RfbConnectionWorker<List<String>>, IRfbSessionListener {
 
-    final private static TS_Log d = TS_Log.of(true, SwingRfbConnectionWorker.class);
-
     private final String predefinedPassword;
     private final ConnectionPresenter presenter;
     private final Component parent;
@@ -98,12 +96,10 @@ public class SwingRfbConnectionWorker extends SwingWorker<List<String>, String> 
 
     @Override
     protected void done() { // EDT
-        d.ci("done", "#10");
         try {
-            d.ci("done", "#11");
-            get();
-            d.ci("done", "#12");
-            presenter.showMessage("Handshake established");
+            var msg = "Handshake established";
+            publish(msg);
+            presenter.showMessage(msg);
             var clipboardController = new ClipboardControllerImpl(killTrigger, workingProtocol, rfbSettings.getRemoteCharsetName());
             clipboardController.setEnabled(rfbSettings.isAllowClipboardTransfer());
             rfbSettings.addListener(clipboardController);
@@ -115,72 +111,12 @@ public class SwingRfbConnectionWorker extends SwingWorker<List<String>, String> 
             workingProtocol.startNormalHandling(killTrigger, this, viewerWindow.getRepaintController(), clipboardController);
             presenter.showMessage("Started");
 
-            d.ci("done", "#20");
             presenter.successfulRfbConnection();
-            d.ci("done", "#21");
         } catch (CancellationException e) {
-            d.ci("done", "#21.e1");
             logger.info("Cancelled");
             presenter.showMessage("Cancelled");
             presenter.connectionCancelled();
-        } catch (InterruptedException e) {
-            d.ci("done", "#21.e2");
-            logger.info("Interrupted");
-            presenter.showMessage("Interrupted");
-            presenter.connectionFailed();
-        } catch (ExecutionException ee) {
-            d.ci("done", "#21.e3 begin");
-            String errorTitle;
-            String errorMessage;
-            try {
-                throw ee.getCause();
-            } catch (UnsupportedProtocolVersionException e) {
-                errorTitle = "Unsupported Protocol Version";
-                errorMessage = e.getMessage();
-                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
-            } catch (UnsupportedSecurityTypeException e) {
-                errorTitle = "Unsupported Security Type";
-                errorMessage = e.getMessage();
-                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
-            } catch (AuthenticationFailedException e) {
-                errorTitle = "Authentication Failed";
-                errorMessage = e.getMessage();
-                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
-                presenter.clearPredefinedPassword();
-            } catch (TransportException e) {
-                errorTitle = "Connection Error";
-                var cause = e.getCause();
-                errorMessage = errorTitle + " : " + e.getMessage();
-                if (cause != null) {
-                    if (cause instanceof EOFException) {
-                        errorMessage += ", possible reason: remote host not responding.";
-                    }
-                    logger.throwing("", "", cause);
-                }
-                logger.severe(errorMessage);
-            } catch (EOFException e) {
-                errorTitle = "Connection Error";
-                errorMessage = errorTitle + ": " + e.getMessage();
-                logger.severe(errorMessage);
-            } catch (IOException e) {
-                errorTitle = "Connection Error";
-                errorMessage = errorTitle + ":  " + e.getMessage();
-                logger.severe(errorMessage);
-            } catch (FatalException e) {
-                errorTitle = "Connection Error";
-                errorMessage = errorTitle + ":    " + e.getMessage();
-                logger.severe(errorMessage);
-            } catch (Throwable e) {
-                errorTitle = "Error";
-                errorMessage = errorTitle + ": " + e.getMessage();
-                logger.severe(errorMessage);
-            }
-            presenter.showReconnectDialog(errorTitle, errorMessage);
-            presenter.clearMessage();
-            presenter.connectionFailed();
-            d.ci("done", "#21.e3.end");
         }
-        d.ci("done", "#30");
     }
 
     @Override
@@ -267,9 +203,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<List<String>, String> 
         logger.info(message);
         publish(message);
 
-        d.ci("doInBackground", "handshake begin");
         workingProtocol.handshake();
-        d.ci("doInBackground", "handshake end");
         return List.of();
     }
 

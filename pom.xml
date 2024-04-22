@@ -11,12 +11,6 @@
             <artifactId>com.tugalsan.api.desktop</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>platform</artifactId>
-            <version>3.5.2</version>
-        </dependency>
     </dependencies>
     
     <build>

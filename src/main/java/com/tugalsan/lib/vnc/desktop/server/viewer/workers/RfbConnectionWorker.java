@@ -32,7 +32,7 @@ import java.net.Socket;
 /**
  * @author dime at tightvnc.com
  */
-public interface RfbConnectionWorker extends ConnectionWorker<Void> {
+public interface RfbConnectionWorker<T> extends ConnectionWorker<T> {
 
     void setWorkingSocket(Socket workingSocket);
 

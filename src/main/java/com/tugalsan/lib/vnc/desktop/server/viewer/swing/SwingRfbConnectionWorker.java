@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
+import com.tugalsan.api.log.server.TS_Log;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.AuthenticationFailedException;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TransportException;
@@ -55,7 +56,9 @@ import java.util.logging.Logger;
 /**
  * @author dime at tightvnc.com
  */
-public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implements RfbConnectionWorker, IRfbSessionListener {
+public class SwingRfbConnectionWorker extends SwingWorker<List<String>, String> implements RfbConnectionWorker<List<String>>, IRfbSessionListener {
+
+    final private static TS_Log d = TS_Log.of(true, SwingRfbConnectionWorker.class);
 
     private final String predefinedPassword;
     private final ConnectionPresenter presenter;
@@ -72,28 +75,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
     private ViewerControlApi viewerControlApi;
     private final TS_ThreadSyncTrigger killTrigger;
 
-    @Override
-    public Void doInBackground() throws Exception {
-        if (null == workingSocket) {
-            throw new ConnectionErrorException("Null socket");
-        }
-        workingSocket.setTcpNoDelay(true); // disable Nagle algorithm
-        var transport = new Transport(workingSocket);
-        var baudrateMeter = new BaudrateMeter();
-        transport.setBaudrateMeter(baudrateMeter);
-        workingProtocol = new Protocol(transport,
-                new PasswordChooser(connectionString, parent, this),
-                rfbSettings);
-        workingProtocol.setConnectionIdRetriever(new ConnectionIdChooser(parent, this));
-        viewerControlApi = new ViewerControlApi(workingProtocol, baudrateMeter);
-        var message = "Handshaking with remote host";
-        logger.info(message);
-        publish(message);
-
-        workingProtocol.handshake();
-//        done();
-        return null;
-    }
+  
 
     public SwingRfbConnectionWorker(TS_ThreadSyncTrigger killTrigger, String predefinedPassword, ConnectionPresenter presenter, Component parent,
             SwingViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
@@ -116,8 +98,11 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
 
     @Override
     protected void done() { // EDT
+        d.ci("done", "#10");
         try {
+            d.ci("done", "#11");
             get();
+            d.ci("done", "#12");
             presenter.showMessage("Handshake established");
             var clipboardController = new ClipboardControllerImpl(killTrigger, workingProtocol, rfbSettings.getRemoteCharsetName());
             clipboardController.setEnabled(rfbSettings.isAllowClipboardTransfer());
@@ -130,16 +115,21 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
             workingProtocol.startNormalHandling(killTrigger, this, viewerWindow.getRepaintController(), clipboardController);
             presenter.showMessage("Started");
 
+            d.ci("done", "#20");
             presenter.successfulRfbConnection();
+            d.ci("done", "#21");
         } catch (CancellationException e) {
+            d.ci("done", "#21.e1");
             logger.info("Cancelled");
             presenter.showMessage("Cancelled");
             presenter.connectionCancelled();
         } catch (InterruptedException e) {
+            d.ci("done", "#21.e2");
             logger.info("Interrupted");
             presenter.showMessage("Interrupted");
             presenter.connectionFailed();
         } catch (ExecutionException ee) {
+            d.ci("done", "#21.e3 begin");
             String errorTitle;
             String errorMessage;
             try {
@@ -188,7 +178,9 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
             presenter.showReconnectDialog(errorTitle, errorMessage);
             presenter.clearMessage();
             presenter.connectionFailed();
+            d.ci("done", "#21.e3.end");
         }
+        d.ci("done", "#30");
     }
 
     @Override
@@ -257,6 +249,30 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
         this.connectionString = connectionString;
     }
 
+    @Override
+    public List<String> doInBackground() throws Exception {
+        if (null == workingSocket) {
+            throw new ConnectionErrorException("Null socket");
+        }
+        workingSocket.setTcpNoDelay(true); // disable Nagle algorithm
+        var transport = new Transport(workingSocket);
+        var baudrateMeter = new BaudrateMeter();
+        transport.setBaudrateMeter(baudrateMeter);
+        workingProtocol = new Protocol(transport,
+                new PasswordChooser(connectionString, parent, this),
+                rfbSettings);
+        workingProtocol.setConnectionIdRetriever(new ConnectionIdChooser(parent, this));
+        viewerControlApi = new ViewerControlApi(workingProtocol, baudrateMeter);
+        var message = "Handshaking with remote host";
+        logger.info(message);
+        publish(message);
+
+        d.ci("doInBackground", "handshake begin");
+        workingProtocol.handshake();
+        d.ci("doInBackground", "handshake end");
+        return List.of();
+    }
+
     /**
      * Ask user for password if needed
      */
@@ -299,9 +315,9 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
     private class ConnectionIdChooser implements IRequestString {
 
         private final Component parent;
-        private final ConnectionWorker<Void> onCancel;
+        private final ConnectionWorker<List<String>> onCancel;
 
-        public ConnectionIdChooser(Component parent, ConnectionWorker<Void> onCancel) {
+        public ConnectionIdChooser(Component parent, ConnectionWorker<List<String>> onCancel) {
             this.parent = parent;
             this.onCancel = onCancel;
         }

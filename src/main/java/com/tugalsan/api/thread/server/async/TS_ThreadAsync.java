@@ -12,11 +12,11 @@ public class TS_ThreadAsync {
     }
 
     public static Thread until(TS_ThreadSyncTrigger killTrigger, Duration until, TGS_RunnableType1<TS_ThreadSyncTrigger> exe) {
-//        if (until == null) {
+        if (until == null) {
             return Thread.startVirtualThread(() -> exe.run(killTrigger));
-//        } else {
-//            return now(killTrigger, kt2 -> TS_ThreadAsyncAwait.runUntil(killTrigger, until, kt1 -> exe.run(kt1)));
-//        }
+        } else {
+            return now(killTrigger, kt2 -> TS_ThreadAsyncAwait.runUntil(killTrigger, until, kt1 -> exe.run(kt1)));
+        }
     }
 
 }

@@ -21,4 +21,6 @@ module com.tugalsan.lib.vnc.desktop {
     exports com.tugalsan.api.log.server;
     exports com.tugalsan.api.random.client;
     exports com.tugalsan.api.random.server;
+    exports com.tugalsan.api.cast.client;
+    exports com.tugalsan.api.time.client;
 }

@@ -61,12 +61,12 @@
                 <version>3.12.1</version>
                 <configuration>
                     <release>22</release>
-                     <!--  <enablePreview>true</enablePreview>
-                    <compilerArgs>
-                       <arg>- -add-modules</arg>
-                        <arg>jdk.incubator.vector</arg>
-                        <arg>-XX:+EnableDynamicAgentLoading 
-                    </compilerArgs> -->
+                    <enablePreview>true</enablePreview>
+                    <!-- <compilerArgs> 
+                    <arg>- -add-modules</arg>
+                    <arg>jdk.incubator.vector</arg>
+                    <arg>-XX:+EnableDynamicAgentLoading 
+                    </compilerArgs>  -->
                 </configuration>
             </plugin>
         </plugins>

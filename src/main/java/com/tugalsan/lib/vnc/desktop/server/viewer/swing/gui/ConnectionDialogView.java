@@ -29,7 +29,6 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.settings.ConnectionParams;
 import com.tugalsan.lib.vnc.desktop.server.viewer.settings.WrongParameterException;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.ConnectionPresenter;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.ViewerEventsListener;
-import com.tugalsan.lib.vnc.desktop.server.viewer.swing.ssh.SshConnectionManager;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -46,22 +45,12 @@ import javax.swing.event.InternalFrameEvent;
 public class ConnectionDialogView extends JPanel implements View, ConnectionView {
 
     private static final int PADDING = 4;
-    private static final int COLUMNS_HOST_FIELD = 30;
     private static final int COLUMNS_PORT_USER_FIELD = 13;
     private static final String CLOSE = "Close";
     private static final String CANCEL = "Cancel";
     private final ViewerEventsListener onCloseListener;
-    private final boolean hasSshSupport;
     public final JTextField serverPortField;
-    public JCheckBox useSshTunnelingCheckbox;
     public final JTextField serverNameField;
-    public JTextField sshUserField;
-    public JTextField sshHostField;
-    public JTextField sshPortField;
-    private JLabel sshUserLabel;
-    private JLabel sshHostLabel;
-    private JLabel sshPortLabel;
-    private JLabel ssUserWarningLabel;
     private JButton connectButton;
     private final JInternalFrame view;
     private final ConnectionPresenter presenter;
@@ -73,7 +62,6 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
 
     public ConnectionDialogView(final ViewerEventsListener onCloseListener, final ConnectionPresenter presenter, JDesktopPane pane, Window window) {
         this.onCloseListener = onCloseListener;
-        this.hasSshSupport = SshConnectionManager.checkForSshSupport();
         this.presenter = presenter;
         this.window = window;
 
@@ -97,10 +85,6 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
 
         addFormFieldRow(optionsPane, gridRow, new JLabel("Port:"), serverPortField, false);
         ++gridRow;
-
-        if (this.hasSshSupport) {
-            gridRow = createSshOptions(optionsPane, gridRow);
-        }
 
         var buttonPanel = createButtons();
 
@@ -216,49 +200,6 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
         }
     }
 
-    private int createSshOptions(JPanel pane, int gridRow) {
-        var cUseSshTunnelLabel = new GridBagConstraints();
-        cUseSshTunnelLabel.gridx = 0;
-        cUseSshTunnelLabel.gridy = gridRow;
-        cUseSshTunnelLabel.weightx = 100;
-        cUseSshTunnelLabel.weighty = 100;
-        cUseSshTunnelLabel.gridwidth = 2;
-        cUseSshTunnelLabel.gridheight = 1;
-        cUseSshTunnelLabel.anchor = GridBagConstraints.LINE_START;
-        cUseSshTunnelLabel.ipadx = PADDING;
-        cUseSshTunnelLabel.ipady = 10;
-        useSshTunnelingCheckbox = new JCheckBox("Use SSH tunneling");
-        pane.add(useSshTunnelingCheckbox, cUseSshTunnelLabel);
-        ++gridRow;
-
-        sshHostLabel = new JLabel("SSH Server:");
-        sshHostField = new JTextField(COLUMNS_HOST_FIELD);
-        addFormFieldRow(pane, gridRow, sshHostLabel, sshHostField, true);
-        ++gridRow;
-
-        sshPortLabel = new JLabel("SSH Port:");
-        sshPortField = new JTextField(COLUMNS_PORT_USER_FIELD);
-        addFormFieldRow(pane, gridRow, sshPortLabel, sshPortField, false);
-        ++gridRow;
-
-        sshUserLabel = new JLabel("SSH User:");
-        sshUserField = new JTextField(COLUMNS_PORT_USER_FIELD);
-        var sshUserFieldPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        sshUserFieldPane.add(sshUserField);
-        ssUserWarningLabel = new JLabel(" (will be asked if not specified)");
-        sshUserFieldPane.add(ssUserWarningLabel);
-        addFormFieldRow(pane, gridRow, sshUserLabel, sshUserFieldPane, false);
-        ++gridRow;
-
-        useSshTunnelingCheckbox.addItemListener((ItemEvent e) -> {
-            var useSsh = e.getStateChange() == ItemEvent.SELECTED;
-            setUseSsh(useSsh);
-            presenter.setUseSsh(useSsh);
-        });
-        presenter.setUseSsh(viewer.connectionParams.getUseSsh());
-        return gridRow;
-    }
-
     private void addFormFieldRow(JPanel pane, int gridRow, JLabel label, JComponent field, boolean fill) {
         var cLabel = new GridBagConstraints();
         cLabel.gridx = 0;
@@ -299,73 +240,6 @@ public class ConnectionDialogView extends JPanel implements View, ConnectionView
     @SuppressWarnings("UnusedDeclaration")
     public String getPortNumber() {
         return serverPortField.getText();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void setSshHostName(String sshHostName) {
-        if (hasSshSupport) {
-            sshHostField.setText(sshHostName);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public String getSshHostName() {
-        if (hasSshSupport) {
-            return sshHostField.getText();
-        } else {
-            return "";
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void setSshPortNumber(int sshPortNumber) {
-        if (hasSshSupport) {
-            sshPortField.setText(String.valueOf(sshPortNumber));
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public String getSshPortNumber() {
-        if (hasSshSupport) {
-            return sshPortField.getText();
-        } else {
-            return "";
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void setSshUserName(String sshUserName) {
-        if (hasSshSupport) {
-            sshUserField.setText(sshUserName);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public String getSshUserName() {
-        if (hasSshSupport) {
-            return sshUserField.getText();
-        } else {
-            return "";
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void setUseSsh(boolean useSsh) {
-        if (hasSshSupport) {
-            useSshTunnelingCheckbox.setSelected(useSsh);
-            sshUserLabel.setEnabled(useSsh);
-            sshUserField.setEnabled(useSsh);
-            ssUserWarningLabel.setEnabled(useSsh);
-            sshHostLabel.setEnabled(useSsh);
-            sshHostField.setEnabled(useSsh);
-            sshPortLabel.setEnabled(useSsh);
-            sshPortField.setEnabled(useSsh);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public boolean getUseSsh() {
-        return useSshTunnelingCheckbox.isSelected();
     }
 
     /*

@@ -57,10 +57,6 @@ public class ParametersHandler {
     public static final String ARG_CONVERT_TO_ASCII = "ConvertToASCII";
     public static final String ARG_ALLOW_CLIPBOARD_TRANSFER = "AllowClipboardTransfer";
     public static final String ARG_REMOTE_CHARSET = "RemoteCharset";
-    public static final String ARG_SSH_HOST = "sshHost";
-    public static final String ARG_SSH_USER = "sshUser";
-    public static final String ARG_SSH_PORT = "sshPort";
-    public static final String ARG_TUNNELING = "Tunneling";
     public static final String ARG_SHOW_CONNECTION_DIALOG = "showConnectionDialog";
 
     public static void completeParserOptions(Parser parser) {
@@ -105,11 +101,6 @@ public class ParametersHandler {
         parser.addOption(ARG_SCALING_FACTOR, null, "Scale local representation of the remote desktop on startup. "
                 + "The value is interpreted as scaling factor in percents. The default value of 100% "
                 + "corresponds to the original framebuffer size.");
-        parser.addOption(ARG_SSH_HOST, "", "SSH host name.");
-        parser.addOption(ARG_SSH_PORT, "0",
-                "SSH port number. When empty, standard SSH port number (" + ConnectionParams.DEFAULT_SSH_PORT + ") is used.");
-        parser.addOption(ARG_SSH_USER, "", "SSH user name.");
-        parser.addOption(ARG_TUNNELING, "auto", "Tunneling. Possible values: auto - allow viewer to choose tunneling mode, none/no - no tunneling use, SSL - choose SSL tunneling when available. Default: auto");
         parser.addOption(ARG_VERBOSE, null, "Verbose console output.");
         parser.addOption(ARG_VERBOSE_MORE, null, "More verbose console output.");
 
@@ -187,7 +178,6 @@ public class ParametersHandler {
         var colorDepthParam = pr.getParamByName(ARG_COLOR_DEPTH);
         var localPointerParam = pr.getParamByName(ARG_LOCAL_POINTER);
         var convertToAsciiParam = pr.getParamByName(ARG_CONVERT_TO_ASCII);
-        var tunneling = pr.getParamByName(ARG_TUNNELING);
 
         var rfbMask = 0;
         rfbSettings.setViewOnly(parseBooleanOrDefault(viewOnlyParam, false));
@@ -228,14 +218,14 @@ public class ParametersHandler {
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
         try {
-            var  compLevel = Integer.parseInt(compressionLevelParam);
+            var compLevel = Integer.parseInt(compressionLevelParam);
             if (rfbSettings.setCompressionLevel(compLevel) == compLevel) {
                 rfbMask |= ProtocolSettings.CHANGED_COMPRESSION_LEVEL;
             }
         } catch (NumberFormatException e) {
             /* nop */ }
         try {
-            var  jpegQuality = Integer.parseInt(jpegQualityParam);
+            var jpegQuality = Integer.parseInt(jpegQualityParam);
             if (jpegQuality > 0 && jpegQuality <= 9) {
                 rfbSettings.setJpegQuality(jpegQuality);
                 rfbMask |= ProtocolSettings.CHANGED_JPEG_QUALITY;
@@ -246,7 +236,7 @@ public class ParametersHandler {
             }
         }
         try {
-            var  colorDepth = Integer.parseInt(colorDepthParam);
+            var colorDepth = Integer.parseInt(colorDepthParam);
             rfbSettings.setColorDepth(colorDepth);
             rfbMask |= ProtocolSettings.CHANGED_COLOR_DEPTH;
         } catch (NumberFormatException e) {
@@ -264,22 +254,18 @@ public class ParametersHandler {
             rfbSettings.setMouseCursorTrack(LocalPointer.HIDE);
             rfbMask |= ProtocolSettings.CHANGED_MOUSE_CURSOR_TRACK;
         }
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase("none", tunneling) || TGS_CharSetCast.equalsLocaleIgnoreCase("no", tunneling) || TGS_CharSetCast.equalsLocaleIgnoreCase("false", tunneling)) {
-            rfbSettings.setTunnelType(TunnelType.NOTUNNEL);
-        } else { // if (TGS_CharSetCast.equalsLocaleIgnoreCase("ssl",tunneling)) {
-            rfbSettings.setTunnelType(TunnelType.SSL);
-        }
+        rfbSettings.setTunnelType(TunnelType.NOTUNNEL);
         return rfbMask;
     }
 
     private static int completeUiSettings(ParamsRetriever pr, UiSettings uiSettings) {
-        var  uiMask = 0;
-        var  scaleFactorParam = pr.getParamByName(ARG_SCALING_FACTOR);
+        var uiMask = 0;
+        var scaleFactorParam = pr.getParamByName(ARG_SCALING_FACTOR);
         uiSettings.showControls = parseBooleanOrDefault(pr.getParamByName(ARG_SHOW_CONTROLS), true);
         uiSettings.showConnectionDialog = parseBooleanOrDefault(pr.getParamByName(ARG_SHOW_CONNECTION_DIALOG), true);
         if (scaleFactorParam != null) {
             try {
-                var  scaleFactor = Integer.parseInt(scaleFactorParam.replaceAll("\\D", ""));
+                var scaleFactor = Integer.parseInt(scaleFactorParam.replaceAll("\\D", ""));
                 if (scaleFactor >= 10 && scaleFactor <= 200) {
                     uiSettings.setScalePercent(scaleFactor);
                     uiMask |= UiSettings.CHANGED_SCALE_FACTOR;
@@ -304,15 +290,6 @@ public class ParametersHandler {
         } catch (WrongParameterException e) {
             Logger.getLogger(ParametersHandler.class.getName()).warning(e.getMessage());
         }
-        var  sshHostNameParam = pr.getParamByName(ARG_SSH_HOST);
-        connectionParams.sshHostName = sshHostNameParam;
-        connectionParams.setUseSsh(TGS_CharSetCast.equalsLocaleIgnoreCase("yes", pr.getParamByName(ARG_TUNNELING)));
-        try {
-            connectionParams.setSshPortNumber(pr.getParamByName(ARG_SSH_PORT));
-        } catch (WrongParameterException e) {
-            Logger.getLogger(ParametersHandler.class.getName()).warning(e.getMessage());
-        }
-        connectionParams.sshUserName = pr.getParamByName(ARG_SSH_USER);
     }
 
     private static boolean isGiven(String param) {

@@ -46,13 +46,6 @@ public class Parser {
             addOption(ParametersHandler.ARG_PORT, String.valueOf((vncPort_orNull == null ? ConnectionParams.DEFAULT_RFB_PORT : vncPort_orNull)), "Port number.");
             addOption(ParametersHandler.ARG_PASSWORD, vncPassword, "Password to the server.");
         }
-        {//SSH
-            addOption(ParametersHandler.ARG_TUNNELING, sshEnable ? "yes" : "no", "Tunneling. Possible values: auto - allow viewer to choose tunneling mode, none/no - no tunneling use, SSL - choose SSL tunneling when available. Default: auto");
-            addOption(ParametersHandler.ARG_SSH_HOST, sshHost, "SSH host name.");
-            addOption(ParametersHandler.ARG_SSH_PORT, String.valueOf((sshPort_orNull == null ? ConnectionParams.DEFAULT_SSH_PORT : sshPort_orNull)),
-                    "SSH port number. When empty, standard SSH port number (" + ConnectionParams.DEFAULT_SSH_PORT + ") is used.");
-            addOption(ParametersHandler.ARG_SSH_USER, sshUser, "SSH user name.");
-        }
         {//EXTRA
 //                            addOption(ParametersHandler.ARG_REMOTE_CHARSET, null, "Charset encoding is used on remote system. Use this option to specify character encoding will be used for encoding clipboard text content to. Default value: local system default character encoding. Set the value to 'standard' for using 'Latin-1' charset which is only specified by rfb standard for clipboard transfers.");
             addOption(ParametersHandler.ARG_VIEW_ONLY, viewOnly ? "Yes" : null, "When set to \"Yes\", then all keyboard and mouse "

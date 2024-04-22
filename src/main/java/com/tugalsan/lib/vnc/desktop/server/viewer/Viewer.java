@@ -97,14 +97,10 @@ public class Viewer implements ViewerEventsListener {
     public ConnectionDialogView connectionDialogView;
 
     @Deprecated
-    public void connectAction(String remoteHost, int vncPort, boolean useSSHTunnel, String SSHServer, int SSHport, String SSHUSer) {
+    public void connectAction(String remoteHost, int vncPort) {
         if (connectionDialogView != null) {
             connectionDialogView.serverNameField.setText(remoteHost);
             connectionDialogView.setPortNumber(vncPort);
-            connectionDialogView.setUseSsh(true);
-            connectionDialogView.setSshHostName(SSHServer);
-            connectionDialogView.setSshPortNumber(SSHport);
-            connectionDialogView.setSshUserName(SSHUSer);
             TS_DesktopDialogMessageUtils.show("TODO CONNECT");
             //connectionDialogView.connectAction();
         } else {

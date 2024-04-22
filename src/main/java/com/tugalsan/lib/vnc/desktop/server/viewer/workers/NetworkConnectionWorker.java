@@ -36,6 +36,4 @@ public interface NetworkConnectionWorker extends ConnectionWorker<Socket> {
     void setConnectionParams(ConnectionParams connectionParams);
 
     void setPresenter(Presenter presenter);
-
-    void setHasSshSupport(boolean hasSshSupport);
 }

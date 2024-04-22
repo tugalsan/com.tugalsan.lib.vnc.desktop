@@ -8,22 +8,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>com.tugalsan.api.thread</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>com.tugalsan.api.desktop</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency><!-- https://mvnrepository.com/artifact/com.trilead/trilead-ssh2 -->
-            <groupId>com.trilead</groupId>
-            <artifactId>trilead-ssh2</artifactId>
-            <version>1.0.0-build222</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>com.tugalsan.api.charset</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

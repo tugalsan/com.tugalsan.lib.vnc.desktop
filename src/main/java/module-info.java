@@ -3,7 +3,7 @@ module com.tugalsan.lib.vnc.desktop {
     requires java.datatransfer;
     requires java.desktop;
     requires java.prefs;
-    requires trilead.ssh2;
+    requires com.sun.jna.platform;
     requires com.tugalsan.api.thread;
     requires com.tugalsan.api.runnable;
     requires com.tugalsan.api.charset;

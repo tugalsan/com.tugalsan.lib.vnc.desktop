@@ -28,12 +28,10 @@ import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
 import com.tugalsan.lib.vnc.desktop.server.utils.ViewerControlApi;
 import com.tugalsan.lib.vnc.desktop.server.viewer.Viewer;
 import com.tugalsan.lib.vnc.desktop.server.viewer.mvp.Presenter;
-import com.tugalsan.lib.vnc.desktop.server.viewer.mvp.PropertyNotFoundException;
 import com.tugalsan.lib.vnc.desktop.server.viewer.settings.ConnectionParams;
 import com.tugalsan.lib.vnc.desktop.server.viewer.settings.UiSettings;
 import com.tugalsan.lib.vnc.desktop.server.viewer.settings.WrongParameterException;
 import com.tugalsan.lib.vnc.desktop.server.viewer.swing.gui.ConnectionView;
-import com.tugalsan.lib.vnc.desktop.server.viewer.swing.ssh.SshConnectionManager;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.AbstractConnectionWorkerFactory;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.NetworkConnectionWorker;
 import com.tugalsan.lib.vnc.desktop.server.viewer.workers.RfbConnectionWorker;
@@ -63,7 +61,6 @@ public class ConnectionPresenter extends Presenter {
     public static final String CONNECTION_PARAMS_MODEL = "ConnectionParamsModel";
     public static final String CONNECTION_VIEW = "ConnectionView";
 
-    private final boolean hasSshSupport;
     private ProtocolSettings rfbSettings;
     private UiSettings uiSettings;
     private static final Logger logger = Logger.getLogger(ConnectionPresenter.class.getName());
@@ -75,7 +72,6 @@ public class ConnectionPresenter extends Presenter {
 
     public ConnectionPresenter(Viewer viewer) {
         super(viewer);
-        this.hasSshSupport = SshConnectionManager.checkForSshSupport();
     }
 
     public void startConnection(ProtocolSettings rfbSettings, UiSettings uiSettings)
@@ -121,7 +117,6 @@ public class ConnectionPresenter extends Presenter {
         } catch (Throwable e) {
             throw new WrongParameterException("Wrong Port", PROPERTY_HOST_NAME);
         }
-        setSshOptions();
         connect();
     }
 
@@ -130,14 +125,13 @@ public class ConnectionPresenter extends Presenter {
      * connection worker tries to establish tcp connection with remote host
      */
     public void connect() {
-       var connectionParams = (ConnectionParams) getModel(CONNECTION_PARAMS_MODEL);
+        var connectionParams = (ConnectionParams) getModel(CONNECTION_PARAMS_MODEL);
         if (null == connectionWorkerFactory) {
             throw new IllegalStateException("connectionWorkerFactory is not set");
         }
         networkConnectionWorker = connectionWorkerFactory.createNetworkConnectionWorker();
         networkConnectionWorker.setConnectionParams(connectionParams);
         networkConnectionWorker.setPresenter(this);
-        networkConnectionWorker.setHasSshSupport(hasSshSupport);
         networkConnectionWorker.run();
     }
 
@@ -203,18 +197,6 @@ public class ConnectionPresenter extends Presenter {
     }
 
     /**
-     * Ask ConnectionView to show dialog
-     *
-     * @param errorMessage message to show
-     */
-    void showConnectionErrorDialog(String errorMessage) {
-        var connectionView = (ConnectionView) getView(CONNECTION_VIEW);
-        if (connectionView != null) {
-            connectionView.showConnectionErrorDialog(errorMessage);
-        }
-    }
-
-    /**
      * Ask ConnectionView to show dialog whether to reconnect or close app
      *
      * @param errorTitle dialog title to show
@@ -224,21 +206,6 @@ public class ConnectionPresenter extends Presenter {
         var connectionView = (ConnectionView) getView(CONNECTION_VIEW);
         if (connectionView != null) {
             connectionView.showReconnectDialog(errorTitle, errorMessage);
-        }
-    }
-
-    private void setSshOptions() {
-        if (hasSshSupport) {
-            try {
-                final boolean useSsh = (Boolean) getViewProperty(PROPERTY_USE_SSH);
-                setModelProperty(PROPERTY_USE_SSH, useSsh, boolean.class);
-            } catch (PropertyNotFoundException e) {
-                //nop
-            }
-            setModelProperty(PROPERTY_SSH_USER_NAME, getViewPropertyOrNull(PROPERTY_SSH_USER_NAME), String.class);
-            setModelProperty(PROPERTY_SSH_HOST_NAME, getViewPropertyOrNull(PROPERTY_SSH_HOST_NAME), String.class);
-            setModelProperty(PROPERTY_SSH_PORT_NUMBER, getViewPropertyOrNull(PROPERTY_SSH_PORT_NUMBER));
-            setViewProperty(PROPERTY_SSH_PORT_NUMBER, getModelProperty(PROPERTY_SSH_PORT_NUMBER));
         }
     }
 

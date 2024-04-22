@@ -36,7 +36,6 @@ import java.util.Objects;
  */
 public class ConnectionParams implements Model {
 
-    public static final int DEFAULT_SSH_PORT = 22;
     public static final int DEFAULT_RFB_PORT = 5900;
 
     /**
@@ -49,34 +48,18 @@ public class ConnectionParams implements Model {
      */
     private int portNumber;
 
-    public String sshUserName;
-    public String sshHostName;
-    private int sshPortNumber;
-
-    private boolean useSsh;
-
-    public ConnectionParams(String hostName, int portNumber, boolean useSsh, String sshHostName, int sshPortNumber, String sshUserName) {
+    public ConnectionParams(String hostName, int portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;
-        this.sshUserName = sshUserName;
-        this.sshHostName = sshHostName;
-        this.sshPortNumber = sshPortNumber;
-        this.useSsh = useSsh;
     }
 
     public ConnectionParams(ConnectionParams cp) {
         this.hostName = cp.hostName != null ? cp.hostName : "";
         this.portNumber = cp.portNumber;
-        this.sshUserName = cp.sshUserName;
-        this.sshHostName = cp.sshHostName;
-        this.sshPortNumber = cp.sshPortNumber;
-        this.useSsh = cp.useSsh;
     }
 
     public ConnectionParams() {
         hostName = "";
-        sshUserName = "";
-        sshHostName = "";
     }
 
     public ConnectionParams(String hostName, String portNumber) {
@@ -108,22 +91,22 @@ public class ConnectionParams implements Model {
      * @return portNubmer parsed
      */
     private int parsePortNumber(String port) throws WrongParameterException {
-        int portNumber;
+        int _portNumber;
         if (null == port) {
             return 0;
         }
         try {
-            portNumber = Integer.parseInt(port);
+            _portNumber = Integer.parseInt(port);
         } catch (NumberFormatException e) {
-            portNumber = 0;
+            _portNumber = 0;
             if (!Strings.isTrimmedEmpty(port)) {
                 throw new WrongParameterException("Wrong port number: " + port + "\nMust be in 0..65535");
             }
         }
-        if (portNumber > 65535 || portNumber < 0) {
+        if (_portNumber > 65535 || _portNumber < 0) {
             throw new WrongParameterException("Port number is out of range: " + port + "\nMust be in 0..65535");
         }
-        return portNumber;
+        return _portNumber;
     }
 
     public void setHostName(String hostName) {
@@ -154,60 +137,6 @@ public class ConnectionParams implements Model {
         return 0 == portNumber ? DEFAULT_RFB_PORT : portNumber;
     }
 
-    public void setSshPortNumber(String port) throws WrongParameterException {
-        try {
-            sshPortNumber = this.parsePortNumber(port);
-        } catch (WrongParameterException e) {
-            throw new WrongParameterException("SSH port number error. " + e.getMessage());
-        }
-    }
-
-    public void setSshPortNumber(int port) {
-        this.sshPortNumber = port;
-    }
-
-    public int getSshPortNumber() {
-        return 0 == sshPortNumber ? DEFAULT_SSH_PORT : sshPortNumber;
-    }
-
-    /**
-     * Set flag to use SSH port forwarding when connect to host
-     *
-     * @param useSsh
-     */
-    public void setUseSsh(boolean useSsh) {
-        this.useSsh = useSsh;
-    }
-
-    /**
-     * Check to use SSH port forwarding when connect to host
-     *
-     * @return true if user wants to use SSH
-     */
-    public boolean useSsh() {
-        return useSsh && !Strings.isTrimmedEmpty(sshHostName);
-    }
-
-    public boolean getUseSsh() {
-        return this.useSsh();
-    }
-
-    public String getSshUserName() {
-        return this.sshUserName;
-    }
-
-    public void setSshUserName(String sshUserName) {
-        this.sshUserName = sshUserName;
-    }
-
-    public String getSshHostName() {
-        return this.sshHostName;
-    }
-
-    public void setSshHostName(String sshHostName) {
-        this.sshHostName = sshHostName;
-    }
-
     /**
      * Copy and complete only field that are empty (null, zerro or empty string)
      * in `this' object from the other one
@@ -224,16 +153,6 @@ public class ConnectionParams implements Model {
         if (0 == portNumber && other.portNumber != 0) {
             portNumber = other.portNumber;
         }
-        if (Strings.isTrimmedEmpty(sshUserName) && !Strings.isTrimmedEmpty(other.sshUserName)) {
-            sshUserName = other.sshUserName;
-        }
-        if (Strings.isTrimmedEmpty(sshHostName) && !Strings.isTrimmedEmpty(other.sshHostName)) {
-            sshHostName = other.sshHostName;
-        }
-        if (0 == sshPortNumber && other.sshPortNumber != 0) {
-            sshPortNumber = other.sshPortNumber;
-        }
-        useSsh |= other.useSsh;
     }
 
     @Override
@@ -251,10 +170,6 @@ public class ConnectionParams implements Model {
         return "ConnectionParams{"
                 + "hostName='" + hostName + '\''
                 + ", portNumber=" + portNumber
-                + ", sshUserName='" + sshUserName + '\''
-                + ", sshHostName='" + sshHostName + '\''
-                + ", sshPortNumber=" + sshPortNumber
-                + ", useSsh=" + useSsh
                 + '}';
     }
 
@@ -267,9 +182,7 @@ public class ConnectionParams implements Model {
             return true;
         }
         var o = (ConnectionParams) obj;
-        return isEqualsNullable(hostName, o.hostName) && getPortNumber() == o.getPortNumber()
-                && useSsh == o.useSsh && isEqualsNullable(sshHostName, o.sshHostName)
-                && getSshPortNumber() == o.getSshPortNumber() && isEqualsNullable(sshUserName, o.sshUserName);
+        return isEqualsNullable(hostName, o.hostName) && getPortNumber() == o.getPortNumber();
     }
 
     private boolean isEqualsNullable(String one, String another) {
@@ -280,20 +193,12 @@ public class ConnectionParams implements Model {
     public int hashCode() {
         return Objects.hash(
                 hostName != null ? hostName.hashCode() : 0,
-                portNumber,
-                useSsh,
-                sshHostName != null ? sshHostName.hashCode() : 0,
-                sshUserName != null ? sshUserName.hashCode() : 0,
-                sshPortNumber
+                portNumber
         );
     }
 
     public void clearFields() {
         hostName = "";
         portNumber = 0;
-        useSsh = false;
-        sshHostName = null;
-        sshUserName = null;
-        sshPortNumber = 0;
     }
 }

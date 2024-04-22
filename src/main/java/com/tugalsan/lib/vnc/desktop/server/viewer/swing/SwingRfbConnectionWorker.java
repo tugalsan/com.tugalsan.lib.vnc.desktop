@@ -118,7 +118,7 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
     protected void done() { // EDT
         try {
             logger.info("get begin...");
-            get();
+            publish("done");//get();
             logger.info("get end...");
             presenter.showMessage("Handshake established");
             var clipboardController = new ClipboardControllerImpl(killTrigger, workingProtocol, rfbSettings.getRemoteCharsetName());
@@ -137,59 +137,59 @@ public class SwingRfbConnectionWorker extends SwingWorker<Void, String> implemen
             logger.info("Cancelled");
             presenter.showMessage("Cancelled");
             presenter.connectionCancelled();
-        } catch (InterruptedException e) {
-            logger.info("Interrupted");
-            presenter.showMessage("Interrupted");
-            presenter.connectionFailed();
-        } catch (ExecutionException ee) {
-            String errorTitle;
-            String errorMessage;
-            try {
-                throw ee.getCause();
-            } catch (UnsupportedProtocolVersionException e) {
-                errorTitle = "Unsupported Protocol Version";
-                errorMessage = e.getMessage();
-                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
-            } catch (UnsupportedSecurityTypeException e) {
-                errorTitle = "Unsupported Security Type";
-                errorMessage = e.getMessage();
-                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
-            } catch (AuthenticationFailedException e) {
-                errorTitle = "Authentication Failed";
-                errorMessage = e.getMessage();
-                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
-                presenter.clearPredefinedPassword();
-            } catch (TransportException e) {
-                errorTitle = "Connection Error";
-                var cause = e.getCause();
-                errorMessage = errorTitle + " : " + e.getMessage();
-                if (cause != null) {
-                    if (cause instanceof EOFException) {
-                        errorMessage += ", possible reason: remote host not responding.";
-                    }
-                    logger.throwing("", "", cause);
-                }
-                logger.severe(errorMessage);
-            } catch (EOFException e) {
-                errorTitle = "Connection Error";
-                errorMessage = errorTitle + ": " + e.getMessage();
-                logger.severe(errorMessage);
-            } catch (IOException e) {
-                errorTitle = "Connection Error";
-                errorMessage = errorTitle + ":  " + e.getMessage();
-                logger.severe(errorMessage);
-            } catch (FatalException e) {
-                errorTitle = "Connection Error";
-                errorMessage = errorTitle + ":    " + e.getMessage();
-                logger.severe(errorMessage);
-            } catch (Throwable e) {
-                errorTitle = "Error";
-                errorMessage = errorTitle + ": " + e.getMessage();
-                logger.severe(errorMessage);
-            }
-            presenter.showReconnectDialog(errorTitle, errorMessage);
-            presenter.clearMessage();
-            presenter.connectionFailed();
+//        } catch (InterruptedException e) {
+//            logger.info("Interrupted");
+//            presenter.showMessage("Interrupted");
+//            presenter.connectionFailed();
+//        } catch (ExecutionException ee) {
+//            String errorTitle;
+//            String errorMessage;
+//            try {
+//                throw ee.getCause();
+//            } catch (UnsupportedProtocolVersionException e) {
+//                errorTitle = "Unsupported Protocol Version";
+//                errorMessage = e.getMessage();
+//                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
+//            } catch (UnsupportedSecurityTypeException e) {
+//                errorTitle = "Unsupported Security Type";
+//                errorMessage = e.getMessage();
+//                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
+//            } catch (AuthenticationFailedException e) {
+//                errorTitle = "Authentication Failed";
+//                errorMessage = e.getMessage();
+//                logger.severe("%s:%s".formatted(errorTitle, errorMessage));
+//                presenter.clearPredefinedPassword();
+//            } catch (TransportException e) {
+//                errorTitle = "Connection Error";
+//                var cause = e.getCause();
+//                errorMessage = errorTitle + " : " + e.getMessage();
+//                if (cause != null) {
+//                    if (cause instanceof EOFException) {
+//                        errorMessage += ", possible reason: remote host not responding.";
+//                    }
+//                    logger.throwing("", "", cause);
+//                }
+//                logger.severe(errorMessage);
+//            } catch (EOFException e) {
+//                errorTitle = "Connection Error";
+//                errorMessage = errorTitle + ": " + e.getMessage();
+//                logger.severe(errorMessage);
+//            } catch (IOException e) {
+//                errorTitle = "Connection Error";
+//                errorMessage = errorTitle + ":  " + e.getMessage();
+//                logger.severe(errorMessage);
+//            } catch (FatalException e) {
+//                errorTitle = "Connection Error";
+//                errorMessage = errorTitle + ":    " + e.getMessage();
+//                logger.severe(errorMessage);
+//            } catch (Throwable e) {
+//                errorTitle = "Error";
+//                errorMessage = errorTitle + ": " + e.getMessage();
+//                logger.severe(errorMessage);
+//            }
+//            presenter.showReconnectDialog(errorTitle, errorMessage);
+//            presenter.clearMessage();
+//            presenter.connectionFailed();
         }
     }
 

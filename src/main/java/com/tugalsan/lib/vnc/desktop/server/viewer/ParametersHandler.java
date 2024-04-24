@@ -24,6 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 import com.tugalsan.api.charset.client.TGS_CharSet;
+import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.EncodingType;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.LocalPointer;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;

@@ -24,6 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
 import com.tugalsan.api.charset.client.TGS_CharSet;
+import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import com.tugalsan.lib.vnc.desktop.server.core.SettingsChangedEvent;
 import com.tugalsan.lib.vnc.desktop.server.rfb.ClipboardController;
 import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientCutTextMessage;

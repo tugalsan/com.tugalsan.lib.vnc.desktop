@@ -61,7 +61,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
 
         if (Strings.isTrimmedEmpty(charsetName)) {
             charset = Charset.defaultCharset();
-        } else if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("standard", charsetName)) {
+        } else if (TGS_CharSetCast.current().equalsIgnoreCase("standard", charsetName)) {
             charset = Charset.forName(STANDARD_CHARSET);
         } else {
             charset = Charset.isSupported(charsetName) ? Charset.forName(charsetName) : Charset.defaultCharset();

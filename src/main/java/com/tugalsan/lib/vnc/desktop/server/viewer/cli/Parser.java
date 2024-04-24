@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.cli;
 
-import com.tugalsan.api.charset.client.TGS_CharSetCast;
+import com.tugalsan.api.charset.client.TGS_CharSet;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
 import com.tugalsan.lib.vnc.desktop.server.utils.Strings;
 import com.tugalsan.lib.vnc.desktop.server.viewer.ParametersHandler;
@@ -73,7 +73,7 @@ public class Parser {
 
     final public void addOption(String opName, String defaultValue, String desc) {
         var op = new Option(opName, defaultValue, desc);
-        options.put(TGS_CharSetCast.toLocaleLowerCase(opName), op);
+        options.put(TGS_CharSet.cmn().languageDefault().toLowerCase(opName), op);
     }
 
     public void parse(String[] args) {
@@ -81,7 +81,7 @@ public class Parser {
             if (p.startsWith("-")) {
                 var skipMinuses = p.startsWith("--") ? 2 : 1;
                 var params = p.split("=", 2);
-                var op = options.get(TGS_CharSetCast.toLocaleLowerCase(params[0]).substring(skipMinuses));
+                var op = options.get(TGS_CharSet.cmn().languageDefault().toLowerCase(params[0]).substring(skipMinuses));
                 if (op != null) {
                     op.isSet = true;
                     if (params.length > 1 && !Strings.isTrimmedEmpty(params[1])) {
@@ -96,12 +96,12 @@ public class Parser {
     }
 
     public String getValueFor(String param) {
-        var op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
+        var op = options.get(TGS_CharSet.cmn().languageDefault().toLowerCase(param));
         return op != null ? op.value : null;
     }
 
     public boolean isSet(String param) {
-        var op = options.get(TGS_CharSetCast.toLocaleLowerCase(param));
+        var op = options.get(TGS_CharSet.cmn().languageDefault().toLowerCase(param));
         return op != null && op.isSet;
     }
 

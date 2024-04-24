@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.charset.client.TGS_CharSetCast;
+import com.tugalsan.api.charset.client.TGS_CharSet;
 import com.tugalsan.lib.vnc.desktop.server.rfb.encoding.EncodingType;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.LocalPointer;
 import com.tugalsan.lib.vnc.desktop.server.rfb.protocol.ProtocolSettings;
@@ -108,7 +108,7 @@ public class ParametersHandler {
 
     static int completeSettingsFromCLI(final Parser parser, ConnectionParams connectionParams, ProtocolSettings rfbSettings, UiSettings uiSettings, ApplicationSettings applicationSettings) {
         var mask = completeSettings((String name) -> {
-            if (TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE, name) || TGS_CharSetCast.equalsLocaleIgnoreCase(ARG_VERBOSE_MORE, name)) {
+            if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase(ARG_VERBOSE, name) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase(ARG_VERBOSE_MORE, name)) {
                 return parser.isSet(name) ? name : null;
             }
             return parser.getValueFor(name);
@@ -201,19 +201,19 @@ public class ParametersHandler {
         if (isGiven(convertToAsciiParam)) {
             rfbMask |= ProtocolSettings.CHANGED_CONVERT_TO_ASCII;
         }
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.TIGHT.getName(), encodingParam)) {
+        if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase(EncodingType.TIGHT.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.TIGHT);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.HEXTILE.getName(), encodingParam)) {
+        if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase(EncodingType.HEXTILE.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.HEXTILE);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.ZRLE.getName(), encodingParam)) {
+        if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase(EncodingType.ZRLE.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.ZRLE);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase(EncodingType.RAW_ENCODING.getName(), encodingParam)) {
+        if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase(EncodingType.RAW_ENCODING.getName(), encodingParam)) {
             rfbSettings.setPreferredEncoding(EncodingType.RAW_ENCODING);
             rfbMask |= ProtocolSettings.CHANGED_ENCODINGS;
         }
@@ -231,7 +231,7 @@ public class ParametersHandler {
                 rfbMask |= ProtocolSettings.CHANGED_JPEG_QUALITY;
             }
         } catch (NumberFormatException e) {
-            if (TGS_CharSetCast.equalsLocaleIgnoreCase("lossless", jpegQualityParam)) {
+            if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("lossless", jpegQualityParam)) {
                 rfbSettings.setJpegQuality(-Math.abs(rfbSettings.getJpegQuality()));
             }
         }
@@ -242,15 +242,15 @@ public class ParametersHandler {
         } catch (NumberFormatException e) {
             /* nop */ }
 
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase("on", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("true", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("yes", localPointerParam)) {
+        if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("on", localPointerParam) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("true", localPointerParam) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("yes", localPointerParam)) {
             rfbSettings.setMouseCursorTrack(LocalPointer.ON);
             rfbMask |= ProtocolSettings.CHANGED_MOUSE_CURSOR_TRACK;
         }
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase("off", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("no", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("false", localPointerParam)) {
+        if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("off", localPointerParam) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("no", localPointerParam) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("false", localPointerParam)) {
             rfbSettings.setMouseCursorTrack(LocalPointer.OFF);
             rfbMask |= ProtocolSettings.CHANGED_MOUSE_CURSOR_TRACK;
         }
-        if (TGS_CharSetCast.equalsLocaleIgnoreCase("hide", localPointerParam) || TGS_CharSetCast.equalsLocaleIgnoreCase("hidden", localPointerParam)) {
+        if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("hide", localPointerParam) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("hidden", localPointerParam)) {
             rfbSettings.setMouseCursorTrack(LocalPointer.HIDE);
             rfbMask |= ProtocolSettings.CHANGED_MOUSE_CURSOR_TRACK;
         }
@@ -298,8 +298,8 @@ public class ParametersHandler {
 
     private static boolean parseBooleanOrDefault(String param, boolean defaultValue) {
         return defaultValue
-                ? !(TGS_CharSetCast.equalsLocaleIgnoreCase("no", param) || TGS_CharSetCast.equalsLocaleIgnoreCase("false", param))
-                : TGS_CharSetCast.equalsLocaleIgnoreCase("yes", param) || TGS_CharSetCast.equalsLocaleIgnoreCase("true", param);
+                ? !(TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("no", param) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("false", param))
+                : TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("yes", param) || TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("true", param);
     }
 
 }

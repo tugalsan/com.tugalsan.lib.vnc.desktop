@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer.swing;
 
-import com.tugalsan.api.charset.client.TGS_CharSetCast;
+import com.tugalsan.api.charset.client.TGS_CharSet;
 import com.tugalsan.lib.vnc.desktop.server.core.SettingsChangedEvent;
 import com.tugalsan.lib.vnc.desktop.server.rfb.ClipboardController;
 import com.tugalsan.lib.vnc.desktop.server.rfb.client.ClientCutTextMessage;
@@ -61,7 +61,7 @@ public class ClipboardControllerImpl implements ClipboardController, Runnable {
 
         if (Strings.isTrimmedEmpty(charsetName)) {
             charset = Charset.defaultCharset();
-        } else if (TGS_CharSetCast.equalsLocaleIgnoreCase("standard", charsetName)) {
+        } else if (TGS_CharSet.cmn().languageDefault().equalsIgnoreCase("standard", charsetName)) {
             charset = Charset.forName(STANDARD_CHARSET);
         } else {
             charset = Charset.isSupported(charsetName) ? Charset.forName(charsetName) : Charset.defaultCharset();

@@ -9,7 +9,7 @@ module com.tugalsan.lib.vnc.desktop {
     requires com.tugalsan.api.unsafe;
     requires com.tugalsan.api.charset;
     requires com.tugalsan.api.log;
-    requires com.tugalsan.api.runnable;
+    
     requires com.tugalsan.api.callable;
     exports com.tugalsan.lib.vnc.desktop.server;
 }

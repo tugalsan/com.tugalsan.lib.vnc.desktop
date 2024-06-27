@@ -10,6 +10,6 @@ module com.tugalsan.lib.vnc.desktop {
     requires com.tugalsan.api.charset;
     requires com.tugalsan.api.log;
     
-    requires com.tugalsan.api.callable;
+    requires com.tugalsan.api.function;
     exports com.tugalsan.lib.vnc.desktop.server;
 }

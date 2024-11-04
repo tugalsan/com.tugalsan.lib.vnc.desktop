@@ -24,7 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;

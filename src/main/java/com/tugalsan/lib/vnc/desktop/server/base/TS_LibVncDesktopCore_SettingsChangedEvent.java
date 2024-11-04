@@ -21,45 +21,21 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 // -----------------------------------------------------------------------
 //
-package com.tugalsan.lib.vnc.desktop.server.core;
+package com.tugalsan.lib.vnc.desktop.server.base;
 
 /**
  * @author dime at tightvnc.com
  */
-public class TS_LibVncDesktopUtils_LazyLoaded<T> {
+public class TS_LibVncDesktopCore_SettingsChangedEvent {
 
-    private boolean isLoaded;
-    private T lazyObj;
-    private Loader<T> loader;
+    private final Object source;
 
-    private TS_LibVncDesktopUtils_LazyLoaded() {
+    public TS_LibVncDesktopCore_SettingsChangedEvent(Object source) {
+        this.source = source;
     }
 
-    public T get() {
-        if (isLoaded) {
-            return lazyObj;
-        } else {
-            try {
-                lazyObj = loader.load();
-                isLoaded = true;
-            } catch (Throwable ignore) {
-                return null;
-            }
-            return lazyObj;
-        }
+    public Object getSource() {
+        return source;
     }
 
-    public TS_LibVncDesktopUtils_LazyLoaded(Loader<T> loader) {
-        this.loader = loader;
-    }
-
-    public interface Loader<T> {
-
-        /**
-         * Loads the lazy loaded object
-         *
-         * @return object loaded
-         */
-        T load() throws Throwable;
-    }
 }

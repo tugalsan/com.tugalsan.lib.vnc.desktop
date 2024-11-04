@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopDrawing_SoftCursor;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopDrawing_SoftCursor;
 
 import java.awt.*;
 import java.awt.image.MemoryImageSource;

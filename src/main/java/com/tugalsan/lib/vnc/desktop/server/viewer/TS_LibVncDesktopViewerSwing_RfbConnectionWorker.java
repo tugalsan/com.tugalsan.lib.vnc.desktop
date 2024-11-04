@@ -32,10 +32,10 @@ import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_BaudrateMeter;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Strings;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_ViewerControlApi;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_BaudrateMeter;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_ViewerControlApi;
 import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
 
 import javax.swing.*;

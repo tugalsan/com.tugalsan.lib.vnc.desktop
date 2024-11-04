@@ -21,7 +21,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 // -----------------------------------------------------------------------
 //
-package com.tugalsan.lib.vnc.desktop.server.core;
+package com.tugalsan.lib.vnc.desktop.server.base;
 
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_ClosedConnection;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;

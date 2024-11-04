@@ -26,7 +26,7 @@ package com.tugalsan.lib.vnc.desktop.server.viewer;
 import com.tugalsan.api.charset.client.TGS_CharSet;
 import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Strings;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
 import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_ParametersHandler;
 
 import java.util.ArrayList;

@@ -30,7 +30,7 @@ import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_ClosedConnection;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_ServerInitMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 
 import java.util.logging.Logger;
 

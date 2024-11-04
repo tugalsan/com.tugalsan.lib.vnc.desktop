@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopCore_SettingsChangedEvent;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

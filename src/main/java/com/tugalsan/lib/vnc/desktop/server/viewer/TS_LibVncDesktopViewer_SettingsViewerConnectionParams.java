@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Strings;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
 import java.util.Objects;
 import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpModel;
 

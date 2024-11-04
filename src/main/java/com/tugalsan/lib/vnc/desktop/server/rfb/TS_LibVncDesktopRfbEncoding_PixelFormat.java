@@ -24,7 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 
 /**
  * Pixel Format: 1 - U8 - bits-per-pixel 1 - U8 - depth 1 - U8 - big-endian-flag

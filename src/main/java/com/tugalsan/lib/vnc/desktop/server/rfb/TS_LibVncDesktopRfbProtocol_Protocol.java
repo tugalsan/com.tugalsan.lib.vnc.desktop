@@ -46,12 +46,12 @@ import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedProtocolVersion;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedSecurityType;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopCore_SettingsChangedEvent;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_Type;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_PixelFormat;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_HandlerHandshaker;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_BaudrateMeter;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_BaudrateMeter;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;

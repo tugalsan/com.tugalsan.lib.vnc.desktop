@@ -28,8 +28,8 @@ import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedProtocolVersion;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedSecurityType;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Strings;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;

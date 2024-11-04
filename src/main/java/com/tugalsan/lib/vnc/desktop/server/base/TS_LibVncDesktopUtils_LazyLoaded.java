@@ -21,43 +21,45 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 // -----------------------------------------------------------------------
 //
-package com.tugalsan.lib.vnc.desktop.server.core;
+package com.tugalsan.lib.vnc.desktop.server.base;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+/**
+ * @author dime at tightvnc.com
+ */
+public class TS_LibVncDesktopUtils_LazyLoaded<T> {
 
-public class TS_LibVncDesktopUtils_Strings {
+    private boolean isLoaded;
+    private T lazyObj;
+    private Loader<T> loader;
 
-    public static String toString(byte[] byteArray) {
-        var sb = new StringBuilder("[");
-        var notFirst = false;
-        for (var b : byteArray) {
-            if (notFirst) {
-                sb.append(", ");
-            } else {
-                notFirst = true;
-            }
-            sb.append(b);
-        }
-        return sb.append("]").toString();
+    private TS_LibVncDesktopUtils_LazyLoaded() {
     }
 
-    public static boolean isTrimmedEmpty(String s) {
-        return null == s || (s.trim().length() == 0);
-    }
-
-    public static byte[] getBytesWithCharset(String string, Charset charset) {
-        byte[] result;
-        try {
-            result = string.getBytes(charset);
-        } catch (NoSuchMethodError error) {
+    public T get() {
+        if (isLoaded) {
+            return lazyObj;
+        } else {
             try {
-                result = string.getBytes(charset.name());
-            } catch (UnsupportedEncodingException e) {
-                result = null;
+                lazyObj = loader.load();
+                isLoaded = true;
+            } catch (Throwable ignore) {
+                return null;
             }
+            return lazyObj;
         }
-        return result;
     }
 
+    public TS_LibVncDesktopUtils_LazyLoaded(Loader<T> loader) {
+        this.loader = loader;
+    }
+
+    public interface Loader<T> {
+
+        /**
+         * Loads the lazy loaded object
+         *
+         * @return object loaded
+         */
+        T load() throws Throwable;
+    }
 }

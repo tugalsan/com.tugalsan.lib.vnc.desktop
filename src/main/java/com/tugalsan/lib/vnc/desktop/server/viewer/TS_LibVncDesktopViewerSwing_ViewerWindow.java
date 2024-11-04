@@ -24,12 +24,12 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 import com.tugalsan.api.desktop.server.TS_DesktopDialogInfoUtils;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopCore_SettingsChangedEvent;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_KeyEventMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_TunnelType;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Keymap;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Keymap;
 import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
 
 import javax.swing.*;

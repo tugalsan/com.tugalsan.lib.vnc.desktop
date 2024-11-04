@@ -21,21 +21,43 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 // -----------------------------------------------------------------------
 //
-package com.tugalsan.lib.vnc.desktop.server.core;
+package com.tugalsan.lib.vnc.desktop.server.base;
 
-/**
- * @author dime at tightvnc.com
- */
-public class TS_LibVncDesktopCore_SettingsChangedEvent {
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
-    private final Object source;
+public class TS_LibVncDesktopUtils_Strings {
 
-    public TS_LibVncDesktopCore_SettingsChangedEvent(Object source) {
-        this.source = source;
+    public static String toString(byte[] byteArray) {
+        var sb = new StringBuilder("[");
+        var notFirst = false;
+        for (var b : byteArray) {
+            if (notFirst) {
+                sb.append(", ");
+            } else {
+                notFirst = true;
+            }
+            sb.append(b);
+        }
+        return sb.append("]").toString();
     }
 
-    public Object getSource() {
-        return source;
+    public static boolean isTrimmedEmpty(String s) {
+        return null == s || (s.trim().length() == 0);
+    }
+
+    public static byte[] getBytesWithCharset(String string, Charset charset) {
+        byte[] result;
+        try {
+            result = string.getBytes(charset);
+        } catch (NoSuchMethodError error) {
+            try {
+                result = string.getBytes(charset.name());
+            } catch (UnsupportedEncodingException e) {
+                result = null;
+            }
+        }
+        return result;
     }
 
 }

@@ -25,7 +25,7 @@ package com.tugalsan.lib.vnc.desktop.server.rfb;
 
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 
 public class TS_LibVncDesktopRfbProtocol_AuthTypeNone extends TS_LibVncDesktopRfbProtocol_AuthHandler {
 

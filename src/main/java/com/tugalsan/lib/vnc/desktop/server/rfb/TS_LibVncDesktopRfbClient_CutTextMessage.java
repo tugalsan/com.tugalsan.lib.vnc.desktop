@@ -24,12 +24,12 @@
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import static com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Strings.*;
+import static com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings.*;
 
 /**
  * ClientCutText The client has new ISO 8859-1 (Latin-1) text in its cut buffer.

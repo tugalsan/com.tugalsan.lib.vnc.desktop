@@ -27,7 +27,7 @@ import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 
 import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
@@ -35,7 +35,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-import static com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Strings.getBytesWithCharset;
+import static com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings.getBytesWithCharset;
 
 public class TS_LibVncDesktopRfbProtocol_AuthTypeVnc extends TS_LibVncDesktopRfbProtocol_AuthHandler {
 

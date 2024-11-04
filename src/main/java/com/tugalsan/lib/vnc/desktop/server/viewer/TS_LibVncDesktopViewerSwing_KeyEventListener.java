@@ -29,7 +29,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Proto
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import static com.tugalsan.lib.vnc.desktop.server.core.TS_LibVncDesktopUtils_Keymap.*;
+import static com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Keymap.*;
 
 public class TS_LibVncDesktopViewerSwing_KeyEventListener implements KeyListener {
 

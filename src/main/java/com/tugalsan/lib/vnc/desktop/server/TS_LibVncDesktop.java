@@ -9,23 +9,18 @@ import javax.swing.JDesktopPane;
 
 public class TS_LibVncDesktop {
 
-    public static TS_LibVncDesktopViewer_Viewer show(TS_ThreadSyncTrigger killTrigger, JDesktopPane pane, Window window, TS_LibVncDesktopViewer_CliParser parser) {
-        return new TS_LibVncDesktopViewer_Viewer(killTrigger, parser, pane, window);
+    private static void show(TS_ThreadSyncTrigger killTrigger, boolean connect, JDesktopPane pane, Window window, TS_LibVncDesktopViewer_CliParser parser) {
+        var v = new TS_LibVncDesktopViewer_Viewer(killTrigger, parser, pane, window);
+        if (connect) {
+            v.connectAction();
+        }
     }
 
-    public static void connect(TS_ThreadSyncTrigger killTrigger, JDesktopPane pane, Window window, TS_LibVncDesktopViewer_CliParser parser) {
-        show(killTrigger, pane, window, parser).connectAction();
-    }
-
-    public static TS_LibVncDesktopViewer_Viewer show(TS_ThreadSyncTrigger killTrigger, JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
+    public static void show(TS_ThreadSyncTrigger killTrigger, boolean connect, JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
         var connParams = TS_LibVncDesktop.defaultParser(viewOnly);
         connParams.addOption(TS_LibVncDesktopViewer_ParametersHandler.ARG_HOST, ipNumber_orURL, "");
         connParams.addOption(TS_LibVncDesktopViewer_ParametersHandler.ARG_PASSWORD, password, "");
-        return show(killTrigger, pane, window, connParams);
-    }
-
-    public static void connect(TS_ThreadSyncTrigger killTrigger, JDesktopPane pane, Window window, boolean viewOnly, String ipNumber_orURL, String password) {
-        show(killTrigger, pane, window, viewOnly, ipNumber_orURL, password).connectAction();
+        show(killTrigger, connect, pane, window, connParams);
     }
 
     private static TS_LibVncDesktopViewer_CliParser defaultParser(boolean viewOnly) {

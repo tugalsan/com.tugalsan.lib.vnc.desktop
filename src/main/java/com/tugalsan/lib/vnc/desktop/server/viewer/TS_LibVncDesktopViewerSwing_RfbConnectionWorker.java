@@ -23,34 +23,27 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.log.server.TS_Log;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_AuthenticationFailed;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedProtocolVersion;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedSecurityType;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
+import com.tugalsan.api.unsafe.client.TGS_UnSafe;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_BaudrateMeter;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_ViewerControlApi;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_AuthenticationFailed;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_ISessionListener;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IRequestString;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersConnectionWorker;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersRfbConnectionWorker;
 
 /**
  * @author dime at tightvnc.com
@@ -71,8 +64,6 @@ public class TS_LibVncDesktopViewerSwing_RfbConnectionWorker extends SwingWorker
     private TS_LibVncDesktopViewer_SettingsUi uiSettings;
     private TS_LibVncDesktopUtils_ViewerControlApi viewerControlApi;
     private final TS_ThreadSyncTrigger killTrigger;
-
-  
 
     public TS_LibVncDesktopViewerSwing_RfbConnectionWorker(TS_ThreadSyncTrigger killTrigger, String predefinedPassword, TS_LibVncDesktopViewerSwing_ConnectionPresenter presenter, Component parent,
             TS_LibVncDesktopViewerSwing_ViewerWindowFactory viewerWindowFactory, JDesktopPane pane, Window window) {
@@ -190,7 +181,7 @@ public class TS_LibVncDesktopViewerSwing_RfbConnectionWorker extends SwingWorker
             throw new TS_LibVncDesktopViewerSwing_ConnectionErrorException("Null socket");
         }
         workingSocket.setTcpNoDelay(true); // disable Nagle algorithm
-        var transport = new TS_LibVncDesktopTransport_Transport(workingSocket);
+        var transport = new TS_LibVncDesktopTransport_Transport(killTrigger, workingSocket);
         var baudrateMeter = new TS_LibVncDesktopTransport_BaudrateMeter();
         transport.setBaudrateMeter(baudrateMeter);
         workingProtocol = new TS_LibVncDesktopRfbProtocol_Protocol(transport,
@@ -201,8 +192,17 @@ public class TS_LibVncDesktopViewerSwing_RfbConnectionWorker extends SwingWorker
         var message = "Handshaking with remote host";
         logger.info(message);
         publish(message);
-
-        workingProtocol.handshake();
+        TGS_UnSafe.run(() -> {
+            try {
+                workingProtocol.handshake();
+            } catch (TS_LibVncDesktopException_AuthenticationFailed ex) {
+                TGS_UnSafe.thrw(ex);
+            } catch (TS_LibVncDesktopException_Transport | TS_LibVncDesktopException_Fatal ex) {
+                TGS_UnSafe.thrw(ex);
+            } catch (Throwable ex) {
+                TGS_UnSafe.thrw(ex);
+            }
+        });
         return List.of();
     }
 

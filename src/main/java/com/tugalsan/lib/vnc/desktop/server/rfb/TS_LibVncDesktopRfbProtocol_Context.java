@@ -23,8 +23,6 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_PixelFormat;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_HandlerHandshaker;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 
 public class TS_LibVncDesktopRfbProtocol_Context {

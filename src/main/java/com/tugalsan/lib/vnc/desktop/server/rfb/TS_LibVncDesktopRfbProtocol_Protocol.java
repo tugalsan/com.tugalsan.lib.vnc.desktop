@@ -24,36 +24,19 @@
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderCursorPos;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderCopyRect;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderZlib;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderTight;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderRRE;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderHextile;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_Decoder;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderRichCursor;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderDesktopSize;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderRaw;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_ByteBuffer;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_DecoderZRLE;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_FramebufferUpdateRequestMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_SetPixelFormatMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_MessageType;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_SetEncodingsMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_CapabilityInfo;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_AuthenticationFailed;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedProtocolVersion;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedSecurityType;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_Type;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_PixelFormat;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_HandlerHandshaker;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_BaudrateMeter;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
+import com.tugalsan.api.unsafe.client.TGS_UnSafe;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -61,12 +44,6 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.logging.Logger;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_ClipboardController;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IChangeSettingsListener;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_ISessionListener;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IRequestString;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IRepaintController;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_ClientToServerMessage;
 
 public class TS_LibVncDesktopRfbProtocol_Protocol implements TS_LibVncDesktopRfb_IChangeSettingsListener {
 
@@ -98,9 +75,17 @@ public class TS_LibVncDesktopRfbProtocol_Protocol implements TS_LibVncDesktopRfb
     }
 
     public void handshake() throws TS_LibVncDesktopException_UnsupportedProtocolVersion, TS_LibVncDesktopException_UnsupportedSecurityType,
-            TS_LibVncDesktopException_AuthenticationFailed, TS_LibVncDesktopException_Transport, TS_LibVncDesktopException_Fatal {
+            TS_LibVncDesktopException_AuthenticationFailed, TS_LibVncDesktopException_Transport, TS_LibVncDesktopException_Fatal, Throwable {
         logger.info("Starting handshake...");
-        context.transport = new TS_LibVncDesktopRfb_HandlerHandshaker(this).handshake(getTransport());
+        var await = TS_ThreadAsyncAwait.runUntil(context.transport.killTrigger, Duration.ofSeconds(15), kt -> {
+            TGS_UnSafe.run(() -> {
+                context.transport = new TS_LibVncDesktopRfb_HandlerHandshaker(this).handshake(getTransport());
+            });
+        });
+        if (await.exceptionIfFailed.isPresent()) {
+            TGS_UnSafe.thrw(await.exceptionIfFailed.get());
+            return;
+        }
         logger.info("context.transport:%s".formatted(context.transport.toString()));
         messageQueue = new TS_LibVncDesktopRfbProtocol_MessageQueue(); // TODO Why here?
         logger.info("messageQueue:%s".formatted(messageQueue.toString()));

@@ -23,20 +23,12 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
+import com.tugalsan.api.log.server.TS_Log;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_ViewerControlApi;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_Viewer;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpPresenter;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsViewerConnectionParams;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsWrongParameterException;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersAbstractConnectionWorkerFactory;
-
 import java.net.Socket;
 import java.util.logging.Logger;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersRfbConnectionWorker;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersNetworkConnectionWorker;
 
 /**
  * A Presenter (controller) that presents business logic for connection
@@ -48,6 +40,8 @@ import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_Workers
  * @author dime at tightvnc.com
  */
 public class TS_LibVncDesktopViewerSwing_ConnectionPresenter extends TS_LibVncDesktopViewer_MvpPresenter {
+
+    final static private TS_Log d = TS_Log.of(TS_LibVncDesktopViewerSwing_ConnectionPresenter.class);
 
     public static final String PROPERTY_HOST_NAME = "HostName";
     public static final String PROPERTY_RFB_PORT_NUMBER = "PortNumber";
@@ -104,6 +98,7 @@ public class TS_LibVncDesktopViewerSwing_ConnectionPresenter extends TS_LibVncDe
      * @param hostName name of host to connect
      */
     public void submitConnection(String hostName) throws TS_LibVncDesktopViewer_SettingsWrongParameterException {
+        d.cr("submitConnection", "begin");
         if (TS_LibVncDesktopUtils_Strings.isTrimmedEmpty(hostName)) {
             throw new TS_LibVncDesktopViewer_SettingsWrongParameterException("Host name is empty", PROPERTY_HOST_NAME);
         }
@@ -116,7 +111,9 @@ public class TS_LibVncDesktopViewerSwing_ConnectionPresenter extends TS_LibVncDe
         } catch (Throwable e) {
             throw new TS_LibVncDesktopViewer_SettingsWrongParameterException("Wrong Port", PROPERTY_HOST_NAME);
         }
+        d.cr("submitConnection", "connect...");
         connect();
+        d.cr("submitConnection", "end");
     }
 
     /**
@@ -124,14 +121,20 @@ public class TS_LibVncDesktopViewerSwing_ConnectionPresenter extends TS_LibVncDe
      * connection worker tries to establish tcp connection with remote host
      */
     public void connect() {
+        d.cr("submitConnection", "begin");
         var connectionParams = (TS_LibVncDesktopViewer_SettingsViewerConnectionParams) getModel(CONNECTION_PARAMS_MODEL);
         if (null == connectionWorkerFactory) {
             throw new IllegalStateException("connectionWorkerFactory is not set");
         }
+        d.cr("submitConnection", "createNetworkConnectionWorker...");
         networkConnectionWorker = connectionWorkerFactory.createNetworkConnectionWorker();
+        d.cr("submitConnection", "setConnectionParams...");
         networkConnectionWorker.setConnectionParams(connectionParams);
+        d.cr("submitConnection", "setPresenter...");
         networkConnectionWorker.setPresenter(this);
+        d.cr("submitConnection", "pre-run");
         networkConnectionWorker.run();
+        d.cr("submitConnection", "pst-run");
     }
 
     /**

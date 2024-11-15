@@ -40,7 +40,7 @@ import javax.swing.JDesktopPane;
 public class TS_LibVncDesktopViewer_Viewer implements TS_LibVncDesktopViewerSwing_ViewerViewerEventsListener {
 
     private final TS_LibVncDesktopViewer_ApplicationSettings applicationSettings;
-    private final TS_ThreadSyncTrigger killTrigger;
+    public final TS_ThreadSyncTrigger killTrigger;
     private static final Logger logger = Logger.getLogger(TS_LibVncDesktopViewer_Viewer.class.getName());
     private final int paramsMask;
     public final TS_LibVncDesktopViewer_SettingsViewerConnectionParams connectionParams;

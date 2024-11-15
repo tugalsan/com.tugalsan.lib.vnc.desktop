@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.base;
 
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_ClosedConnection;
 import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
 
@@ -37,38 +38,37 @@ public class TS_LibVncDesktopTransport_Transport {
 
     public final static Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
     public final static Charset UTF8 = Charset.forName("UTF-8");
-    DataInputStream is;
-    DataOutputStream os;
-    InputStream origIs;
-    OutputStream origOs;
+    public final TS_ThreadSyncTrigger killTrigger;
+    private DataInputStream is;
+    private DataOutputStream os;
+    private InputStream origIs;
+    private OutputStream origOs;
     private TS_LibVncDesktopTransport_BaudrateMeter baudrateMeter;
 
-    public TS_LibVncDesktopTransport_Transport(Socket socket) throws IOException {
-        this(socket.getInputStream(), socket.getOutputStream());
+    public TS_LibVncDesktopTransport_Transport(TS_ThreadSyncTrigger threadKiller) {
+        this(threadKiller, null, null);
     }
 
-    public TS_LibVncDesktopTransport_Transport(InputStream is) {
-        this(is, null);
+    public TS_LibVncDesktopTransport_Transport(TS_ThreadSyncTrigger killTrigger, Socket socket) throws IOException {
+        this(killTrigger, socket.getInputStream(), socket.getOutputStream());
     }
 
-    public TS_LibVncDesktopTransport_Transport(OutputStream os) {
-        this(null, os);
+    public TS_LibVncDesktopTransport_Transport(TS_ThreadSyncTrigger killTrigger, InputStream is) {
+        this(killTrigger, is, null);
     }
 
-    public TS_LibVncDesktopTransport_Transport(InputStream is, OutputStream os) {
-        init(is, os);
+    public TS_LibVncDesktopTransport_Transport(TS_ThreadSyncTrigger killTrigger, OutputStream os) {
+        this(killTrigger, null, os);
     }
 
-    final void init(InputStream is, OutputStream os) {
+    public TS_LibVncDesktopTransport_Transport(TS_ThreadSyncTrigger killTrigger, InputStream is, OutputStream os) {
+        this.killTrigger = killTrigger;
         origIs = is;
         this.is = is != null ? new DataInputStream(is) : null;
         origOs = os;
         this.os = os != null ? new DataOutputStream(os) : null;
     }
 
-    public TS_LibVncDesktopTransport_Transport() {
-        this(null, null);
-    }
 
 //    void release() {
 //        origIs = is = null;

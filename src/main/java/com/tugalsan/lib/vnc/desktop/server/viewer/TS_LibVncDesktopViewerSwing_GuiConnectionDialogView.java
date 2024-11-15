@@ -23,10 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_Viewer;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsViewerConnectionParams;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsWrongParameterException;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewerSwing_ConnectionPresenter;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -35,8 +32,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpView;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewerSwing_ViewerViewerEventsListener;
 
 /**
  * Dialog window for connection parameters get from.
@@ -183,21 +178,25 @@ public class TS_LibVncDesktopViewerSwing_GuiConnectionDialogView extends JPanel 
     }
 
     public void connectAction() {
-        setMessage("");
-        var hostName = serverNameField.getText();
-        try {
-            setConnectionInProgress(true);
-            presenter.submitConnection(hostName);
-        } catch (TS_LibVncDesktopViewer_SettingsWrongParameterException wpe) {
-            if (TS_LibVncDesktopViewerSwing_ConnectionPresenter.PROPERTY_HOST_NAME.equals(wpe.getPropertyName())) {
-                serverNameField.requestFocusInWindow();
+        TS_ThreadAsync.now(viewer.killTrigger, kt -> {
+            setMessage("");
+            var hostName = serverNameField.getText();
+            try {
+                setConnectionInProgress(true);
+                presenter.submitConnection(hostName);
+            } catch (TS_LibVncDesktopViewer_SettingsWrongParameterException wpe) {
+                var wpe_prp = wpe.getPropertyName();
+                var wpe_msg = wpe.getMessage();
+                if (TS_LibVncDesktopViewerSwing_ConnectionPresenter.PROPERTY_HOST_NAME.equals(wpe_prp)) {
+                    serverNameField.requestFocusInWindow();
+                }
+                if (TS_LibVncDesktopViewerSwing_ConnectionPresenter.PROPERTY_RFB_PORT_NUMBER.equals(wpe_prp)) {
+                    serverPortField.requestFocusInWindow();
+                }
+                showConnectionErrorDialog(wpe_msg);
+                setConnectionInProgress(false);
             }
-            if (TS_LibVncDesktopViewerSwing_ConnectionPresenter.PROPERTY_RFB_PORT_NUMBER.equals(wpe.getPropertyName())) {
-                serverPortField.requestFocusInWindow();
-            }
-            showConnectionErrorDialog(wpe.getMessage());
-            setConnectionInProgress(false);
-        }
+        });
     }
 
     private void addFormFieldRow(JPanel pane, int gridRow, JLabel label, JComponent field, boolean fill) {
@@ -258,7 +257,7 @@ public class TS_LibVncDesktopViewerSwing_GuiConnectionDialogView extends JPanel 
     }
 
     @Override
-    public void showConnectionErrorDialog(final String message) {
+    public void showConnectionErrorDialog(String message) {
         JOptionPane.showMessageDialog(view, message, "Connection error", JOptionPane.ERROR_MESSAGE);
     }
 

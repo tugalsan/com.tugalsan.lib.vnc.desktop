@@ -23,8 +23,6 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpPresenter;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsViewerConnectionParams;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +32,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Logger;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersNetworkConnectionWorker;
 
 public class TS_LibVncDesktopViewerSwing_NetworkConnectionWorker extends SwingWorker<Socket, String> implements TS_LibVncDesktopViewer_WorkersNetworkConnectionWorker {
 

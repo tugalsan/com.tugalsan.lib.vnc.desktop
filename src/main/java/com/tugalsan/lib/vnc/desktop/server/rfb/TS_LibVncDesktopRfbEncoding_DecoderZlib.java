@@ -45,7 +45,7 @@ public class TS_LibVncDesktopRfbEncoding_DecoderZlib extends TS_LibVncDesktopRfb
         var length = rect.width * rect.height * renderer.getBytesPerPixel();
         var bytes = unzip(transport, zippedLength, length);
         var unzippedReader
-                = new TS_LibVncDesktopTransport_Transport(
+                = new TS_LibVncDesktopTransport_Transport(transport.killTrigger,
                         new ByteArrayInputStream(bytes, zippedLength, length));
         TS_LibVncDesktopRfbEncoding_DecoderRaw.getInstance().decode(unzippedReader, renderer, rect);
     }

@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.unsafe.client.TGS_UnSafe;
+import com.tugalsan.api.function.client.TGS_FuncUtils;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
@@ -90,7 +90,7 @@ public class TS_LibVncDesktopViewerSwing_SshPrefsHelper {
                 }
             }
 //        } catch (Exception r) {
-//            TGS_UnSafe.throwIfInterruptedException(r);
+//            TGS_FuncUtils.throwIfInterruptedException(r);
 //            logger.warning("Wrong data at '%s#%s' prefs: %s".formatted(sshNode.absolutePath(), key, r.getMessage()));
 //            clearNode(sshNode);
 //        }

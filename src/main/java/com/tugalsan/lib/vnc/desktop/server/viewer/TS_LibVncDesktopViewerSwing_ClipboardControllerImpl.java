@@ -30,7 +30,7 @@ import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_CutText
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
-import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 
 import java.awt.*;
@@ -131,7 +131,7 @@ public class TS_LibVncDesktopViewerSwing_ClipboardControllerImpl implements TS_L
             isRunning = false;
         }
         if (enable && !isEnabled) {
-            TS_ThreadAsync.now(killTrigger, kt -> run());
+            TS_ThreadAsyncRun.now(killTrigger, kt -> run());
         }
         isEnabled = enable;
     }

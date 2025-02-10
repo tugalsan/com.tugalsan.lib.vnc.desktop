@@ -25,11 +25,12 @@ package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 import com.tugalsan.api.desktop.server.TS_DesktopDesktopPaneUtils;
 import com.tugalsan.api.desktop.server.TS_DesktopDialogMessageUtils;
+import com.tugalsan.api.function.client.maythrow.checkedexceptions.TGS_FuncMTCEUtils;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
-import com.tugalsan.api.thread.server.TS_ThreadWait;
+import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncWait;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.api.unsafe.client.*;
+
 import java.awt.Window;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -145,9 +146,9 @@ public class TS_LibVncDesktopViewer_Viewer implements TS_LibVncDesktopViewerSwin
         viewerWindow.setZoomToFitSelected(true);
         TS_DesktopDesktopPaneUtils.remove(pane, connectionDialogView.getFrame());
         TS_DesktopDesktopPaneUtils.tiltWindows(pane);
-        TS_ThreadAsync.now(killTrigger, kt -> {
-            TS_ThreadWait.seconds(null, killTrigger, 5);
-            TGS_UnSafe.run(() -> {
+        TS_ThreadAsyncRun.now(killTrigger, kt -> {
+            TS_ThreadSyncWait.seconds(null, killTrigger, 5);
+            TGS_FuncMTCEUtils.run(() -> {
                 viewerWindow.ReDrawOnResize();
                 viewerWindow.getFrame().setResizable(true);
                 System.out.println("np");

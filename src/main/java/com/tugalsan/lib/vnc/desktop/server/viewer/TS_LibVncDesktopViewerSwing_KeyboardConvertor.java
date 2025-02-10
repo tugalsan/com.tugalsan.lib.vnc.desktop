@@ -24,7 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 import com.sun.jna.Platform;
-import com.tugalsan.api.unsafe.client.TGS_UnSafe;
+import com.tugalsan.api.function.client.maythrow.checkedexceptions.TGS_FuncMTCEUtils;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -99,7 +99,7 @@ public class TS_LibVncDesktopViewerSwing_KeyboardConvertor {
     private final boolean canCheckCapsWithToolkit;
 
     public TS_LibVncDesktopViewerSwing_KeyboardConvertor() {
-        canCheckCapsWithToolkit = TGS_UnSafe.call(() -> {
+        canCheckCapsWithToolkit = TGS_FuncMTCEUtils.call(() -> {
             Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
             return true;
         }, e -> {

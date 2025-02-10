@@ -6,7 +6,7 @@ module com.tugalsan.lib.vnc.desktop {
     requires com.sun.jna.platform;
     requires com.tugalsan.api.desktop;
     requires com.tugalsan.api.thread;
-    requires com.tugalsan.api.unsafe;
+    
     requires com.tugalsan.api.charset;
     requires com.tugalsan.api.log;
     

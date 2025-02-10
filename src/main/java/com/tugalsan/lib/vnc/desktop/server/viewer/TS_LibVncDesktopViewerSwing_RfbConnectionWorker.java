@@ -24,7 +24,8 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.api.unsafe.client.TGS_UnSafe;
+import com.tugalsan.api.function.client.maythrow.checkedexceptions.TGS_FuncMTCEUtils;
+import com.tugalsan.api.function.client.maythrow.uncheckedexceptions.TGS_FuncMTUCEUtils;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_BaudrateMeter;
@@ -192,15 +193,15 @@ public class TS_LibVncDesktopViewerSwing_RfbConnectionWorker extends SwingWorker
         var message = "Handshaking with remote host";
         logger.info(message);
         publish(message);
-        TGS_UnSafe.run(() -> {
+        TGS_FuncMTCEUtils.run(() -> {
             try {
                 workingProtocol.handshake();
             } catch (TS_LibVncDesktopException_AuthenticationFailed ex) {
-                TGS_UnSafe.thrw(ex);
+                TGS_FuncMTUCEUtils.thrw(ex);
             } catch (TS_LibVncDesktopException_Transport | TS_LibVncDesktopException_Fatal ex) {
-                TGS_UnSafe.thrw(ex);
+                TGS_FuncMTUCEUtils.thrw(ex);
             } catch (Throwable ex) {
-                TGS_UnSafe.thrw(ex);
+                TGS_FuncMTUCEUtils.thrw(ex);
             }
         });
         return List.of();

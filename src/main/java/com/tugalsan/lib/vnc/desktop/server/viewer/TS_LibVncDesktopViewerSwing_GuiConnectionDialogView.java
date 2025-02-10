@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.thread.server.async.TS_ThreadAsync;
+import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -178,7 +178,7 @@ public class TS_LibVncDesktopViewerSwing_GuiConnectionDialogView extends JPanel 
     }
 
     public void connectAction() {
-        TS_ThreadAsync.now(viewer.killTrigger, kt -> {
+        TS_ThreadAsyncRun.now(viewer.killTrigger, kt -> {
             setMessage("");
             var hostName = serverNameField.getText();
             try {

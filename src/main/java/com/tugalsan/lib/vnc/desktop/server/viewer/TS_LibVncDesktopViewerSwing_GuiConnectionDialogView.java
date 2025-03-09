@@ -23,6 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
+import com.tugalsan.api.log.server.TS_Log;
 import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
 
 import javax.swing.*;
@@ -38,6 +39,8 @@ import javax.swing.event.InternalFrameEvent;
  */
 @SuppressWarnings("serial")
 public class TS_LibVncDesktopViewerSwing_GuiConnectionDialogView extends JPanel implements TS_LibVncDesktopViewer_MvpView, TS_LibVncDesktopViewerSwing_GuiConnectionView {
+
+    final static private TS_Log d = TS_Log.of(TS_LibVncDesktopViewerSwing_GuiConnectionDialogView.class);
 
     private static final int PADDING = 4;
     private static final int COLUMNS_PORT_USER_FIELD = 13;
@@ -178,7 +181,7 @@ public class TS_LibVncDesktopViewerSwing_GuiConnectionDialogView extends JPanel 
     }
 
     public void connectAction() {
-        TS_ThreadAsyncRun.now(viewer.killTrigger, kt -> {
+        TS_ThreadAsyncRun.now(viewer.killTrigger.newChild(d.className), kt -> {
             setMessage("");
             var hostName = serverNameField.getText();
             try {

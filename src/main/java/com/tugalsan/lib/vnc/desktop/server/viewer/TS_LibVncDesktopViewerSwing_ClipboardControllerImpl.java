@@ -23,8 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.charset.client.TGS_CharSet;
 import com.tugalsan.api.charset.client.TGS_CharSetCast;
+import com.tugalsan.api.log.server.TS_Log;
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_CutTextMessage;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
@@ -43,6 +43,8 @@ import java.nio.charset.Charset;
 import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_ClipboardController;
 
 public class TS_LibVncDesktopViewerSwing_ClipboardControllerImpl implements TS_LibVncDesktopRfb_ClipboardController, Runnable {
+
+    final static private TS_Log d = TS_Log.of(TS_LibVncDesktopViewerSwing_ClipboardControllerImpl.class);
 
     private static final String STANDARD_CHARSET = "ISO-8859-1"; // aka Latin-1
     private static final long CLIPBOARD_UPDATE_CHECK_INTERVAL_MILS = 1000L;
@@ -96,7 +98,7 @@ public class TS_LibVncDesktopViewerSwing_ClipboardControllerImpl implements TS_L
                 // ignore
             }
             // ignore
-            
+
         } else {
             clipboardText = null;
         }
@@ -131,7 +133,7 @@ public class TS_LibVncDesktopViewerSwing_ClipboardControllerImpl implements TS_L
             isRunning = false;
         }
         if (enable && !isEnabled) {
-            TS_ThreadAsyncRun.now(killTrigger, kt -> run());
+            TS_ThreadAsyncRun.now(killTrigger.newChild(d.className), kt -> run());
         }
         isEnabled = enable;
     }

@@ -36,6 +36,7 @@ import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
 import com.tugalsan.api.thread.server.async.await.TS_ThreadAsyncAwait;
 import com.tugalsan.api.function.client.maythrow.checkedexceptions.TGS_FuncMTCEUtils;
 import com.tugalsan.api.function.client.maythrow.uncheckedexceptions.TGS_FuncMTUCEUtils;
+import com.tugalsan.api.log.server.TS_Log;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.HashSet;
@@ -48,6 +49,7 @@ import java.util.logging.Logger;
 
 public class TS_LibVncDesktopRfbProtocol_Protocol implements TS_LibVncDesktopRfb_IChangeSettingsListener {
 
+    final private static TS_Log d = TS_Log.of(false, TS_LibVncDesktopRfbProtocol_Protocol.class);
     private final TS_LibVncDesktopRfbProtocol_Context context;
     private static final Logger logger = Logger.getLogger(TS_LibVncDesktopRfbProtocol_Protocol.class.getName());
     private final TS_LibVncDesktopRfb_IRequestString passwordRetriever;
@@ -78,7 +80,7 @@ public class TS_LibVncDesktopRfbProtocol_Protocol implements TS_LibVncDesktopRfb
     public void handshake() throws TS_LibVncDesktopException_UnsupportedProtocolVersion, TS_LibVncDesktopException_UnsupportedSecurityType,
             TS_LibVncDesktopException_AuthenticationFailed, TS_LibVncDesktopException_Transport, TS_LibVncDesktopException_Fatal, Throwable {
         logger.info("Starting handshake...");
-        var await = TS_ThreadAsyncAwait.runUntil(context.transport.killTrigger, Duration.ofSeconds(15), kt -> {
+        var await = TS_ThreadAsyncAwait.runUntil(context.transport.killTrigger.newChild(d.className), Duration.ofSeconds(15), kt -> {
             TGS_FuncMTCEUtils.run(() -> {
                 context.transport = new TS_LibVncDesktopRfb_HandlerHandshaker(this).handshake(getTransport());
             });
@@ -126,13 +128,13 @@ public class TS_LibVncDesktopRfbProtocol_Protocol implements TS_LibVncDesktopRfb
 
         sendRefreshMessage();
         senderTask = new TS_LibVncDesktopRfbProtocol_SenderTask(killTrigger, messageQueue, context.transport, TS_LibVncDesktopRfbProtocol_Protocol.this);
-        senderThread = TS_ThreadAsyncRun.now(killTrigger, kt -> senderTask.run());
+        senderThread = TS_ThreadAsyncRun.now(killTrigger.newChild(d.className), kt -> senderTask.run());
         resetDecoders();
         receiverTask = new TS_LibVncDesktopRfbProtocol_ReceiverTask(killTrigger,
                 context.transport, repaintController,
                 clipboardController,
                 TS_LibVncDesktopRfbProtocol_Protocol.this, baudrateMeter);
-        receiverThread = TS_ThreadAsyncRun.now(killTrigger, kt -> receiverTask.run());
+        receiverThread = TS_ThreadAsyncRun.now(killTrigger.newChild(d.className), kt -> receiverTask.run());
     }
 
     private void correctServerPixelFormat() {

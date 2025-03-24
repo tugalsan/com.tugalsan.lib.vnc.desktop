@@ -25,7 +25,7 @@ package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 import com.tugalsan.api.desktop.server.TS_DesktopDesktopPaneUtils;
 import com.tugalsan.api.desktop.server.TS_DesktopDialogMessageUtils;
-import com.tugalsan.api.function.client.maythrow.checkedexceptions.TGS_FuncMTCEUtils;
+import com.tugalsan.api.function.client.maythrowexceptions.checked.TGS_FuncMTCUtils;
 import com.tugalsan.api.log.server.TS_Log;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
@@ -150,7 +150,7 @@ public class TS_LibVncDesktopViewer_Viewer implements TS_LibVncDesktopViewerSwin
         TS_DesktopDesktopPaneUtils.tiltWindows(pane);
         TS_ThreadAsyncRun.now(killTrigger.newChild(d.className), kt -> {
             TS_ThreadSyncWait.seconds(null, killTrigger, 5);
-            TGS_FuncMTCEUtils.run(() -> {
+            TGS_FuncMTCUtils.run(() -> {
                 viewerWindow.ReDrawOnResize();
                 viewerWindow.getFrame().setResizable(true);
                 System.out.println("np");

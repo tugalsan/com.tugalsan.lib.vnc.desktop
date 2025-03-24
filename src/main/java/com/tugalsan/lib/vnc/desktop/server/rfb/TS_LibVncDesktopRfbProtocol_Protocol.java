@@ -34,8 +34,8 @@ import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Baudra
 import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
 import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
 import com.tugalsan.api.thread.server.async.await.TS_ThreadAsyncAwait;
-import com.tugalsan.api.function.client.maythrow.checkedexceptions.TGS_FuncMTCEUtils;
-import com.tugalsan.api.function.client.maythrow.uncheckedexceptions.TGS_FuncMTUCEUtils;
+import com.tugalsan.api.function.client.maythrowexceptions.checked.TGS_FuncMTCUtils;
+import com.tugalsan.api.function.client.maythrowexceptions.unchecked.TGS_FuncMTUUtils;
 import com.tugalsan.api.log.server.TS_Log;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
@@ -81,12 +81,12 @@ public class TS_LibVncDesktopRfbProtocol_Protocol implements TS_LibVncDesktopRfb
             TS_LibVncDesktopException_AuthenticationFailed, TS_LibVncDesktopException_Transport, TS_LibVncDesktopException_Fatal, Throwable {
         logger.info("Starting handshake...");
         var await = TS_ThreadAsyncAwait.runUntil(context.transport.killTrigger.newChild(d.className), Duration.ofSeconds(15), kt -> {
-            TGS_FuncMTCEUtils.run(() -> {
+            TGS_FuncMTCUtils.run(() -> {
                 context.transport = new TS_LibVncDesktopRfb_HandlerHandshaker(this).handshake(getTransport());
             });
         });
         if (await.exceptionIfFailed.isPresent()) {
-            TGS_FuncMTUCEUtils.thrw(await.exceptionIfFailed.get());
+            TGS_FuncMTUUtils.thrw(await.exceptionIfFailed.get());
             return;
         }
         logger.info("context.transport:%s".formatted(context.transport.toString()));

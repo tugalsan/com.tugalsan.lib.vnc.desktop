@@ -24,7 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 
-import com.tugalsan.api.function.client.maythrow.uncheckedexceptions.TGS_FuncMTUCEUtils;
+import com.tugalsan.api.function.client.maythrowexceptions.unchecked.TGS_FuncMTUUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -100,12 +100,12 @@ public class TS_LibVncDesktopViewerSwing_NetworkConnectionWorker extends SwingWo
             try {
                 socket = doInBackground2();
             } catch (IOException | TS_LibVncDesktopViewerSwing_ConnectionErrorException | TS_LibVncDesktopViewerSwing_CancelConnectionException e) {
-                TGS_FuncMTUCEUtils.thrw(e);
+                TGS_FuncMTUUtils.thrw(e);
             }
             try {
                 Thread.sleep(30); // throws
             } catch (InterruptedException ie) {
-                TGS_FuncMTUCEUtils.thrw(ie);
+                TGS_FuncMTUUtils.thrw(ie);
             }
 
             logger.info("creating socket done#0");

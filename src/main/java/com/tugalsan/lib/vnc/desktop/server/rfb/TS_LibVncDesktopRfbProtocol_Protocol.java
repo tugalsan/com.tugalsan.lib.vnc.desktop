@@ -85,8 +85,8 @@ public class TS_LibVncDesktopRfbProtocol_Protocol implements TS_LibVncDesktopRfb
                 context.transport = new TS_LibVncDesktopRfb_HandlerHandshaker(this).handshake(getTransport());
             });
         });
-        if (await.exceptionIfFailed.isPresent()) {
-            TGS_FuncMTUUtils.thrw(await.exceptionIfFailed.get());
+        if (await.exceptionIfFailed().isPresent()) {
+            TGS_FuncMTUUtils.thrw(await.exceptionIfFailed().get());
             return;
         }
         logger.info("context.transport:%s".formatted(context.transport.toString()));

@@ -181,7 +181,7 @@ public class TS_LibVncDesktopViewerSwing_GuiConnectionDialogView extends JPanel 
     }
 
     public void connectAction() {
-        TS_ThreadAsyncRun.now(viewer.killTrigger.newChild(d.className), kt -> {
+        TS_ThreadAsyncRun.now(viewer.killTrigger.newChild(d.className()), kt -> {
             setMessage("");
             var hostName = serverNameField.getText();
             try {

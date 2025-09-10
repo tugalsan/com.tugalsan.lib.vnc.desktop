@@ -133,7 +133,7 @@ public class TS_LibVncDesktopViewerSwing_ClipboardControllerImpl implements TS_L
             isRunning = false;
         }
         if (enable && !isEnabled) {
-            TS_ThreadAsyncRun.now(killTrigger.newChild(d.className), kt -> run());
+            TS_ThreadAsyncRun.now(killTrigger.newChild(d.className()), kt -> run());
         }
         isEnabled = enable;
     }

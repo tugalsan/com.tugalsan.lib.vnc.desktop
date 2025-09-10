@@ -148,7 +148,7 @@ public class TS_LibVncDesktopViewer_Viewer implements TS_LibVncDesktopViewerSwin
         viewerWindow.setZoomToFitSelected(true);
         TS_DesktopDesktopPaneUtils.remove(pane, connectionDialogView.getFrame());
         TS_DesktopDesktopPaneUtils.tiltWindows(pane);
-        TS_ThreadAsyncRun.now(killTrigger.newChild(d.className), kt -> {
+        TS_ThreadAsyncRun.now(killTrigger.newChild(d.className()), kt -> {
             TS_ThreadSyncWait.seconds(null, killTrigger, 5);
             TGS_FuncMTCUtils.run(() -> {
                 viewerWindow.ReDrawOnResize();

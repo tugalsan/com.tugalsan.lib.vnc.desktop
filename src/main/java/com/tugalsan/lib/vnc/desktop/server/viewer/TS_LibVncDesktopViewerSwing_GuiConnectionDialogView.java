@@ -23,16 +23,9 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.log.server.TS_Log;
-import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
+import module com.tugalsan.api.log;
+import module com.tugalsan.api.thread;
+import module java.desktop;
 
 /**
  * Dialog window for connection parameters get from.

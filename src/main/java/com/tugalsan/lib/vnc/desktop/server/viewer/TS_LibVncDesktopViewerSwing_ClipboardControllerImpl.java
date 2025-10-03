@@ -23,24 +23,14 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.charset.client.TGS_CharSetCast;
-import com.tugalsan.api.log.server.TS_Log;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_CutTextMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
-import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_ClipboardController;
+import module com.tugalsan.api.thread;
+import module com.tugalsan.api.charset;
+import module com.tugalsan.api.log;
+import module java.desktop;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import java.io.*;
+import java.nio.charset.*;
 
 public class TS_LibVncDesktopViewerSwing_ClipboardControllerImpl implements TS_LibVncDesktopRfb_ClipboardController, Runnable {
 

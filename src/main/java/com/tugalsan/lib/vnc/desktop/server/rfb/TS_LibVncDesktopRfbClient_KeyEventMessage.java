@@ -23,8 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
 
 /**
  * A key press or release. Down-flag is non-zero (true) if the key is now

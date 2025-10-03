@@ -23,23 +23,11 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopDrawing_Renderer;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Common;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_FramebufferUpdateRequestMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_SetPixelFormatMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_PixelFormat;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_FramebufferUpdateRectangle;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_BaudrateMeter;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.logging.Logger;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_ClipboardController;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IRepaintController;
+import module com.tugalsan.api.thread;
+import module java.logging;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import java.io.*;
 
 public class TS_LibVncDesktopRfbProtocol_ReceiverTask implements Runnable {
 

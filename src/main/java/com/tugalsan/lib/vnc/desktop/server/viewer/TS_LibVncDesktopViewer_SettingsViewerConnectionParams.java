@@ -23,9 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
-import java.util.Objects;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpModel;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import java.util.*;
 
 /**
  * Object that represents parameters needed for establishing network connection

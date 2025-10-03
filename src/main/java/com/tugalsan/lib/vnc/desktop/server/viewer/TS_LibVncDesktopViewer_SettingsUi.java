@@ -23,13 +23,11 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IChangeSettingsListener;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author dime at tightvnc.com

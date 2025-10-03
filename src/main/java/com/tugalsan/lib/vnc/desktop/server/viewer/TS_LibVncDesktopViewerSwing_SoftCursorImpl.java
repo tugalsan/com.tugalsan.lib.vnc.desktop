@@ -23,10 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopDrawing_SoftCursor;
-
-import java.awt.*;
-import java.awt.image.MemoryImageSource;
+import module java.desktop;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
 
 public class TS_LibVncDesktopViewerSwing_SoftCursorImpl extends TS_LibVncDesktopDrawing_SoftCursor {
 

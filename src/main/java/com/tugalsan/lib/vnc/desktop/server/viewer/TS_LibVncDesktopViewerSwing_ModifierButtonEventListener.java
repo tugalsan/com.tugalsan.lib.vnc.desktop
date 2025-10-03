@@ -23,10 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Map;
+import module java.desktop;
+import java.util.*;
 
 public class TS_LibVncDesktopViewerSwing_ModifierButtonEventListener {
 

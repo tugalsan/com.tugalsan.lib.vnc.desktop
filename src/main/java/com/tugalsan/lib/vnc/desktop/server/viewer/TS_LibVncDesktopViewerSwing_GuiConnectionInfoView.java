@@ -23,16 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewerSwing_ConnectionPresenter;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewerSwing_ViewerViewerEventsListener;
+import module java.desktop;
 
 /**
  * @author dime at tightvnc.com

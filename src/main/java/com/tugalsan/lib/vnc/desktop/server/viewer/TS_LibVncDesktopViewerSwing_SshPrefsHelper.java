@@ -23,11 +23,9 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.function.client.TGS_FuncUtils;
-import java.io.IOException;
-import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
+import module java.logging;
+import java.io.*;
+import java.util.prefs.*;
 
 public class TS_LibVncDesktopViewerSwing_SshPrefsHelper {
 

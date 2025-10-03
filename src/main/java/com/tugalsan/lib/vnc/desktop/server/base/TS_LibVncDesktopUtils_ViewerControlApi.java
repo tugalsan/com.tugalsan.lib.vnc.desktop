@@ -23,9 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.base;
 
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_MessageType;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_ClientToServerMessage;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
 
 /**
  * @author dime at tightvnc.com

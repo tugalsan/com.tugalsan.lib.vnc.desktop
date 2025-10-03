@@ -23,12 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_ClientToServerMessage;
+import module java.logging;
+import java.util.concurrent.*;
 
 /**
  * @author dime at tightvnc.com

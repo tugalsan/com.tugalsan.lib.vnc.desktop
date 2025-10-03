@@ -23,17 +23,10 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopDrawing_Renderer;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_PixelFormat;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_FramebufferUpdateRectangle;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-
-import java.awt.*;
-import java.awt.image.*;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import module java.desktop;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import java.util.concurrent.*;
 
 public class TS_LibVncDesktopViewerSwing_RendererImpl extends TS_LibVncDesktopDrawing_Renderer implements ImageObserver {
 
@@ -95,7 +88,7 @@ public class TS_LibVncDesktopViewerSwing_RendererImpl extends TS_LibVncDesktopDr
                 // nop
             }
             // nop
-            
+
         }
         return !isReady;
     }

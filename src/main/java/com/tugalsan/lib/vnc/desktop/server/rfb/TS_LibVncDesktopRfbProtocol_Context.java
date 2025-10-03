@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
 
 public class TS_LibVncDesktopRfbProtocol_Context {
 

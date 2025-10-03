@@ -23,8 +23,6 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_CapabilityInfo;
-
 /**
  * @author dime at tightvnc.com
  */

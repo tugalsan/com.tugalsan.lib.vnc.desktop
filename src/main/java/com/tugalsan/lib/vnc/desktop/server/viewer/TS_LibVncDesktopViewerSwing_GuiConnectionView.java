@@ -23,9 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-
-import javax.swing.*;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpView;
+import module java.desktop;
 
 /**
  * @author dime at tightvnc.com

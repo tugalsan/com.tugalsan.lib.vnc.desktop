@@ -23,8 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.base;
 
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_PixelFormat;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
 
 public class TS_LibVncDesktopDrawing_ColorDecoder {
 

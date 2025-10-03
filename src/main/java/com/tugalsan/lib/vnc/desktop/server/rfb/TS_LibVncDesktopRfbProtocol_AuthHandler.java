@@ -23,23 +23,16 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_AuthenticationFailed;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_UnsupportedSecurityType;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_ClosedConnection;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_ServerInitMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-
-import java.util.logging.Logger;
+import module java.logging;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
 
 public abstract class TS_LibVncDesktopRfbProtocol_AuthHandler {
 
     private static final int AUTH_RESULT_OK = 0;
 //	private static final int AUTH_RESULT_FAILED = 1;
     private static final Logger logger = Logger.getLogger(TS_LibVncDesktopRfbProtocol_AuthHandler.class.getName());
-    
+
     /**
      * Not thread safe, no need to be thread safe
      */
@@ -75,7 +68,7 @@ public abstract class TS_LibVncDesktopRfbProtocol_AuthHandler {
     public void checkSecurityResult(TS_LibVncDesktopTransport_Transport transport) throws TS_LibVncDesktopException_Transport,
             TS_LibVncDesktopException_AuthenticationFailed {
         final var securityResult = transport.readInt32();
-        logger().fine("Security result: %d%s".formatted(securityResult , (AUTH_RESULT_OK == securityResult ? " (OK)" : " (Failed)")));
+        logger().fine("Security result: %d%s".formatted(securityResult, (AUTH_RESULT_OK == securityResult ? " (OK)" : " (Failed)")));
         if (securityResult != AUTH_RESULT_OK) {
             try {
                 var reason = transport.readString();

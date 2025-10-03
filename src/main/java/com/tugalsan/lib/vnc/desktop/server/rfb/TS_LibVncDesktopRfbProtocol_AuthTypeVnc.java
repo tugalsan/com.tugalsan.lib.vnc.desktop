@@ -23,17 +23,12 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Crypto;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
 import javax.crypto.*;
-import javax.crypto.spec.DESKeySpec;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import javax.crypto.spec.*;
+import java.security.*;
+import java.security.spec.*;
 
 import static com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings.getBytesWithCharset;
 
@@ -62,8 +57,8 @@ public class TS_LibVncDesktopRfbProtocol_AuthTypeVnc extends TS_LibVncDesktopRfb
      * Encrypt challenge by key using DES
      *
      * @return encrypted bytes
-     * @throws TS_LibVncDesktopException_Crypto on problem with DES algorithm support or smth
-     * about
+     * @throws TS_LibVncDesktopException_Crypto on problem with DES algorithm
+     * support or smth about
      */
     public byte[] encrypt(byte[] challenge, byte[] key) throws TS_LibVncDesktopException_Crypto {
         try {

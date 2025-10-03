@@ -1,6 +1,6 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import java.util.logging.Level;
+import module java.logging;
 
 public class TS_LibVncDesktopViewer_ApplicationSettings {
 

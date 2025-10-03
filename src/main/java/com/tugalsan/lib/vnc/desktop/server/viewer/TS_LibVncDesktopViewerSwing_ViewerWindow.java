@@ -23,26 +23,13 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.desktop.server.TS_DesktopDialogInfoUtils;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopCore_SettingsChangedEvent;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_KeyEventMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_TunnelType;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Keymap;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
-
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import module com.tugalsan.api.desktop;
+import module java.desktop;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import java.awt.event.MouseEvent;
+import java.util.*;
 import java.util.List;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IChangeSettingsListener;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IRepaintController;
 
 public class TS_LibVncDesktopViewerSwing_ViewerWindow implements TS_LibVncDesktopRfb_IChangeSettingsListener, TS_LibVncDesktopViewerSwing_MouseEnteredListener {
 
@@ -490,7 +477,7 @@ public class TS_LibVncDesktopViewerSwing_ViewerWindow implements TS_LibVncDeskto
     }
 
     final protected void createButtonsPanel(final TS_LibVncDesktopRfbProtocol_Protocol protocol, Container container) {
-       var bb = createButtonsBar();
+        var bb = createButtonsBar();
 
         bb.addToNoFullScreenGroup(
                 bb.createButton("options", "Set Options", (ActionEvent e) -> {

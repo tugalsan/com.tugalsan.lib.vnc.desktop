@@ -1,11 +1,8 @@
 package com.tugalsan.lib.vnc.desktop.server;
 
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_ParametersHandler;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_Viewer;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_CliParser;
-import java.awt.Window;
-import javax.swing.JDesktopPane;
+import module java.desktop;
+import module com.tugalsan.api.thread;
+import com.tugalsan.lib.vnc.desktop.server.viewer.*;
 
 public class TS_LibVncDesktop {
 

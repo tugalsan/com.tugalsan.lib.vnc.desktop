@@ -24,7 +24,7 @@
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
 
-import java.util.LinkedHashSet;
+import java.util.*;
 
 /**
  * Encoding types

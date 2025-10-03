@@ -23,12 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
-
-import java.awt.*;
-import javax.swing.JDesktopPane;
+import module java.desktop;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
 
 /**
  * Factory that creates SwingViewerWindow with a number of params

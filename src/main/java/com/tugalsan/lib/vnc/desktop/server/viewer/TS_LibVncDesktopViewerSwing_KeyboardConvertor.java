@@ -23,13 +23,11 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.sun.jna.Platform;
-import com.tugalsan.api.function.client.maythrowexceptions.checked.TGS_FuncMTCUtils;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
+import module com.tugalsan.api.function;
+import module java.desktop;
+import module com.sun.jna.platform;
+import java.util.*;
+import java.util.regex.*;
 
 public class TS_LibVncDesktopViewerSwing_KeyboardConvertor {
 

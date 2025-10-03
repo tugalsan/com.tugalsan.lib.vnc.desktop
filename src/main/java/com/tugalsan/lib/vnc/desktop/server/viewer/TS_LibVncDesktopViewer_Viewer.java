@@ -23,20 +23,13 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.desktop.server.TS_DesktopDesktopPaneUtils;
-import com.tugalsan.api.desktop.server.TS_DesktopDialogMessageUtils;
-import com.tugalsan.api.function.client.maythrowexceptions.checked.TGS_FuncMTCUtils;
-import com.tugalsan.api.log.server.TS_Log;
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.api.thread.server.async.run.TS_ThreadAsyncRun;
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncWait;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-
-import java.awt.Window;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JDesktopPane;
+import module com.tugalsan.api.desktop;
+import module com.tugalsan.api.function;
+import module com.tugalsan.api.log;
+import module com.tugalsan.api.thread;
+import module java.desktop;
+import module java.logging;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
 
 @SuppressWarnings("serial")
 public class TS_LibVncDesktopViewer_Viewer implements TS_LibVncDesktopViewerSwing_ViewerViewerEventsListener {

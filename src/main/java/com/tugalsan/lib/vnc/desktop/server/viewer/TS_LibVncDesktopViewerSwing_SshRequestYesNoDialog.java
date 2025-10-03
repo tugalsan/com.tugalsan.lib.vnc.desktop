@@ -23,10 +23,9 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import javax.swing.*;
-import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Logger;
+import module java.desktop;
+import module java.logging;
+import java.lang.reflect.*;
 
 /**
  * @author dime at tightvnc.com

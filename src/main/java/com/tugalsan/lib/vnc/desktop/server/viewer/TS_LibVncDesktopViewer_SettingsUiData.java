@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * @author dime at tightvnc.com

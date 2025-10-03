@@ -23,16 +23,9 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_Type;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_LocalPointer;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.HashMap;
-import java.util.Map;
+import module java.desktop;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import java.util.*;
 
 /**
  * Options dialog

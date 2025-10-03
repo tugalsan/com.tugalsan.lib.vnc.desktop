@@ -23,14 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpPresenter;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersAbstractConnectionWorkerFactory;
-
-import java.awt.*;
-import javax.swing.JDesktopPane;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersRfbConnectionWorker;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_WorkersNetworkConnectionWorker;
+import module com.tugalsan.api.thread;
+import module java.desktop;
 
 /**
  * @author dime at tightvnc.com

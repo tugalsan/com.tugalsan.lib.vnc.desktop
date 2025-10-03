@@ -23,10 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_MvpPresenter;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsViewerConnectionParams;
-
-import java.net.Socket;
+import java.net.*;
 
 /**
  * @author dime at tightvnc.com

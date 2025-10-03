@@ -23,28 +23,17 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.api.function.client.maythrowexceptions.checked.TGS_FuncMTCUtils;
-import com.tugalsan.api.function.client.maythrowexceptions.unchecked.TGS_FuncMTUUtils;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_BaudrateMeter;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_ViewerControlApi;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_AuthenticationFailed;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Fatal;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.net.Socket;
-import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.logging.Logger;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_ISessionListener;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IRequestString;
+import module com.tugalsan.api.thread;
+import module com.tugalsan.api.function;
+import module java.desktop;
+import module java.logging;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author dime at tightvnc.com

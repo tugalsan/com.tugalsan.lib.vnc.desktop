@@ -23,14 +23,10 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.desktop.server.TS_DesktopWindowAndFrameUtils;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Logger;
+import module com.tugalsan.api.desktop;
+import module java.desktop;
+import module java.logging;
+import java.lang.reflect.*;
 
 /**
  * @author dime at tightvnc.com

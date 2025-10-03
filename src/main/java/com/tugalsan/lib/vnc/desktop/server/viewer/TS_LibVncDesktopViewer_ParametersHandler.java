@@ -23,15 +23,10 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.charset.client.TGS_CharSet;
-import com.tugalsan.api.charset.client.TGS_CharSetCast;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbEncoding_Type;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_LocalPointer;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_TunnelType;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
-
-import java.util.logging.Logger;
+import module com.tugalsan.api.charset;
+import module java.logging;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
 
 public class TS_LibVncDesktopViewer_ParametersHandler {
 

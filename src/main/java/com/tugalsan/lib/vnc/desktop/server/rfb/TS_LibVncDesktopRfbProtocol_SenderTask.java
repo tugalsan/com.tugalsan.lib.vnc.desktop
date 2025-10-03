@@ -23,14 +23,11 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.logging.Logger;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_ClientToServerMessage;
+import module java.logging;
+import module com.tugalsan.api.thread;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import java.io.*;
 
 public class TS_LibVncDesktopRfbProtocol_SenderTask implements Runnable {
 

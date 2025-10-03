@@ -23,11 +23,9 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_ViewerControlApi;
-import com.tugalsan.lib.vnc.desktop.server.viewer.TS_LibVncDesktopViewer_SettingsUi;
-
-import java.net.Socket;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import java.net.*;
 
 /**
  * @author dime at tightvnc.com

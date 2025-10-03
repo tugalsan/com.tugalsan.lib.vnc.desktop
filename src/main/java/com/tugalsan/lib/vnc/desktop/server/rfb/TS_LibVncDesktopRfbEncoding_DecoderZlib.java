@@ -23,13 +23,10 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopDrawing_Renderer;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-
-import java.io.ByteArrayInputStream;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import java.io.*;
+import java.util.zip.*;
 
 public class TS_LibVncDesktopRfbEncoding_DecoderZlib extends TS_LibVncDesktopRfbEncoding_Decoder {
 

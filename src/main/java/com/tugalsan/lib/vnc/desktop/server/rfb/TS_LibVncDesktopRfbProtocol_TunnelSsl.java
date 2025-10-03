@@ -23,16 +23,11 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.lang.reflect.InvocationTargetException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import javax.net.ssl.*;
+import java.lang.reflect.*;
+import java.security.*;
 
 /**
  * @author dime at glavsoft.com

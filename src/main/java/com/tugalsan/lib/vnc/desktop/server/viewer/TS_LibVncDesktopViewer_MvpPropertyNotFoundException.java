@@ -23,7 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Common;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
 
 /**
  * @author dime at glavsoft.com

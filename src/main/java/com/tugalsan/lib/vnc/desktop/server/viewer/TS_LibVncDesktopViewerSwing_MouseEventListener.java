@@ -23,15 +23,9 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbClient_PointerEventMessage;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Protocol;
-
-import javax.swing.event.MouseInputAdapter;
-import java.awt.event.InputEvent;
+import module java.desktop;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfb_IRepaintController;
 
 public class TS_LibVncDesktopViewerSwing_MouseEventListener extends MouseInputAdapter
         implements MouseWheelListener {

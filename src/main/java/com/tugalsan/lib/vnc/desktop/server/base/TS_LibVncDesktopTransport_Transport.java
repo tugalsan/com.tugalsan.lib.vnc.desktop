@@ -23,13 +23,11 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.base;
 
-import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_ClosedConnection;
-import com.tugalsan.lib.vnc.desktop.server.exceptions.TS_LibVncDesktopException_Transport;
-
+import module com.tugalsan.api.thread;
+import com.tugalsan.lib.vnc.desktop.server.exceptions.*;
 import java.io.*;
-import java.net.Socket;
-import java.nio.charset.Charset;
+import java.net.*;
+import java.nio.charset.*;
 
 /**
  * @author dime

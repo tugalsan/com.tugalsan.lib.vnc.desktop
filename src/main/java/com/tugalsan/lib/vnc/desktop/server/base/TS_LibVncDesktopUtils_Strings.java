@@ -23,8 +23,8 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.base;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import java.io.*;
+import java.nio.charset.*;
 
 public class TS_LibVncDesktopUtils_Strings {
 

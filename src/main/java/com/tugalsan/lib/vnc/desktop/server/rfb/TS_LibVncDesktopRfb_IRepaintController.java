@@ -23,8 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.rfb;
 
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopDrawing_Renderer;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopTransport_Transport;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
 
 /**
  * Interface for sending repaint event from worker thread to GUI thread

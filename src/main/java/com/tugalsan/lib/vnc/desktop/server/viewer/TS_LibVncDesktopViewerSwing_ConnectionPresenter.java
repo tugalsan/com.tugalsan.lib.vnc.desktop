@@ -23,12 +23,11 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
-import com.tugalsan.api.log.server.TS_Log;
-import com.tugalsan.lib.vnc.desktop.server.rfb.TS_LibVncDesktopRfbProtocol_Settings;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_Strings;
-import com.tugalsan.lib.vnc.desktop.server.base.TS_LibVncDesktopUtils_ViewerControlApi;
-import java.net.Socket;
-import java.util.logging.Logger;
+import module com.tugalsan.api.log;
+import module java.logging;
+import com.tugalsan.lib.vnc.desktop.server.rfb.*;
+import com.tugalsan.lib.vnc.desktop.server.base.*;
+import java.net.*;
 
 /**
  * A Presenter (controller) that presents business logic for connection

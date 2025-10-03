@@ -23,8 +23,7 @@
 //
 package com.tugalsan.lib.vnc.desktop.server.base;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author dime at tightvnc.com

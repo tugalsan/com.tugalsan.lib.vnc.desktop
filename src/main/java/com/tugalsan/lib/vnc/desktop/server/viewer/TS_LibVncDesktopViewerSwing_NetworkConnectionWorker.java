@@ -24,15 +24,13 @@
 package com.tugalsan.lib.vnc.desktop.server.viewer;
 
 
-import com.tugalsan.api.function.client.maythrowexceptions.unchecked.TGS_FuncMTUUtils;
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.logging.Logger;
+import module com.tugalsan.api.function;
+import module java.desktop;
+import module java.logging;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class TS_LibVncDesktopViewerSwing_NetworkConnectionWorker extends SwingWorker<Socket, String> implements TS_LibVncDesktopViewer_WorkersNetworkConnectionWorker {
 
